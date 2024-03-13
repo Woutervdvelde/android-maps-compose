@@ -1,4 +1,5 @@
 plugins {
+    id 'com.android.library'
     id 'kotlin-android'
 }
 
@@ -19,7 +20,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion libs.versions.composecompiler.get()
+        kotlinCompilerExtensionVersion = "1.5.4"
     }
 
     buildFeatures {
@@ -37,9 +38,9 @@ android {
 dependencies {
     api project(':maps-compose')
 
-    implementation libs.androidx.core
-    implementation platform(libs.androidx.compose.bom)
-    implementation libs.androidx.compose.ui
-    implementation libs.kotlin
-    api libs.maps.ktx.utils
+    implementation "androidx.core:core-ktx:1.12.0"
+    implementation platform("androidx.compose:compose-bom:2024.01.00")
+    implementation "androidx.compose.ui:ui:1.6.3"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.22"
+    api "com.google.maps.android:maps-utils-ktx:5.0.0"
 }
