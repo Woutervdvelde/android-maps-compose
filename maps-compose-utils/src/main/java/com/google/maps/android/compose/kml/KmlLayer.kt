@@ -4,7 +4,10 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
 import androidx.compose.runtime.Composable
+import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMapComposable
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.kml.parser.KmlParser
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
@@ -17,10 +20,6 @@ import java.util.zip.ZipInputStream
 public fun KmlLayer(
     stream: InputStream
 ) {
-//    val testLatLong = LatLng(52.5069297,6.0866005)
-//    Marker(
-//        state = MarkerState(position = testLatLong)
-//    )
     val bis = BufferedInputStream(stream)
     bis.mark(1024)
     val zip = ZipInputStream(bis)
@@ -55,6 +54,15 @@ public fun KmlLayer(
         stream.close()
         bis.close()
         zip.close()
+    }
+
+    parser?.mPlacemarks?.forEach {placemark ->
+        val geometryObject = placemark.geometry.geometryObject
+        if (geometryObject is LatLng) {
+            Marker(
+                state = MarkerState(geometryObject)
+            )
+        }
     }
 }
 

@@ -1,15 +1,26 @@
 package com.google.maps.android.compose.kml.parser
 
+import com.google.maps.android.data.kml.KmlPlacemark
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import java.io.IOException
 
+/**
+ * Parses a given KML file into KmlStyle, KmlPlacemark, KmlGroundOverlay and KmlContainer objects
+ */
 internal class KmlParser (
     private val mParser: XmlPullParser,
-    val mPlacemarks: HashMap<Any, Any> = HashMap()
+    val mPlacemarks: MutableList<KmlPlacemark> = mutableListOf(),
+    val mContainers: MutableList<KmlPlacemark> = mutableListOf(),
+    val mStyles: MutableList<KmlPlacemark> = mutableListOf(),
+    val mStyleMaps: MutableList<KmlPlacemark> = mutableListOf(),
+    val mGroundOverlays: MutableList<KmlPlacemark> = mutableListOf()
 ) {
 
-
+    /**
+     * Parses the KML file stored in the current XmlPullParser.
+     * Stores values in their corresponding list
+     */
     fun parseKml() {
         var eventType = mParser.eventType
         while (eventType != XmlPullParser.END_DOCUMENT) {
@@ -24,7 +35,7 @@ internal class KmlParser (
                     //TODO(handle stylemap)
                 }
                 if (mParser.name.equals(PLACEMARK)) {
-                    //TODO(handle placemark)
+                    mPlacemarks.add(KmlFeatureParser.createPlacemark(mParser))
                 }
                 if (mParser.name.equals(GROUND_OVERLAY)) {
                     //TODO(handle groundoverlay)
@@ -35,6 +46,10 @@ internal class KmlParser (
         }
     }
 
+    /**
+     * Skips tags from START_TAG to END_TAG
+     * @param parser XmlPullParser
+     */
     @Throws(XmlPullParserException::class, IOException::class)
     fun skip(parser: XmlPullParser) {
         check(parser.eventType == XmlPullParser.START_TAG)
