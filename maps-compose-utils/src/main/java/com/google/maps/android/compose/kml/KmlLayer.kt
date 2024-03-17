@@ -4,7 +4,6 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
 import androidx.compose.runtime.Composable
-import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMapComposable
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
@@ -56,12 +55,31 @@ public fun KmlLayer(
         zip.close()
     }
 
-    parser?.mPlacemarks?.forEach {placemark ->
-        val geometryObject = placemark.geometry.geometryObject
-        if (geometryObject is LatLng) {
-            Marker(
-                state = MarkerState(geometryObject)
-            )
+    parser?.container?.getContainers()?.forEach {container ->
+        container.getMarkers().forEach { marker ->
+            run {
+                Marker(
+                    state = MarkerState(marker.getPosition())
+                )
+            }
+        }
+        container.getContainers().forEach { container ->
+            container.getMarkers().forEach { marker ->
+                run {
+                    Marker(
+                        state = MarkerState(marker.getPosition())
+                    )
+                }
+            }
+            container.getContainers().forEach { container ->
+                container.getMarkers().forEach { marker ->
+                    run {
+                        Marker(
+                            state = MarkerState(marker.getPosition())
+                        )
+                    }
+                }
+            }
         }
     }
 }
