@@ -19,7 +19,7 @@ internal class KmlPlacemarkParser {
         @Throws(IOException::class, XmlPullParserException::class)
         fun parsePlacemark(parser: XmlPullParser, container: ContainerManager) {
             var eventType = parser.eventType
-            val properties: HashMap<String, String> = hashMapOf()
+            val properties: HashMap<String, Any> = hashMapOf()
             var placemark: KmlComposableManager? = null
 
             while (!(eventType == XmlPullParser.END_TAG && parser.name == "Placemark")) {
@@ -40,8 +40,7 @@ internal class KmlPlacemarkParser {
                 eventType = parser.next()
             }
 
-            placemark?.properties = properties
-            placemark?.applyProperties()
+            placemark?.setProperties(properties)
         }
 
         private fun createMarker(parser: XmlPullParser): MarkerManager {

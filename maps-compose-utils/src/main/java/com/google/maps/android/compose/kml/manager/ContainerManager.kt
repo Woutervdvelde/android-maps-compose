@@ -4,14 +4,16 @@ import androidx.compose.runtime.Composable
 
 public class ContainerManager: KmlComposableManager {
     private var containerName: String = ""
-    override var properties: HashMap<String, String> = hashMapOf()
-
     private val containers: MutableList<ContainerManager> = mutableListOf()
     private val markers: MutableList<MarkerManager> = mutableListOf()
 
     public fun getName(): String = containerName
     public fun getContainers(): List<ContainerManager> = containers
     public fun getMarkers(): List<MarkerManager> = markers
+
+    override fun setProperties(data: HashMap<String, Any>) {
+        //TODO()
+    }
 
     public fun setName(name: String) {
         containerName = name
@@ -23,10 +25,6 @@ public class ContainerManager: KmlComposableManager {
 
     public fun addMarker(marker: MarkerManager) {
         markers.add(marker)
-    }
-
-    override fun applyProperties() {
-        //TODO()
     }
 
     @Composable

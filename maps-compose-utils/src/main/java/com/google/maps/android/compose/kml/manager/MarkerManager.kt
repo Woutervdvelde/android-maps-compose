@@ -8,27 +8,44 @@ import com.google.maps.android.compose.rememberMarkerState
 public class MarkerManager (
     private val position: LatLng
 ): KmlComposableManager {
-    override var properties: HashMap<String, String> = hashMapOf()
-    private var description: String = ""
-    private var name = ""
-    private var visibility = true
-    private var drawOrder = 0
+    private var markerData: MarkerProperties = MarkerProperties()
 
-    public fun getPosition(): LatLng = position
-
-    override fun applyProperties() {
-        
-        //TODO()
+    public override fun setProperties(data: HashMap<String, Any>) {
+        markerData = MarkerProperties.from(data)
     }
+    public fun getPosition(): LatLng = position
 
     @Composable
     override fun Render() {
         val markerState = rememberMarkerState(position = position)
         Marker(
             state = markerState,
-            snippet = "Test",
-            title = "Title",
+            snippet = markerData.description,
+            title = markerData.name,
+            visible = markerData.visibility,
+            zIndex = markerData.drawOrder
         )
-        markerState.showInfoWindow()
+    }
+}
+
+internal data class MarkerProperties(
+    val description: String = DEFAULT_DESCRIPTION,
+    val name: String = DEFAULT_NAME,
+    val visibility: Boolean = DEFAULT_VISIBILITY,
+    val drawOrder: Float = DEFAULT_DRAW_ORDER
+) {
+    companion object {
+        fun from(properties: HashMap<String, Any>): MarkerProperties {
+            val description: String by properties.withDefault { DEFAULT_DESCRIPTION }
+            val name: String by properties.withDefault { DEFAULT_NAME }
+            val visibility: Boolean by properties.withDefault { DEFAULT_VISIBILITY }
+            val drawOrder: Float by properties.withDefault { DEFAULT_DRAW_ORDER }
+            return MarkerProperties(description, name, visibility, drawOrder)
+        }
+
+        private const val DEFAULT_DESCRIPTION = ""
+        private const val DEFAULT_NAME = ""
+        private const val DEFAULT_VISIBILITY = true
+        private const val DEFAULT_DRAW_ORDER = 0f
     }
 }
