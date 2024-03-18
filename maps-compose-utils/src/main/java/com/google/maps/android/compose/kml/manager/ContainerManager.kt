@@ -1,6 +1,8 @@
 package com.google.maps.android.compose.kml.manager
 
-public class ContainerManager {
+import androidx.compose.runtime.Composable
+
+public class ContainerManager: KmlComposableManager {
     private var containerName: String = ""
     private val containers: MutableList<ContainerManager> = mutableListOf()
     private val markers: MutableList<MarkerManager> = mutableListOf()
@@ -19,5 +21,12 @@ public class ContainerManager {
 
     public fun addMarker(marker: MarkerManager) {
         markers.add(marker)
+    }
+
+
+    @Composable
+    override fun Render() {
+        markers.forEach { it.Render() }
+        containers.forEach { it.Render() }
     }
 }

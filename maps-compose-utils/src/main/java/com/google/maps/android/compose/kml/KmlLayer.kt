@@ -5,8 +5,6 @@ import android.graphics.BitmapFactory
 import android.util.Log
 import androidx.compose.runtime.Composable
 import com.google.maps.android.compose.GoogleMapComposable
-import com.google.maps.android.compose.Marker
-import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.kml.parser.KmlParser
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
@@ -55,33 +53,7 @@ public fun KmlLayer(
         zip.close()
     }
 
-    parser?.container?.getContainers()?.forEach {container ->
-        container.getMarkers().forEach { marker ->
-            run {
-                Marker(
-                    state = MarkerState(marker.getPosition())
-                )
-            }
-        }
-        container.getContainers().forEach { container ->
-            container.getMarkers().forEach { marker ->
-                run {
-                    Marker(
-                        state = MarkerState(marker.getPosition())
-                    )
-                }
-            }
-            container.getContainers().forEach { container ->
-                container.getMarkers().forEach { marker ->
-                    run {
-                        Marker(
-                            state = MarkerState(marker.getPosition())
-                        )
-                    }
-                }
-            }
-        }
-    }
+    parser?.container?.Render()
 }
 
 private fun parseKml(stream: InputStream): KmlParser {
