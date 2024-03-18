@@ -2,6 +2,7 @@ package com.google.maps.android.compose.kml.parser
 
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.kml.manager.ContainerManager
+import com.google.maps.android.compose.kml.manager.KmlComposableManager
 import com.google.maps.android.compose.kml.manager.MarkerManager
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
@@ -18,20 +19,29 @@ internal class KmlPlacemarkParser {
         @Throws(IOException::class, XmlPullParserException::class)
         fun parsePlacemark(parser: XmlPullParser, container: ContainerManager) {
             var eventType = parser.eventType
+            val properties: HashMap<String, String> = hashMapOf()
+            var placemark: KmlComposableManager? = null
 
             while (!(eventType == XmlPullParser.END_TAG && parser.name == "Placemark")) {
                 if (eventType == XmlPullParser.START_TAG) {
-                    if (parser.name.matches(PLACEMARK_REGEX)) {
-                        when (parser.name) {
-                            POINT_TAG -> container.addMarker(createMarker(parser))
-                            "LineString" -> return //TODO()
-                            "Polygon" -> return //TODO()
-                            "MultiGeometry" -> return //TODO()
-                        }
+                    if (parser.name.matches(PROPERTY_REGEX)) {
+                        properties[parser.name] = parser.nextText()
+                    } else if (parser.name.equals(POINT_TAG)) {
+                        placemark = createMarker(parser)
+                        container.addMarker(placemark)
+                    } else if (parser.name.equals(LINE_STRING_TAG)) {
+                        //TODO()
+                    } else if (parser.name.equals(POLYGON_TAG)) {
+                        //TODO()
+                    } else if (parser.name.equals(MUTLI_GEOMETRY_TAG)) {
+                        //TODO()
                     }
                 }
                 eventType = parser.next()
             }
+
+            placemark?.properties = properties
+            placemark?.applyProperties()
         }
 
         private fun createMarker(parser: XmlPullParser): MarkerManager {
@@ -44,11 +54,16 @@ internal class KmlPlacemarkParser {
                 eventType = parser.next()
             }
 
-            return MarkerManager(latLngAlt!!.latLng)
+            if (latLngAlt == null) {
+                throw IllegalArgumentException("KML ")
+            }
+
+            return MarkerManager(latLngAlt.latLng)
         }
 
         private val PLACEMARK_REGEX = Regex("Point|LineString|Polygon|MultiGeometry")
-        private val PROPERTY_REGEX = Regex("name|description|drawOrder|visibility|open|address|phoneNumber")
+        private val PROPERTY_REGEX =
+            Regex("name|description|drawOrder|visibility|address|phoneNumber")
         private val BOUNDARY_REGEX = Regex("outerBoundaryIs|innerBoundaryIs")
         private val COMPASS_REGEX = Regex("north|south|east|west")
         private const val LONGITUDE_INDEX = 0
@@ -56,6 +71,9 @@ internal class KmlPlacemarkParser {
         private const val ALTITUDE_INDEX = 2
         private const val LAT_LNG_ALT_SEPARATOR = ","
         private const val POINT_TAG = "Point"
+        private const val LINE_STRING_TAG = "LineString"
+        private const val POLYGON_TAG = "Polygon"
+        private const val MUTLI_GEOMETRY_TAG = "MultiGeometry"
         private const val COORDINATES_TAG = "coordinates"
         private const val EXTENDED_DATA_TAG = "ExtendedData"
         private const val STYLE_URL_TAG = "styleUrl"

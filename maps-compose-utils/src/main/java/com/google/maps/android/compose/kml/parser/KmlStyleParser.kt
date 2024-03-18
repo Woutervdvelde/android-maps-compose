@@ -47,15 +47,40 @@ internal class KmlStyleParser {
 
             while (!(eventType == XmlPullParser.END_TAG && parser.name.equals(KmlParser.STYLE_TAG))) {
                 if (eventType == XmlPullParser.START_TAG) {
-
+                    when(parser.name) {
+                        ICON_STYLE_TAG -> parseIconStyle(parser, style)
+                        LINE_STYLE_TAG -> return style //TODO()
+                        POLY_STYLE_TAG -> return style //TODO()
+                        BALLOON_STYLE_TAG -> return style //TODO()
+                    }
                 }
                 eventType = parser.next()
             }
             return style
         }
 
+        /**
+         *
+         */
+        @Throws(IOException::class, XmlPullParserException::class)
+        private fun parseIconStyle(parser: XmlPullParser, style: KmlStyle) {
+            var eventType = parser.eventType
+
+            while (!(eventType == XmlPullParser.END_TAG && parser.name.equals(ICON_STYLE_TAG))) {
+                if (eventType == XmlPullParser.START_TAG) {
+
+                }
+
+                eventType = parser.next()
+            }
+        }
+
         private const val STYLE_MAP_KEY_TAG = "key"
         private const val STYLE_URL_TAG = "styleUrl"
         private const val STYLE_MAP_NORMAL_STYLE = "normal"
+        private const val ICON_STYLE_TAG = "IconStyle"
+        private const val LINE_STYLE_TAG = "LineStyle"
+        private const val POLY_STYLE_TAG = "PolyStyle"
+        private const val BALLOON_STYLE_TAG = "BalloonStyle"
     }
 }

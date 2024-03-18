@@ -27,7 +27,8 @@ internal class KmlParser (
 
         while (eventType != XmlPullParser.END_DOCUMENT) {
             if (eventType == XmlPullParser.START_TAG) {
-                if (mParser.name.matches(CONTAINER_REGEX)) {
+                //KML defines the <kml> should only contain exactly one Document, Folder, or Placemark as direct child
+                if (mParser.name.matches(CONTAINER_REGEX) || mParser.name.equals(PLACEMARK_TAG)) {
                     container = parseKmlContainer(mParser)
                 }
             }
