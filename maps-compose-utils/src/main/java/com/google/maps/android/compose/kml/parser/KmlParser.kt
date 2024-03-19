@@ -11,7 +11,7 @@ import java.io.IOException
  * Parses a given KML file into KmlStyle, KmlPlacemark, KmlGroundOverlay and KmlContainer objects
  */
 internal class KmlParser (
-    private val mParser: XmlPullParser,
+    private val parser: XmlPullParser,
     private val styleMaps: HashMap<String, KmlStyleMap> = hashMapOf(),
     private val styles: HashMap<String, KmlStyle> = hashMapOf(),
     var container: ContainerManager = ContainerManager(),
@@ -23,18 +23,20 @@ internal class KmlParser (
      */
     @Throws(IOException::class, XmlPullParserException::class)
     fun parseKml() {
-        var eventType = mParser.eventType
+        var eventType = parser.eventType
 
         while (eventType != XmlPullParser.END_DOCUMENT) {
             if (eventType == XmlPullParser.START_TAG) {
                 //KML defines the <kml> should only contain exactly one Document, Folder, or Placemark as direct child
-                if (mParser.name.matches(CONTAINER_REGEX) || mParser.name.equals(PLACEMARK_TAG)) {
-                    container = parseKmlContainer(mParser)
+                if (parser.name.matches(CONTAINER_REGEX) || parser.name.equals(PLACEMARK_TAG)) {
+                    container = parseKmlContainer(parser)
                 }
             }
 
-            eventType = mParser.next()
+            eventType = parser.next()
         }
+
+        container.setStyle(styleMaps, styles)
 
         /**
          * TODO(apply style from stylemaps and styles)

@@ -60,9 +60,8 @@ internal class KmlPlacemarkParser {
             return MarkerManager(latLngAlt.latLng)
         }
 
-        private val PLACEMARK_REGEX = Regex("Point|LineString|Polygon|MultiGeometry")
         private val PROPERTY_REGEX =
-            Regex("name|description|drawOrder|visibility|address|phoneNumber")
+            Regex("name|description|drawOrder|visibility|address|phoneNumber|styleUrl")
         private val BOUNDARY_REGEX = Regex("outerBoundaryIs|innerBoundaryIs")
         private val COMPASS_REGEX = Regex("north|south|east|west")
         private const val LONGITUDE_INDEX = 0
@@ -75,8 +74,6 @@ internal class KmlPlacemarkParser {
         private const val MUTLI_GEOMETRY_TAG = "MultiGeometry"
         private const val COORDINATES_TAG = "coordinates"
         private const val EXTENDED_DATA_TAG = "ExtendedData"
-        private const val STYLE_URL_TAG = "styleUrl"
-        private const val STYLE_TAG = "Style"
     }
 
     /**

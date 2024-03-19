@@ -20,12 +20,12 @@ public fun KmlLayer(
     val bis = BufferedInputStream(stream)
     bis.mark(1024)
     val zip = ZipInputStream(bis)
+    val images = HashMap<String, Bitmap>()
     var parser: KmlParser? = null
 
     try {
         var entry = zip.nextEntry
         if (entry != null) { // is a KMZ zip file
-            val images = HashMap<String, Bitmap>()
             while (entry != null) {
                 if (parser == null && entry.name.lowercase().endsWith(".kml")) {
                     parser = parseKml(zip)
@@ -53,7 +53,7 @@ public fun KmlLayer(
         zip.close()
     }
 
-    parser?.container?.Render()
+    parser?.container?.Render(images)
 }
 
 private fun parseKml(stream: InputStream): KmlParser {

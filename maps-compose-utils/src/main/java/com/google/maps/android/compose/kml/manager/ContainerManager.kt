@@ -1,9 +1,13 @@
 package com.google.maps.android.compose.kml.manager
 
+import android.graphics.Bitmap
 import androidx.compose.runtime.Composable
+import com.google.maps.android.compose.kml.data.KmlStyle
+import com.google.maps.android.compose.kml.data.KmlStyleMap
 
-public class ContainerManager: KmlComposableManager {
+public class ContainerManager() : KmlComposableManager {
     private var containerName: String = ""
+    override var style: KmlStyle? = null
     private val containers: MutableList<ContainerManager> = mutableListOf()
     private val markers: MutableList<MarkerManager> = mutableListOf()
 
@@ -13,6 +17,14 @@ public class ContainerManager: KmlComposableManager {
 
     override fun setProperties(data: HashMap<String, Any>) {
         //TODO()
+    }
+
+    override fun setStyle(
+        styleMaps: HashMap<String, KmlStyleMap>,
+        styles: HashMap<String, KmlStyle>
+    ) {
+        containers.forEach { it.setStyle(styleMaps, styles) }
+        markers.forEach { it.setStyle(styleMaps, styles) }
     }
 
     public fun setName(name: String) {
@@ -28,8 +40,8 @@ public class ContainerManager: KmlComposableManager {
     }
 
     @Composable
-    override fun Render() {
-        markers.forEach { it.Render() }
-        containers.forEach { it.Render() }
+    override fun Render(images: HashMap<String, Bitmap>) {
+        markers.forEach { it.Render(images) }
+        containers.forEach { it.Render(images) }
     }
 }
