@@ -1,5 +1,6 @@
 package com.google.maps.android.compose.kml.parser
 
+import android.content.Context
 import android.graphics.Bitmap
 import com.google.maps.android.compose.kml.data.KmlStyle
 import com.google.maps.android.compose.kml.data.KmlStyleMap
@@ -90,8 +91,8 @@ internal class KmlParser (
         }
     }
 
-    suspend fun applyStyles(images: HashMap<String, Bitmap>) {
-        container.setStyle(styleMaps, styles, images)
+    suspend fun applyStyles(images: HashMap<String, Bitmap>, context: Context) {
+        container.setStyle(styleMaps, styles, images, context)
     }
 
     companion object {
