@@ -6,11 +6,16 @@ import com.google.maps.android.compose.kml.data.KmlStyle
 import com.google.maps.android.compose.kml.data.KmlStyleMap
 
 internal interface KmlComposableManager {
-    var style: KmlStyle?
+    var style: KmlStyle
 
-    fun setStyle(styleMaps: HashMap<String, KmlStyleMap>, styles: HashMap<String, KmlStyle>)
+    suspend fun setStyle(
+        styleMaps: HashMap<String, KmlStyleMap>,
+        styles: HashMap<String, KmlStyle>,
+        images: HashMap<String, Bitmap>
+    )
+
     fun setProperties(data: HashMap<String, Any>)
 
     @Composable
-    fun Render(images: HashMap<String, Bitmap>)
+    fun Render()
 }

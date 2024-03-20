@@ -1,5 +1,6 @@
 package com.google.maps.android.compose.kml.parser
 
+import android.graphics.Bitmap
 import com.google.maps.android.compose.kml.data.KmlStyle
 import com.google.maps.android.compose.kml.data.KmlStyleMap
 import com.google.maps.android.compose.kml.manager.ContainerManager
@@ -36,13 +37,6 @@ internal class KmlParser (
             eventType = parser.next()
         }
 
-        container.setStyle(styleMaps, styles)
-
-        /**
-         * TODO(apply style from stylemaps and styles)
-         * 1. loop through stylemaps and assign styles
-         * 2. loop through containers and placemarks and apply styles from stylemaps
-          */
     }
 
     /**
@@ -94,6 +88,10 @@ internal class KmlParser (
                 XmlPullParser.START_TAG -> depth++
             }
         }
+    }
+
+    suspend fun applyStyles(images: HashMap<String, Bitmap>) {
+        container.setStyle(styleMaps, styles, images)
     }
 
     companion object {

@@ -72,15 +72,15 @@ internal class KmlStyleParser {
                     if (parser.name.equals(ICON_HREF_TAG)) {
                         style.setIconUrl(parser.nextText())
                     } else if (parser.name.equals(STYLE_SCALE_TAG)) {
-                        style.setScale(parser.nextText().toFloat())
+                        style.setIconScale(parser.nextText().toFloat())
                     } else if (parser.name.equals(STYLE_HEADING_TAG)) {
-                        style.setHeading(parser.nextText().toInt())
+                        style.setIconHeading(parser.nextText().toInt())
                     } else if (parser.name.equals(STYLE_HOTSPOT_TAG)) {
                         parseIconHotSpot(parser, style)
                     } else if (parser.name.equals(STYLE_COLOR_TAG)) {
-                        style.setColor(parseKmlColor(parser.nextText()))
+                        style.setIconColor(parseKmlColor(parser.nextText()))
                     } else if (parser.name.equals(STYLE_COLOR_MODE_TAG)) {
-                        style.setColorMode(parser.nextText().equals(COLOR_MODE_RANDOM))
+                        style.setIconColorMode(parser.nextText().equals(COLOR_MODE_RANDOM))
                     }
                 }
 
@@ -95,7 +95,7 @@ internal class KmlStyleParser {
         private fun parseIconHotSpot(parser: XmlPullParser, style: KmlStyle) {
             val xValue = parser.getAttributeValue(null, "x").toFloat()
             val yValue = parser.getAttributeValue(null, "y").toFloat()
-            style.setAnchor(xValue, yValue)
+            style.setIconAnchor(xValue, yValue)
         }
 
         /**

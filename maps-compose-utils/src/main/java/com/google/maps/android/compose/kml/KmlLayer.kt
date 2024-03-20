@@ -4,8 +4,12 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import com.google.maps.android.compose.GoogleMapComposable
 import com.google.maps.android.compose.kml.parser.KmlParser
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
 import java.io.BufferedInputStream
@@ -17,11 +21,13 @@ import java.util.zip.ZipInputStream
 public fun KmlLayer(
     stream: InputStream
 ) {
+    val images = HashMap<String, Bitmap>()
+    var parser: KmlParser? = null
+
     val bis = BufferedInputStream(stream)
     bis.mark(1024)
     val zip = ZipInputStream(bis)
-    val images = HashMap<String, Bitmap>()
-    var parser: KmlParser? = null
+    Log.e("KmlLayer", "Started - ${System.currentTimeMillis()}")
 
     try {
         var entry = zip.nextEntry
@@ -34,7 +40,10 @@ public fun KmlLayer(
                     if (bitmap != null) {
                         images[entry.name] = bitmap
                     } else {
-                        Log.w("KmlLayer", "Unsupported KMZ contents file type: ${entry.name}")
+                        Log.w(
+                            "KmlLayer",
+                            "Unsupported KMZ contents file type: ${entry.name}"
+                        )
                     }
                 }
                 entry = zip.nextEntry
@@ -53,7 +62,12 @@ public fun KmlLayer(
         zip.close()
     }
 
-    parser?.container?.Render(images)
+    LaunchedEffect(Unit) {
+        CoroutineScope(Dispatchers.IO).launch {
+            parser?.applyStyles(images)
+        }
+    }
+    parser?.container?.Render()
 }
 
 private fun parseKml(stream: InputStream): KmlParser {
