@@ -6,11 +6,15 @@ import com.google.maps.android.compose.kml.data.KmlStyleMap
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import java.io.IOException
+import java.util.Random
 
 internal class KmlStyleParser {
     companion object {
         /**
+         * Parses the StyleMap tag and stores it in a [KmlStyleMap]
          *
+         * @param parser XmlPullParser containing the StyleMap tag
+         * @return KmlStyleMap containing all style id information
          */
         @Throws(IOException::class, XmlPullParserException::class)
         fun parseStyleMap(parser: XmlPullParser): KmlStyleMap {
@@ -38,7 +42,9 @@ internal class KmlStyleParser {
         }
 
         /**
+         * Parses the IconStyle, LineStyle, PolyStyle and BalloonStyle into a [KmlStyle] object
          *
+         * @param parser XmlPullParser containing the Style tag
          */
         @Throws(IOException::class, XmlPullParserException::class)
         fun parseStyle(parser: XmlPullParser): KmlStyle {
@@ -61,7 +67,10 @@ internal class KmlStyleParser {
         }
 
         /**
+         * Receives input from the XMLPullParser and assigns relevant properties to a [KmlStyle]
          *
+         * @param parser The XMLPullParser
+         * @param style The KmlStyle properties should be saved in
          */
         @Throws(IOException::class, XmlPullParserException::class)
         private fun parseIconStyle(parser: XmlPullParser, style: KmlStyle) {
@@ -89,7 +98,10 @@ internal class KmlStyleParser {
         }
 
         /**
+         * Sets the hot spot for the icon
          *
+         * @param parser The XmlPullParser
+         * @param style The [KmlStyle] the value should be set to
          */
         @Throws(XmlPullParserException::class)
         private fun parseIconHotSpot(parser: XmlPullParser, style: KmlStyle) {
@@ -105,18 +117,30 @@ internal class KmlStyleParser {
          * @return Float hue value from color
          */
         private fun parseKmlColor(color: String): Float {
-            val integerColor = Color.parseColor("#${convertColorToAARRGGB(color)}")
+            val integerColor =
+                Color.parseColor("#${convertColorToAARRGGB(color.substringAfter('#'))}")
+            return convertIntColorToHueValue(integerColor)
+        }
+
+
+        /**
+         * Converts an integer color value and returns the hue value
+         *
+         * @param color Color as integer
+         * @return Float hue value from color
+         */
+        internal fun convertIntColorToHueValue(color: Int): Float {
             val hsvValues = FloatArray(HSV_VALUES)
-            Color.colorToHSV(integerColor, hsvValues)
+            Color.colorToHSV(color, hsvValues)
             return hsvValues[HUE_VALUE]
         }
 
         /**
-         * Converts a color format of the form AABBGGRR to AARRGGBB.
+         * Converts a color format of the form (AA)BBGGRR to (AA)RRGGBB.
          * Any leading or trailing spaces in the provided string will be trimmed prior to conversion.
          *
-         * @param color Color in AABBGGRR format
-         * @return color in AARRGGBB format
+         * @param color Color in (AA)BBGGRR format
+         * @return color in (AA)RRGGBB format
          */
         private fun convertColorToAARRGGB(color: String): String {
             val trimmedColor = color.trim()
@@ -130,6 +154,36 @@ internal class KmlStyleParser {
                         trimmedColor.substring(2, 4) +
                         trimmedColor.substring(0, 2)
             }
+        }
+
+        /**
+         * Computes a random color given an integer. Algorithm to compute the random color can be found in
+         * https://developers.google.com/kml/documentation/kmlreference#colormode
+         *
+         * @param color Color represented as an integer
+         * @return Integer representing a random color
+         */
+        internal fun computeRandomColor(color: Int): Int {
+            val random = Random()
+            var red = Color.red(color)
+            var green = Color.green(color)
+            var blue = Color.blue(color)
+
+            if (red != 0) {
+                red = random.nextInt(red)
+            }
+            if (blue != 0) {
+                blue = random.nextInt(blue)
+            }
+            if (green != 0) {
+                green = random.nextInt(green)
+            }
+            if (red == 0 && blue == 0 && green == 0) {
+                red = random.nextInt(256)
+                blue = random.nextInt(256)
+                green = random.nextInt(256)
+            }
+            return Color.rgb(red, green, blue)
         }
 
         private const val STYLE_MAP_KEY_TAG = "key"

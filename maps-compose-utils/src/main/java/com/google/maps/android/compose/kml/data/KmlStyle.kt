@@ -5,7 +5,7 @@ public class KmlStyle: KmlStyleId() {
     private var mIconScale: Float = DEFAULT_ICON_SCALE
     private var mIconHeading: Int = DEFAULT_ICON_HEADING
     private var mIconAnchor: Anchor = DEFAULT_ICON_ANCHOR
-    private var mIconColor: Float = DEFAULT_ICON_COLOR
+    private var mIconColor: Float? = DEFAULT_ICON_COLOR
     private var mIconColorModeRandom: Boolean = DEFAULT_ICON_COLOR_MODE_RANDOM
 
     internal fun setIconUrl(url: String) {
@@ -32,19 +32,42 @@ public class KmlStyle: KmlStyleId() {
         mIconColorModeRandom = isRandomMode
     }
 
+    /**
+     * Gets the iconUrl of the marker if set
+     * @return iconUrl if set or [DEFAULT_ICON_URL]
+     */
     public fun getIconUrl(): String? = mIconUrl
+
+    /**
+     * Gets the size of the marker
+     * @return scale value
+     */
     public fun getIconScale(): Float = mIconScale
+
+    /**
+     * Gets the color hue of the marker color
+     * @return hue
+     */
+    public fun getIconColor(): Float? = mIconColor
+
+    /**
+     * @return true if the icon colorMode is set to random
+     */
+    public fun getIconRandomColorMode(): Boolean = mIconColorModeRandom
 
     internal companion object {
         val DEFAULT_ICON_URL = null
         const val DEFAULT_ICON_SCALE = 1f
         const val DEFAULT_ICON_HEADING = 0
         val DEFAULT_ICON_ANCHOR = Anchor()
-        const val DEFAULT_ICON_COLOR = 0f
+        val DEFAULT_ICON_COLOR = null
         const val DEFAULT_ICON_COLOR_MODE_RANDOM = false
     }
 }
 
+/**
+ * Internal helper data class to easily store Anchor data used for the KML hotSpot tag
+ */
 internal data class Anchor(
     val x: Float = 0f,
     val y: Float = 0f

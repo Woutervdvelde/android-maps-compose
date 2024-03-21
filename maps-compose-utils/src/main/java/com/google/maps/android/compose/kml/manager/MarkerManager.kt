@@ -12,9 +12,12 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.kml.data.KmlStyle
 import com.google.maps.android.compose.kml.data.KmlStyleMap
+import com.google.maps.android.compose.kml.parser.KmlStyleParser
 import com.google.maps.android.compose.rememberMarkerState
 import java.io.IOException
 import java.net.URL
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 public class MarkerManager(
     private val position: LatLng
@@ -44,29 +47,46 @@ public class MarkerManager(
         markerData.value = markerData.value.copy(visibility = visible)
     }
 
-    private fun generateIcon(images: HashMap<String, Bitmap>, context: Context) {
-        val iconUrl = style.getIconUrl()
-        val bitmap = iconUrl?.let { images[it] }
+    /**
+     *
+     */
+    private suspend fun generateIcon(images: HashMap<String, Bitmap>, context: Context) {
+        val bitmap = getMarkerIconBitmap(images)
 
-        val iconBitmap = bitmap ?: run {
-            if (iconUrl != null && iconUrl.lowercase().startsWith("http")) {
-                fetchIconFromUrl(iconUrl)
-            } else null
-        }
+        val bitmapDescriptor = bitmap?.let {
+            BitmapDescriptorFactory.fromBitmap(resizeIcon(it, style.getIconScale(), context))
+        } ?: style.getIconColor()?.let {
+            if (style.getIconRandomColorMode()) {
+                val color = KmlStyleParser.computeRandomColor(it.toInt())
+                BitmapDescriptorFactory.defaultMarker(KmlStyleParser.convertIntColorToHueValue(color))
+            } else {
+                BitmapDescriptorFactory.defaultMarker(it)
+            }
+        } ?: BitmapDescriptorFactory.defaultMarker()
 
-        iconBitmap?.let {
-            val resizedIcon = resizeIcon(it, style.getIconScale(), context)
-            markerData.value = markerData.value.copy(icon = BitmapDescriptorFactory.fromBitmap(resizedIcon))
-        }
+        markerData.value = markerData.value.copy(icon = bitmapDescriptor)
     }
 
-    private fun fetchIconFromUrl(url: String): Bitmap? {
-        return try {
-            val inputStream = URL(url).openConnection().getInputStream()
-            BitmapFactory.decodeStream(inputStream)
-        } catch (e: IOException) {
-            e.printStackTrace()
-            null
+    private suspend fun getMarkerIconBitmap(images: HashMap<String, Bitmap>): Bitmap? {
+        val iconUrl = style.getIconUrl()
+        iconUrl?.let { images[it]?.let { bitmap -> return bitmap } } //bitmap exists in parsed KMZ
+
+        if (iconUrl != null && iconUrl.lowercase().startsWith("http")) {
+            fetchIconFromUrl(iconUrl)?.let { return it }
+        }
+
+        return null
+    }
+
+    private suspend fun fetchIconFromUrl(url: String): Bitmap? { //TODO(Test with non image url for errors)
+        return suspendCoroutine { continuation ->
+            try {
+                val inputStream = URL(url).openConnection().getInputStream()
+                continuation.resume(BitmapFactory.decodeStream(inputStream))
+            } catch (e: IOException) {
+                e.printStackTrace()
+                continuation.resume(null)
+            }
         }
     }
 
