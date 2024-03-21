@@ -6,12 +6,14 @@ import android.graphics.BitmapFactory
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.geometry.Offset
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.kml.data.KmlStyle
 import com.google.maps.android.compose.kml.data.KmlStyleMap
+import com.google.maps.android.compose.kml.parser.Anchor
 import com.google.maps.android.compose.kml.parser.KmlStyleParser
 import com.google.maps.android.compose.rememberMarkerState
 import java.io.IOException
@@ -41,10 +43,34 @@ public class MarkerManager(
 
         style = selectedStyle ?: KmlStyle()
         generateIcon(images, context)
+        applyStylesToProperties()
     }
 
     public fun setVisibility(visible: Boolean) {
         markerData.value = markerData.value.copy(visibility = visible)
+    }
+
+    public fun setAlpha(alpha: Float) {
+        markerData.value = markerData.value.copy(alpha = alpha)
+    }
+
+    public fun setRotation(rotation: Int) {
+        markerData.value = markerData.value.copy(rotation = rotation)
+    }
+
+    public fun setAnchor(anchor: Anchor) {
+        //TODO("handle other unit types, only supports fractions at the moment")
+        if (anchor.xUnit == KmlStyleParser.HOTSPOT_UNIT_FRACTION && anchor.yUnit == KmlStyleParser.HOTSPOT_UNIT_FRACTION) {
+            markerData.value = markerData.value.copy(anchor = anchor)
+        } else {
+            markerData.value = markerData.value.copy(anchor = Anchor())
+        }
+    }
+
+    private fun applyStylesToProperties() {
+        setAlpha(style.getIconAlpha())
+        setAnchor(style.getIconAnchor())
+        setRotation(style.getIconHeading())
     }
 
     /**
@@ -78,7 +104,7 @@ public class MarkerManager(
         return null
     }
 
-    private suspend fun fetchIconFromUrl(url: String): Bitmap? { //TODO(Test with non image url for errors)
+    private suspend fun fetchIconFromUrl(url: String): Bitmap? {
         return suspendCoroutine { continuation ->
             try {
                 val inputStream = URL(url).openConnection().getInputStream()
@@ -113,6 +139,9 @@ public class MarkerManager(
 
         Marker(
             state = markerState,
+            alpha = currentMarkerData.alpha,
+            anchor = Offset(currentMarkerData.anchor.x, currentMarkerData.anchor.y),
+            rotation = currentMarkerData.rotation.toFloat(),
             snippet = currentMarkerData.description,
             title = currentMarkerData.name,
             visible = currentMarkerData.visibility,
@@ -127,28 +156,43 @@ public class MarkerManager(
     }
 }
 
-public data class MarkerProperties(
+internal data class MarkerProperties(
     val description: String = DEFAULT_DESCRIPTION,
     val name: String = DEFAULT_NAME,
     val visibility: Boolean = DEFAULT_VISIBILITY,
+    val alpha: Float = DEFAULT_ALPHA,
     val drawOrder: Float = DEFAULT_DRAW_ORDER,
+    val anchor: Anchor = DEFAULT_ANCHOR,
+    val rotation: Int = DEFAULT_ROTATION,
     val styleUrl: String? = DEFAULT_STYLE_URL,
     var icon: BitmapDescriptor = BitmapDescriptorFactory.defaultMarker(),
 ) {
-    public companion object {
+    companion object {
         internal fun from(properties: HashMap<String, Any>): MarkerProperties {
             val description: String by properties.withDefault { DEFAULT_DESCRIPTION }
             val name: String by properties.withDefault { DEFAULT_NAME }
             val visibility: Boolean by properties.withDefault { DEFAULT_VISIBILITY }
             val drawOrder: Float by properties.withDefault { DEFAULT_DRAW_ORDER }
             val styleUrl: String? by properties
-            return MarkerProperties(description, name, visibility, drawOrder, styleUrl)
+            return MarkerProperties(
+                description,
+                name,
+                visibility,
+                DEFAULT_ALPHA,
+                drawOrder,
+                DEFAULT_ANCHOR,
+                DEFAULT_ROTATION,
+                styleUrl
+            )
         }
 
         private const val DEFAULT_DESCRIPTION = ""
         private const val DEFAULT_NAME = ""
         private const val DEFAULT_VISIBILITY = true
+        private const val DEFAULT_ALPHA = 1f
         private const val DEFAULT_DRAW_ORDER = 0f
+        private val DEFAULT_ANCHOR = Anchor()
+        private const val DEFAULT_ROTATION = 0
         private const val DEFAULT_STYLE_URL = ""
     }
 }

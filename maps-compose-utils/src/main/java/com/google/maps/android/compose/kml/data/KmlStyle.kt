@@ -1,11 +1,14 @@
 package com.google.maps.android.compose.kml.data
 
+import com.google.maps.android.compose.kml.parser.Anchor
+
 public class KmlStyle: KmlStyleId() {
     private var mIconUrl: String? = DEFAULT_ICON_URL
     private var mIconScale: Float = DEFAULT_ICON_SCALE
     private var mIconHeading: Int = DEFAULT_ICON_HEADING
     private var mIconAnchor: Anchor = DEFAULT_ICON_ANCHOR
     private var mIconColor: Float? = DEFAULT_ICON_COLOR
+    private var mIconAlpha: Float = DEFAULT_ICON_ALPHA
     private var mIconColorModeRandom: Boolean = DEFAULT_ICON_COLOR_MODE_RANDOM
 
     internal fun setIconUrl(url: String) {
@@ -20,12 +23,16 @@ public class KmlStyle: KmlStyleId() {
         mIconHeading = heading
     }
 
-    internal fun setIconAnchor(x: Float, y: Float) {
-        mIconAnchor = Anchor(x, y)
+    internal fun setIconAnchor(anchor: Anchor) {
+        mIconAnchor = anchor
     }
 
     internal fun setIconColor(colorHue: Float) {
         mIconColor = colorHue
+    }
+
+    internal fun setIconAlpha(alpha: Float) {
+        mIconAlpha = alpha
     }
 
     internal fun setIconColorMode(isRandomMode: Boolean) {
@@ -39,16 +46,34 @@ public class KmlStyle: KmlStyleId() {
     public fun getIconUrl(): String? = mIconUrl
 
     /**
-     * Gets the size of the marker
+     * Gets the size of the icon
      * @return scale value
      */
     public fun getIconScale(): Float = mIconScale
 
     /**
-     * Gets the color hue of the marker color
+     * Gets the heading (rotation) of the icon
+     * @return heading in degrees
+     */
+    public fun getIconHeading(): Int = mIconHeading
+
+    /**
+     * Gets icon offset
+     * @return offset with x, y values
+     */
+    public fun getIconAnchor(): Anchor = mIconAnchor
+
+    /**
+     * Gets the color hue of the icon color
      * @return hue
      */
     public fun getIconColor(): Float? = mIconColor
+
+    /**
+     * Gets the alpha value of the icon
+     * @return float value between 0 and 1
+     */
+    public fun getIconAlpha(): Float = mIconAlpha
 
     /**
      * @return true if the icon colorMode is set to random
@@ -61,14 +86,7 @@ public class KmlStyle: KmlStyleId() {
         const val DEFAULT_ICON_HEADING = 0
         val DEFAULT_ICON_ANCHOR = Anchor()
         val DEFAULT_ICON_COLOR = null
+        const val DEFAULT_ICON_ALPHA = 1f
         const val DEFAULT_ICON_COLOR_MODE_RANDOM = false
     }
 }
-
-/**
- * Internal helper data class to easily store Anchor data used for the KML hotSpot tag
- */
-internal data class Anchor(
-    val x: Float = 0f,
-    val y: Float = 0f
-)

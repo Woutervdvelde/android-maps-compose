@@ -87,7 +87,9 @@ internal class KmlStyleParser {
                     } else if (parser.name.equals(STYLE_HOTSPOT_TAG)) {
                         parseIconHotSpot(parser, style)
                     } else if (parser.name.equals(STYLE_COLOR_TAG)) {
-                        style.setIconColor(parseKmlColor(parser.nextText()))
+                        val (color, alpha) = parseKmlColor(parser.nextText())
+                        style.setIconColor(color)
+                        style.setIconAlpha(alpha)
                     } else if (parser.name.equals(STYLE_COLOR_MODE_TAG)) {
                         style.setIconColorMode(parser.nextText().equals(COLOR_MODE_RANDOM))
                     }
@@ -105,9 +107,11 @@ internal class KmlStyleParser {
          */
         @Throws(XmlPullParserException::class)
         private fun parseIconHotSpot(parser: XmlPullParser, style: KmlStyle) {
+            val xUnits = parser.getAttributeValue(null, "xunits")
+            val yUnits = parser.getAttributeValue(null, "yunits")
             val xValue = parser.getAttributeValue(null, "x").toFloat()
             val yValue = parser.getAttributeValue(null, "y").toFloat()
-            style.setIconAnchor(xValue, yValue)
+            style.setIconAnchor(Anchor(xValue, yValue, xUnits, yUnits))
         }
 
         /**
@@ -116,10 +120,17 @@ internal class KmlStyleParser {
          * @param color Color in AABBGGRR format
          * @return Float hue value from color
          */
-        private fun parseKmlColor(color: String): Float {
+        private fun parseKmlColor(color: String): Pair<Float, Float> {
+            val c = color.substringAfter('#')
             val integerColor =
-                Color.parseColor("#${convertColorToAARRGGB(color.substringAfter('#'))}")
-            return convertIntColorToHueValue(integerColor)
+                Color.parseColor("#${convertColorToAARRGGB(c)}")
+
+            val alpha = if (c.length > 6) {
+                val intValue = c.substring(0, 2).toInt(16)
+                intValue.toFloat() / 255f
+            } else 1f
+
+            return Pair(convertIntColorToHueValue(integerColor), alpha)
         }
 
 
@@ -202,5 +213,15 @@ internal class KmlStyleParser {
         private const val COLOR_MODE_RANDOM = "random"
         private const val HSV_VALUES = 3
         private const val HUE_VALUE = 0
+        const val HOTSPOT_UNIT_FRACTION = "fraction"
+        const val HOTSPOT_UNIT_PIXELS = "pixels"
+        const val HOTSPOT_UNIT_INSET_PIXELS = "insetPixels"
     }
 }
+
+public data class Anchor(
+    val x: Float = 0.5f,
+    val y: Float = 1.0f,
+    val xUnit: String = KmlStyleParser.HOTSPOT_UNIT_FRACTION,
+    val yUnit: String = KmlStyleParser.HOTSPOT_UNIT_FRACTION
+)

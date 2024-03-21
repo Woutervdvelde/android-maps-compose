@@ -32,8 +32,6 @@ public fun KmlLayer(
         images.putAll(parsedImages)
     }
 
-    parser?.container?.Render()
-
     LaunchedEffect(Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             parser?.applyStyles(images, context)
@@ -41,6 +39,8 @@ public fun KmlLayer(
             onParsed(parser?.container)
         }
     }
+
+    parser?.container?.Render()
 }
 
 private fun parseStream(stream: InputStream, onParsed: (KmlParser?, Map<String, Bitmap>) -> Unit) {
