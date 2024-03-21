@@ -43,6 +43,11 @@ internal class KmlPlacemarkParser {
             placemark?.setProperties(properties)
         }
 
+        /**
+         * Creates a MarkerManager based on the given KML data, coordinates will be extracted from the <point> tag
+         *
+         * @param parser XmlPullParser containing KML Point tag
+         */
         private fun createMarker(parser: XmlPullParser): MarkerManager {
             var eventType = parser.eventType
             var latLngAlt: LatLngAlt? = null

@@ -219,6 +219,9 @@ internal class KmlStyleParser {
     }
 }
 
+/**
+ * Helper data class for saving hotSpot anchor information
+ */
 public data class Anchor(
     val x: Float = 0.5f,
     val y: Float = 1.0f,

@@ -90,6 +90,12 @@ internal class KmlParser (
         }
     }
 
+    /**
+     * Applies styles to container and its features
+     *
+     * @param images Images extracted from KMZ
+     * @param context Current context used to get phones pixel density
+     */
     suspend fun applyStyles(images: HashMap<String, Bitmap>, context: Context) {
         container.setStyle(styleMaps, styles, images, context)
     }

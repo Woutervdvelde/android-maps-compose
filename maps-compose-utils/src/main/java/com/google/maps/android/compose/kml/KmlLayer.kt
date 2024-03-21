@@ -18,6 +18,12 @@ import java.io.BufferedInputStream
 import java.io.InputStream
 import java.util.zip.ZipInputStream
 
+/**
+ * Parses KML/KMZ files and displays them on the map.
+ * @param stream KML/KMZ InputStream
+ * @param context Current context, for instance used to get information about display size
+ * @param onParsed Callback function giving access to [ContainerManager]
+ */
 @Composable
 @GoogleMapComposable
 public fun KmlLayer(
@@ -43,6 +49,14 @@ public fun KmlLayer(
     parser?.container?.Render()
 }
 
+/**
+ * Processes the InputStream to extract KML data and any images from a KMZ.
+ * Once parsing is complete, the provided callback function is invoked with the [KmlParser]
+ * and a Map<String, Bitmap> containing the file paths and corresponding Bitmap objects of any images included in a KMZ.
+ *
+ * @param stream InputStream containing the KML/KMZ data.
+ * @param onParsed Callback function to be invoked when parsing is complete.
+ */
 private fun parseStream(stream: InputStream, onParsed: (KmlParser?, Map<String, Bitmap>) -> Unit) {
     val images = HashMap<String, Bitmap>()
     var parser: KmlParser? = null
@@ -88,6 +102,11 @@ private fun parseStream(stream: InputStream, onParsed: (KmlParser?, Map<String, 
     }
 }
 
+/**
+ * Creates the KmlParser with the needed XmlParser
+ * @param stream InputStream containing the KML data.
+ * @return KmlParser
+ */
 private fun parseKml(stream: InputStream): KmlParser {
     val xmlPullParser = createXmlParser(stream)
     val parser = KmlParser(xmlPullParser)
@@ -95,6 +114,10 @@ private fun parseKml(stream: InputStream): KmlParser {
     return parser
 }
 
+/**
+ * Creates the XmlParser used to parse KML data.
+ * @return XmlPullParser containing the KML file
+ */
 private fun createXmlParser(stream: InputStream): XmlPullParser {
     val factory = XmlPullParserFactory.newInstance()
     factory.isNamespaceAware = true

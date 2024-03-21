@@ -31,6 +31,14 @@ public class MarkerManager(
         markerData.value = MarkerProperties.from(data)
     }
 
+    /**
+     * Sets the styles received from the KML Parser
+     *
+     * @param styleMaps All StyleMap tags parsed from the KML file
+     * @param styles All Style tags parsed from the KML file
+     * @param images All images when present in KMZ file
+     * @param context Current context used to get information about display size
+     */
     public override suspend fun setStyle(
         styleMaps: HashMap<String, KmlStyleMap>,
         styles: HashMap<String, KmlStyle>,
@@ -46,18 +54,39 @@ public class MarkerManager(
         applyStylesToProperties()
     }
 
+    /**
+     * Sets the visibility of the marker
+     *
+     * @param visible True when marker should be visible, false if not
+     */
     public fun setVisibility(visible: Boolean) {
         markerData.value = markerData.value.copy(visibility = visible)
     }
 
+    /**
+     * Sets alpha of the marker, value between 0f and 1f.
+     * 0f means the icon is fully transparent and  1f will make the marker fully opaque.
+     *
+     * @param alpha Float value between 0f and 1f
+     */
     public fun setAlpha(alpha: Float) {
         markerData.value = markerData.value.copy(alpha = alpha)
     }
 
+    /**
+     * Sets rotation of the marker in degrees
+     *
+     * @param rotation in degrees, 0 - 360
+     */
     public fun setRotation(rotation: Int) {
         markerData.value = markerData.value.copy(rotation = rotation)
     }
 
+    /**
+     * Sets icon anchor, only supports fractions
+     *
+     * @param anchor Anchor value
+     */
     public fun setAnchor(anchor: Anchor) {
         //TODO("handle other unit types, only supports fractions at the moment")
         if (anchor.xUnit == KmlStyleParser.HOTSPOT_UNIT_FRACTION && anchor.yUnit == KmlStyleParser.HOTSPOT_UNIT_FRACTION) {
@@ -67,6 +96,9 @@ public class MarkerManager(
         }
     }
 
+    /**
+     * Applies all available styles to properties
+     */
     private fun applyStylesToProperties() {
         setAlpha(style.getIconAlpha())
         setAnchor(style.getIconAnchor())
@@ -74,7 +106,11 @@ public class MarkerManager(
     }
 
     /**
+     * Generates icon that can be used by the Marker composable.
+     * Sets the value in markerData
      *
+     * @param images All images when present in KMZ file
+     * @param context Context used to get information about display size
      */
     private suspend fun generateIcon(images: HashMap<String, Bitmap>, context: Context) {
         val bitmap = getMarkerIconBitmap(images)
@@ -93,6 +129,12 @@ public class MarkerManager(
         markerData.value = markerData.value.copy(icon = bitmapDescriptor)
     }
 
+    /**
+     * Tries to get the marker Icon from the images in the KMZ or through a url.
+     *
+     * @param images All images when present in KMZ file
+     * @return Bitmap when available in HashMap or fetched via url, null otherwise
+     */
     private suspend fun getMarkerIconBitmap(images: HashMap<String, Bitmap>): Bitmap? {
         val iconUrl = style.getIconUrl()
         iconUrl?.let { images[it]?.let { bitmap -> return bitmap } } //bitmap exists in parsed KMZ
@@ -104,6 +146,12 @@ public class MarkerManager(
         return null
     }
 
+    /**
+     * Fetches an image from a URL and converts it to a Bitmap
+     *
+     * @param url Source of the image
+     * @return Bitmap when the url request is successful, null otherwise
+     */
     private suspend fun fetchIconFromUrl(url: String): Bitmap? {
         return suspendCoroutine { continuation ->
             try {
@@ -116,6 +164,13 @@ public class MarkerManager(
         }
     }
 
+    /**
+     * Resizes icon bitmap based on icon aspect ratio, scale and display density
+     *
+     * @param icon The icon Bitmap
+     * @param scale Scale that should be applied
+     * @param context Context used to get the display density
+     */
     private fun resizeIcon(icon: Bitmap, scale: Float, context: Context): Bitmap {
         if (icon.height == 0 || icon.density == 0)
             return icon
@@ -132,6 +187,9 @@ public class MarkerManager(
         return Bitmap.createScaledBitmap(icon, width.toInt(), height.toInt(), true)
     }
 
+    /**
+     * Renders the Marker applying all its properties and styles to it
+     */
     @Composable
     override fun Render() {
         val markerState = rememberMarkerState(position = position)
@@ -156,6 +214,9 @@ public class MarkerManager(
     }
 }
 
+/**
+ * Internal helper data class containing all maker properties and styles
+ */
 internal data class MarkerProperties(
     val description: String = DEFAULT_DESCRIPTION,
     val name: String = DEFAULT_NAME,
