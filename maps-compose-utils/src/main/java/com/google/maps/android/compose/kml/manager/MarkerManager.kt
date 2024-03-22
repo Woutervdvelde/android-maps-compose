@@ -27,7 +27,7 @@ public class MarkerManager(
     private var markerData: MutableState<MarkerProperties> = mutableStateOf(MarkerProperties())
     public override var style: KmlStyle = KmlStyle()
 
-    public override fun setProperties(data: HashMap<String, Any>) {
+    override fun setProperties(data: HashMap<String, Any>) {
         markerData.value = MarkerProperties.from(data)
     }
 
@@ -139,7 +139,7 @@ public class MarkerManager(
         val iconUrl = style.getIconUrl()
         iconUrl?.let { images[it]?.let { bitmap -> return bitmap } } //bitmap exists in parsed KMZ
 
-        if (iconUrl != null && iconUrl.lowercase().startsWith("http")) {
+        if (iconUrl != null && iconUrl.lowercase().startsWith("https")) {
             fetchIconFromUrl(iconUrl)?.let { return it }
         }
 

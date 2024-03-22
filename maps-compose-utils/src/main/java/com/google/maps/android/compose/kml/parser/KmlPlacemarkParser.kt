@@ -28,7 +28,7 @@ internal class KmlPlacemarkParser {
                         properties[parser.name] = parser.nextText()
                     } else if (parser.name.equals(POINT_TAG)) {
                         placemark = createMarker(parser)
-                        container.addMarker(placemark)
+                        container.addChild(placemark)
                     } else if (parser.name.equals(LINE_STRING_TAG)) {
                         //TODO()
                     } else if (parser.name.equals(POLYGON_TAG)) {

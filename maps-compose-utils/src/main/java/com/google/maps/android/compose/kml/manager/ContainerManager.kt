@@ -7,10 +7,9 @@ import com.google.maps.android.compose.kml.data.KmlStyle
 import com.google.maps.android.compose.kml.data.KmlStyleMap
 
 public class ContainerManager() : KmlComposableManager {
-    private var containerName: String = ""
     override var style: KmlStyle = KmlStyle()
-    private val containers: MutableList<ContainerManager> = mutableListOf()
-    private val markers: MutableList<MarkerManager> = mutableListOf()
+    private var containerName: String = ""
+    private val children: MutableList<KmlComposableManager> = mutableListOf()
 
     public fun getName(): String = containerName
 
@@ -19,13 +18,22 @@ public class ContainerManager() : KmlComposableManager {
      *
      * @return List of [ContainerManager]s
      */
-    public fun getContainers(): List<ContainerManager> = containers
+    public fun getContainers(): List<ContainerManager> = children.filterIsInstance<ContainerManager>()
 
     /**
      * Gets a list of markers that are direct children of this ContainerManager
      * @return List of [MarkerManager]s
      */
-    public fun getMarkers(): List<MarkerManager> = markers
+    public fun getMarkers(): List<MarkerManager> = children.filterIsInstance<MarkerManager>()
+
+    /**
+     * Sets the name of the container
+     *
+     * @param name Name of the container
+     */
+    public fun setName(name: String) {
+        containerName = name
+    }
 
     /**
      *  Sets properties from KML relevant to the container
@@ -35,7 +43,6 @@ public class ContainerManager() : KmlComposableManager {
     override fun setProperties(data: HashMap<String, Any>) {
         //TODO()
     }
-
 
     /**
      * Sets the styles of children [ContainerManager]s and all child features ([MarkerManager]s etc.)
@@ -51,35 +58,16 @@ public class ContainerManager() : KmlComposableManager {
         images: HashMap<String, Bitmap>,
         context: Context
     ) {
-        containers.forEach { it.setStyle(styleMaps, styles, images, context) }
-        markers.forEach { it.setStyle(styleMaps, styles, images, context) }
+        children.forEach { it.setStyle(styleMaps, styles, images, context) }
     }
 
     /**
-     * Adds a container as child to the ContainerManager
+     * Adds a child to the ContainerManager
      *
-     * @param container ContainerManager that will be added
+     * @param child Any class extending from the [KmlComposableManager]
      */
-    internal fun addContainer(container: ContainerManager) {
-        containers.add(container)
-    }
-
-    /**
-     * Adds a marker as child to the ContainerManager
-     *
-     * @param marker MarkerManager that will be added
-     */
-    internal fun addMarker(marker: MarkerManager) {
-        markers.add(marker)
-    }
-
-    /**
-     * Sets the name of the container
-     *
-     * @param name Name of the container
-     */
-    public fun setName(name: String) {
-        containerName = name
+    internal fun addChild(child: KmlComposableManager) {
+        children.add(child)
     }
 
     /**
@@ -87,7 +75,6 @@ public class ContainerManager() : KmlComposableManager {
      */
     @Composable
     override fun Render() {
-        markers.forEach { it.Render() }
-        containers.forEach { it.Render() }
+        children.forEach { it.Render() }
     }
 }

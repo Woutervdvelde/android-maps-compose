@@ -55,7 +55,7 @@ internal class KmlParser (
                 if (parser.name.matches(UNSUPPORTED_REGEX)) {
                     skip(parser)
                 } else if (parser.name.matches(CONTAINER_REGEX)) {
-                    containerManager.addContainer(parseKmlContainer(parser))
+                    containerManager.addChild(parseKmlContainer(parser))
                 } else if (parser.name.equals(NAME_TAG)) {
                     containerManager.setName(parser.nextText())
                 } else if (parser.name.equals(PLACEMARK_TAG)) {
