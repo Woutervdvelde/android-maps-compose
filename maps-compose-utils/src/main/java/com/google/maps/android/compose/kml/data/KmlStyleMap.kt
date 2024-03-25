@@ -4,6 +4,8 @@ public class KmlStyleMap: KmlStyleId() {
     private val styles: HashMap<String, String> = hashMapOf()
     private var normalStyleId: String? = null
 
+    internal fun getNormalStyleId(): String? = normalStyleId
+
     /**
      * Adds a style to the StyleMap and makes sure it is set as the normal style.
      */
@@ -18,6 +20,4 @@ public class KmlStyleMap: KmlStyleId() {
     internal fun addStyle(key: String, styleUrl: String) {
         styles[key] = styleUrl
     }
-
-    internal fun getNormalStyleId(): String? = normalStyleId
 }

@@ -14,6 +14,15 @@ public class ContainerManager() : KmlComposableManager {
     public fun getName(): String = containerName
 
     /**
+     * Sets the name of the container
+     *
+     * @param name Name of the container
+     */
+    public fun setName(name: String) {
+        containerName = name
+    }
+
+    /**
      * Gets a list of containers that are direct children of this ContainerManager
      *
      * @return List of [ContainerManager]s
@@ -25,15 +34,6 @@ public class ContainerManager() : KmlComposableManager {
      * @return List of [MarkerManager]s
      */
     public fun getMarkers(): List<MarkerManager> = children.filterIsInstance<MarkerManager>()
-
-    /**
-     * Sets the name of the container
-     *
-     * @param name Name of the container
-     */
-    public fun setName(name: String) {
-        containerName = name
-    }
 
     /**
      *  Sets properties from KML relevant to the container

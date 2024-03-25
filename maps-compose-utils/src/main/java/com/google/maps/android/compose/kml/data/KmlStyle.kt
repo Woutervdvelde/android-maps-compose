@@ -12,13 +12,27 @@ public class KmlStyle: KmlStyleId() {
     private var mIconColorModeRandom: Boolean = DEFAULT_ICON_COLOR_MODE_RANDOM
 
     /**
-     * Sets url of an icon
+     * Gets the current iconUrl of the marker
      *
-     * @param url Icon url
+     * @return icon url
+     */
+    public fun getIconUrl(): String? = mIconUrl
+
+    /**
+     * Sets iconUrl of the marker
+     *
+     * @param url icon url
      */
     internal fun setIconUrl(url: String) {
         mIconUrl = url
     }
+
+    /**
+     * Gets the size of the icon
+     *
+     * @return scale value
+     */
+    public fun getIconScale(): Float = mIconScale
 
     /**
      * Sets icon scale
@@ -30,6 +44,13 @@ public class KmlStyle: KmlStyleId() {
     }
 
     /**
+     * Gets the heading (rotation) of the icon
+     *
+     * @return heading in degrees
+     */
+    public fun getIconHeading(): Int = mIconHeading
+
+    /**
      * Sets the icon heading (rotation)
      *
      * @param heading represented in degrees (0 - 360)
@@ -37,6 +58,13 @@ public class KmlStyle: KmlStyleId() {
     internal fun setIconHeading(heading: Int) {
         mIconHeading = heading
     }
+
+    /**
+     * Gets icon offset
+     *
+     * @return offset with x, y values
+     */
+    public fun getIconAnchor(): Anchor = mIconAnchor
 
     /**
      * Sets icon anchor, parsed from kml <hotSpot> tag
@@ -48,6 +76,13 @@ public class KmlStyle: KmlStyleId() {
     }
 
     /**
+     * Gets the color hue of the icon color
+     *
+     * @return hue
+     */
+    public fun getIconColor(): Float? = mIconColor
+
+    /**
      * Sets the color of the icon using the provided hue value.
      *
      * @param colorHue Hue value representing the color of the icon. (0 - 360)
@@ -55,6 +90,13 @@ public class KmlStyle: KmlStyleId() {
     internal fun setIconColor(colorHue: Float) {
         mIconColor = colorHue
     }
+
+    /**
+     * Gets the alpha value of the icon
+     *
+     * @return float value between 0 and 1
+     */
+    public fun getIconAlpha(): Float = mIconAlpha
 
     /**
      * Sets the alpha of the icon
@@ -66,6 +108,11 @@ public class KmlStyle: KmlStyleId() {
     }
 
     /**
+     * @return true if the icon colorMode is set to random
+     */
+    public fun getIconRandomColorMode(): Boolean = mIconColorModeRandom
+
+    /**
      * Sets the icon random colorMode
      *
      * @param isRandomMode true if colorMode is set tue 'random'
@@ -73,53 +120,6 @@ public class KmlStyle: KmlStyleId() {
     internal fun setIconColorMode(isRandomMode: Boolean) {
         mIconColorModeRandom = isRandomMode
     }
-
-    /**
-     * Gets the current iconUrl of the marker
-     *
-     * @return iconUrl
-     */
-    public fun getIconUrl(): String? = mIconUrl
-
-    /**
-     * Gets the size of the icon
-     *
-     * @return scale value
-     */
-    public fun getIconScale(): Float = mIconScale
-
-    /**
-     * Gets the heading (rotation) of the icon
-     *
-     * @return heading in degrees
-     */
-    public fun getIconHeading(): Int = mIconHeading
-
-    /**
-     * Gets icon offset
-     *
-     * @return offset with x, y values
-     */
-    public fun getIconAnchor(): Anchor = mIconAnchor
-
-    /**
-     * Gets the color hue of the icon color
-     *
-     * @return hue
-     */
-    public fun getIconColor(): Float? = mIconColor
-
-    /**
-     * Gets the alpha value of the icon
-     *
-     * @return float value between 0 and 1
-     */
-    public fun getIconAlpha(): Float = mIconAlpha
-
-    /**
-     * @return true if the icon colorMode is set to random
-     */
-    public fun getIconRandomColorMode(): Boolean = mIconColorModeRandom
 
     internal companion object {
         val DEFAULT_ICON_URL = null
