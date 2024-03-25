@@ -96,7 +96,6 @@ public fun GoogleMap(
         Box(modifier = modifier)
         return
     }
-
     val context = LocalContext.current
     val mapView = remember { MapView(context, googleMapOptionsFactory()) }
 
