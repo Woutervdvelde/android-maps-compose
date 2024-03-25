@@ -3,12 +3,15 @@ package com.google.maps.android.compose.kml.manager
 import android.content.Context
 import android.graphics.Bitmap
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import com.google.maps.android.compose.kml.data.KmlStyle
 import com.google.maps.android.compose.kml.data.KmlStyleMap
 
 public class ContainerManager() : KmlComposableManager {
     override var style: KmlStyle = KmlStyle()
     private var containerName: String = ""
+    private var isActive: MutableState<Boolean> = mutableStateOf(true)
     private val children: MutableList<KmlComposableManager> = mutableListOf()
 
     public fun getName(): String = containerName
@@ -20,6 +23,27 @@ public class ContainerManager() : KmlComposableManager {
      */
     public fun setName(name: String) {
         containerName = name
+    }
+
+    /**
+     * Gets the current active state of the container
+     */
+    public fun getActive(): Boolean = isActive.value
+
+    /**
+     * Sets a container active or inactive. Inactive containers won't render their children
+     *
+     * @param active Active state of the container
+     */
+    public fun setActive(active: Boolean) {
+        isActive.value = active
+    }
+
+    /**
+     * Toggles the active state of the container
+     */
+    public fun toggleActive() {
+        setActive(!isActive.value)
     }
 
     /**
@@ -75,6 +99,8 @@ public class ContainerManager() : KmlComposableManager {
      */
     @Composable
     override fun Render() {
-        children.forEach { it.Render() }
+        if (isActive.value) {
+            children.forEach { it.Render() }
+        }
     }
 }
