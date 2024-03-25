@@ -54,6 +54,31 @@ public class ContainerManager() : KmlComposableManager {
     public fun getContainers(): List<ContainerManager> = children.filterIsInstance<ContainerManager>()
 
     /**
+     * Gets a list of containers from a specific depth in the tree of nested ContainerManagers.
+     * When a branch can't go deeper it will return the leave
+     *
+     * @param depth The depth all containers will be returned from, if possible
+     * @return list of containers at specified depth or as deep as a branch goes
+     */
+    public fun getContainers(depth: Int): List<ContainerManager> = getContainers(depth, 0)
+
+    /**
+     * Recursive function that returns a list of containers from a specific depth
+     *
+     * @param targetDepth The depth all containers will be returned from, if possible
+     * @param currentDepth The current depth in recursion
+     * @return list of containers at specified depth or as deep as a branch goes
+     */
+    private fun getContainers(targetDepth: Int, currentDepth: Int): List<ContainerManager> {
+        val containers = getContainers()
+        return if (targetDepth == currentDepth || containers.isEmpty()) {
+            listOf(this)
+        } else {
+            containers.flatMap { it.getContainers(targetDepth, currentDepth + 1) }
+        }
+    }
+
+    /**
      * Gets a list of markers that are direct children of this ContainerManager
      * @return List of [MarkerManager]s
      */
