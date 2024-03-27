@@ -182,8 +182,10 @@ public class MarkerManager(
         } else {
             Pair(DEFAULT_ICON_WIDTH, DEFAULT_ICON_HEIGHT / iconAspectRatio)
         }
-        val width = defaultWidth * scale * (dpi / icon.density)
-        val height = defaultHeight * scale * (dpi / icon.density)
+        val scaleFactor = dpi / DEFAULT_DPI
+        val width = defaultWidth * scale * scaleFactor
+        val height = defaultHeight * scale * scaleFactor
+
         return Bitmap.createScaledBitmap(icon, width.toInt(), height.toInt(), true)
     }
 
@@ -209,6 +211,7 @@ public class MarkerManager(
     }
 
     private companion object {
+        const val DEFAULT_DPI: Float = 560f
         const val DEFAULT_ICON_WIDTH: Float = 110f
         const val DEFAULT_ICON_HEIGHT: Float = 110f
     }
