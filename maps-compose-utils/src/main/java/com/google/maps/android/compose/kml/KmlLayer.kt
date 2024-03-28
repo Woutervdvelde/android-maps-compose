@@ -1,6 +1,5 @@
 package com.google.maps.android.compose.kml
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
@@ -21,14 +20,12 @@ import java.util.zip.ZipInputStream
 /**
  * Parses KML/KMZ files and displays them on the map.
  * @param stream KML/KMZ InputStream
- * @param context Current context, for instance used to get information about display size
  * @param onParsed Callback function giving access to [ContainerManager]
  */
 @Composable
 @GoogleMapComposable
 public fun KmlLayer(
     stream: InputStream,
-    context: Context,
     onParsed: (ContainerManager?) -> Unit
 ) {
     val images = HashMap<String, Bitmap>()
@@ -40,7 +37,7 @@ public fun KmlLayer(
 
     LaunchedEffect(Unit) {
         CoroutineScope(Dispatchers.IO).launch {
-            parser?.applyStyles(images, context)
+            parser?.applyStyles(images)
         }.invokeOnCompletion {
             onParsed(parser?.container)
         }

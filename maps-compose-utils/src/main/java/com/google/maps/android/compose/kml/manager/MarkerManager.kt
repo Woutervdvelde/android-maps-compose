@@ -1,6 +1,5 @@
 package com.google.maps.android.compose.kml.manager
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.compose.runtime.Composable
@@ -42,15 +41,14 @@ public class MarkerManager(
     public override suspend fun setStyle(
         styleMaps: HashMap<String, KmlStyleMap>,
         styles: HashMap<String, KmlStyle>,
-        images: HashMap<String, Bitmap>,
-        context: Context
+        images: HashMap<String, Bitmap>
     ) {
         val styleUrl = markerData.value.styleUrl
         val normalStyleId = styleMaps[styleUrl]?.getNormalStyleId()
         val selectedStyle = styles[normalStyleId]
 
         style = selectedStyle ?: KmlStyle()
-        generateIcon(images, context)
+        generateIcon(images)
         applyStylesToProperties()
     }
 
@@ -112,11 +110,11 @@ public class MarkerManager(
      * @param images All images when present in KMZ file
      * @param context Context used to get information about display size
      */
-    private suspend fun generateIcon(images: HashMap<String, Bitmap>, context: Context) {
+    private suspend fun generateIcon(images: HashMap<String, Bitmap>) {
         val bitmap = getMarkerIconBitmap(images)
 
         val bitmapDescriptor = bitmap?.let {
-            BitmapDescriptorFactory.fromBitmap(resizeIcon(it, style.getIconScale(), context))
+            BitmapDescriptorFactory.fromBitmap(resizeIcon(it, style.getIconScale()))
         } ?: style.getIconColor()?.let {
             if (style.getIconRandomColorMode()) {
                 val color = KmlStyleParser.computeRandomColor(it.toInt())
@@ -169,13 +167,12 @@ public class MarkerManager(
      *
      * @param icon The icon Bitmap
      * @param scale Scale that should be applied
-     * @param context Context used to get the display density
      */
-    private fun resizeIcon(icon: Bitmap, scale: Float, context: Context): Bitmap {
+    private fun resizeIcon(icon: Bitmap, scale: Float): Bitmap {
         if (icon.height == 0 || icon.density == 0)
             return icon
 
-        val dpi = context.resources.displayMetrics.densityDpi
+        val dpi = icon.density
         val iconAspectRatio = icon.width.toFloat() / icon.height.toFloat()
         val (defaultWidth, defaultHeight) = if (iconAspectRatio < 1) {
             Pair(DEFAULT_ICON_WIDTH * iconAspectRatio, DEFAULT_ICON_HEIGHT)

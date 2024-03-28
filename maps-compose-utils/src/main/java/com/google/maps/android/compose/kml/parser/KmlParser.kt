@@ -1,6 +1,5 @@
 package com.google.maps.android.compose.kml.parser
 
-import android.content.Context
 import android.graphics.Bitmap
 import com.google.maps.android.compose.kml.data.KmlStyle
 import com.google.maps.android.compose.kml.data.KmlStyleMap
@@ -94,10 +93,9 @@ internal class KmlParser (
      * Applies styles to container and its features
      *
      * @param images Images extracted from KMZ
-     * @param context Current context used to get phones pixel density
      */
-    suspend fun applyStyles(images: HashMap<String, Bitmap>, context: Context) {
-        container.setStyle(styleMaps, styles, images, context)
+    suspend fun applyStyles(images: HashMap<String, Bitmap>) {
+        container.setStyle(styleMaps, styles, images)
     }
 
     companion object {
