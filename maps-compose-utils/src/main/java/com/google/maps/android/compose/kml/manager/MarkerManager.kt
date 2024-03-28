@@ -233,7 +233,6 @@ internal data class MarkerProperties(
     val anchor: Anchor = DEFAULT_ANCHOR,
     val rotation: Int = DEFAULT_ROTATION,
     val styleUrl: String? = DEFAULT_STYLE_URL,
-//    var icon: BitmapDescriptor = BitmapDescriptorFactory.defaultMarker(),
     var icon: Bitmap? = null,
 ) {
     companion object {
