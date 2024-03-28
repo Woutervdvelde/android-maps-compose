@@ -113,10 +113,16 @@ public class MarkerManager(
      * @param context Context used to get information about display size
      */
     private suspend fun generateIcon(images: HashMap<String, Bitmap>, context: Context) {
-        val bitmap = getMarkerIconBitmap(images)
+        getMarkerIconBitmap(images)?.let {
+            markerData.value = markerData.value.copy(
+                icon = resizeIcon(it, style.getIconScale(), context)
+            )
+        }
+    }
 
-        val bitmapDescriptor = bitmap?.let {
-            BitmapDescriptorFactory.fromBitmap(resizeIcon(it, style.getIconScale(), context))
+    private fun getIcon(bitmap: Bitmap?): BitmapDescriptor {
+        return bitmap?.let {
+            BitmapDescriptorFactory.fromBitmap(it)
         } ?: style.getIconColor()?.let {
             if (style.getIconRandomColorMode()) {
                 val color = KmlStyleParser.computeRandomColor(it.toInt())
@@ -125,8 +131,6 @@ public class MarkerManager(
                 BitmapDescriptorFactory.defaultMarker(it)
             }
         } ?: BitmapDescriptorFactory.defaultMarker()
-
-        markerData.value = markerData.value.copy(icon = bitmapDescriptor)
     }
 
     /**
@@ -206,7 +210,7 @@ public class MarkerManager(
             title = currentMarkerData.name,
             visible = currentMarkerData.visibility,
             zIndex = currentMarkerData.drawOrder,
-            icon = currentMarkerData.icon,
+            icon = getIcon(currentMarkerData.icon),
         )
     }
 
@@ -229,7 +233,7 @@ internal data class MarkerProperties(
     val anchor: Anchor = DEFAULT_ANCHOR,
     val rotation: Int = DEFAULT_ROTATION,
     val styleUrl: String? = DEFAULT_STYLE_URL,
-    var icon: BitmapDescriptor = BitmapDescriptorFactory.defaultMarker(),
+    var icon: Bitmap? = null,
 ) {
     companion object {
         internal fun from(properties: HashMap<String, Any>): MarkerProperties {
