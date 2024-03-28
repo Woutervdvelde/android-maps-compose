@@ -6,6 +6,11 @@ import android.graphics.BitmapFactory
 import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import com.google.maps.android.compose.GoogleMapComposable
 import com.google.maps.android.compose.kml.manager.ContainerManager
 import com.google.maps.android.compose.kml.parser.KmlParser
@@ -22,31 +27,38 @@ import java.util.zip.ZipInputStream
  * Parses KML/KMZ files and displays them on the map.
  * @param stream KML/KMZ InputStream
  * @param context Current context, for instance used to get information about display size
- * @param onParsed Callback function giving access to [ContainerManager]
+ * @param onParsed Callback function giving access to [ContainerManager] if parsed successfully, otherwise null
  */
 @Composable
 @GoogleMapComposable
 public fun KmlLayer(
     stream: InputStream,
     context: Context,
-    onParsed: (ContainerManager?) -> Unit
+    onParsed: (ContainerManager?) -> Unit,
 ) {
     val images = HashMap<String, Bitmap>()
-    var parser: KmlParser? = null
-    parseStream(stream) { parsedParser, parsedImages ->
-        parser = parsedParser
-        images.putAll(parsedImages)
+    var parsed by remember { mutableStateOf(false) }
+    val parser: MutableState<KmlParser?> = remember { mutableStateOf(null) }
+
+    if (!parsed) {
+        parseStream(stream) { parsedParser, parsedImages ->
+            parser.value = parsedParser
+            images.putAll(parsedImages)
+        }
     }
 
     LaunchedEffect(Unit) {
         CoroutineScope(Dispatchers.IO).launch {
-            parser?.applyStyles(images, context)
+            parser.value?.applyStyles(images, context)
         }.invokeOnCompletion {
-            onParsed(parser?.container)
+            onParsed(parser.value?.container)
+            parsed = true
         }
     }
 
-    parser?.container?.Render()
+    if (parsed) {
+        parser.value?.container?.Render()
+    }
 }
 
 /**
@@ -89,7 +101,7 @@ private fun parseStream(stream: InputStream, onParsed: (KmlParser?, Map<String, 
                 if (parser == null) {
                     throw IllegalArgumentException("KML not found in InputStream")
                 }
-            } else {
+            } else { // is a KML file
                 bis.reset()
                 parser = parseKml(bis)
             }
