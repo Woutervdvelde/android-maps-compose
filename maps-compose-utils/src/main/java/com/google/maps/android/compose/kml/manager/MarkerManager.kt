@@ -1,6 +1,5 @@
 package com.google.maps.android.compose.kml.manager
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.compose.runtime.Composable
@@ -42,15 +41,14 @@ public class MarkerManager(
     public override suspend fun setStyle(
         styleMaps: HashMap<String, KmlStyleMap>,
         styles: HashMap<String, KmlStyle>,
-        images: HashMap<String, Bitmap>,
-        context: Context
+        images: HashMap<String, Bitmap>
     ) {
         val styleUrl = markerData.value.styleUrl
         val normalStyleId = styleMaps[styleUrl]?.getNormalStyleId()
         val selectedStyle = styles[normalStyleId]
 
         style = selectedStyle ?: KmlStyle()
-        generateIcon(images, context)
+        generateIcon(images)
         applyStylesToProperties()
     }
 
@@ -97,12 +95,35 @@ public class MarkerManager(
     }
 
     /**
+     * Sets marker color, also applies random color if RandomColorMode is enabled
+     *
+     * @param color Color as integer
+     */
+    public fun setColor(color: Int) {
+        var finalColor = color.toFloat()
+        if (style.getIconRandomColorMode()) {
+            val randomColor = KmlStyleParser.computeRandomColor(color)
+            finalColor = KmlStyleParser.convertIntColorToHueValue(randomColor)
+        }
+        markerData.value = markerData.value.copy(color = finalColor)
+    }
+
+    /**
      * Applies all available styles to properties
      */
     private fun applyStylesToProperties() {
         setAlpha(style.getIconAlpha())
         setAnchor(style.getIconAnchor())
         setRotation(style.getIconHeading())
+        style.getIconColor()?.let { setColor(it.toInt()) }
+    }
+
+    private fun getIcon(bitmap: Bitmap?): BitmapDescriptor {
+        return bitmap?.let {
+            BitmapDescriptorFactory.fromBitmap(it)
+        } ?: markerData.value.color?.let {
+            BitmapDescriptorFactory.defaultMarker(it)
+        } ?: BitmapDescriptorFactory.defaultMarker()
     }
 
     /**
@@ -110,27 +131,14 @@ public class MarkerManager(
      * Sets the value in markerData
      *
      * @param images All images when present in KMZ file
-     * @param context Context used to get information about display size
      */
-    private suspend fun generateIcon(images: HashMap<String, Bitmap>, context: Context) {
-        getMarkerIconBitmap(images)?.let {
+    private suspend fun generateIcon(images: HashMap<String, Bitmap>) {
+        val bitmap = getMarkerIconBitmap(images)
+        bitmap?.let {
             markerData.value = markerData.value.copy(
-                icon = resizeIcon(it, style.getIconScale(), context)
+                icon = resizeIcon(it, style.getIconScale())
             )
         }
-    }
-
-    private fun getIcon(bitmap: Bitmap?): BitmapDescriptor {
-        return bitmap?.let {
-            BitmapDescriptorFactory.fromBitmap(it)
-        } ?: style.getIconColor()?.let {
-            if (style.getIconRandomColorMode()) {
-                val color = KmlStyleParser.computeRandomColor(it.toInt())
-                BitmapDescriptorFactory.defaultMarker(KmlStyleParser.convertIntColorToHueValue(color))
-            } else {
-                BitmapDescriptorFactory.defaultMarker(it)
-            }
-        } ?: BitmapDescriptorFactory.defaultMarker()
     }
 
     /**
@@ -173,13 +181,12 @@ public class MarkerManager(
      *
      * @param icon The icon Bitmap
      * @param scale Scale that should be applied
-     * @param context Context used to get the display density
      */
-    private fun resizeIcon(icon: Bitmap, scale: Float, context: Context): Bitmap {
+    private fun resizeIcon(icon: Bitmap, scale: Float): Bitmap {
         if (icon.height == 0 || icon.density == 0)
             return icon
 
-        val dpi = context.resources.displayMetrics.densityDpi
+        val dpi = icon.density
         val iconAspectRatio = icon.width.toFloat() / icon.height.toFloat()
         val (defaultWidth, defaultHeight) = if (iconAspectRatio < 1) {
             Pair(DEFAULT_ICON_WIDTH * iconAspectRatio, DEFAULT_ICON_HEIGHT)
@@ -232,8 +239,9 @@ internal data class MarkerProperties(
     val drawOrder: Float = DEFAULT_DRAW_ORDER,
     val anchor: Anchor = DEFAULT_ANCHOR,
     val rotation: Int = DEFAULT_ROTATION,
+    val color: Float? = DEFAULT_COLOR,
     val styleUrl: String? = DEFAULT_STYLE_URL,
-    var icon: Bitmap? = null,
+    var icon: Bitmap? = DEFAULT_ICON,
 ) {
     companion object {
         internal fun from(properties: HashMap<String, Any>): MarkerProperties {
@@ -243,14 +251,16 @@ internal data class MarkerProperties(
             val drawOrder: Float by properties.withDefault { DEFAULT_DRAW_ORDER }
             val styleUrl: String? by properties
             return MarkerProperties(
-                description,
-                name,
-                visibility,
-                DEFAULT_ALPHA,
-                drawOrder,
-                DEFAULT_ANCHOR,
-                DEFAULT_ROTATION,
-                styleUrl
+                description = description,
+                name = name,
+                visibility = visibility,
+                alpha = DEFAULT_ALPHA,
+                drawOrder = drawOrder,
+                anchor = DEFAULT_ANCHOR,
+                rotation = DEFAULT_ROTATION,
+                color = DEFAULT_COLOR,
+                styleUrl = styleUrl,
+                icon = DEFAULT_ICON
             )
         }
 
@@ -261,6 +271,8 @@ internal data class MarkerProperties(
         private const val DEFAULT_DRAW_ORDER = 0f
         private val DEFAULT_ANCHOR = Anchor()
         private const val DEFAULT_ROTATION = 0
+        private val DEFAULT_COLOR = null
         private const val DEFAULT_STYLE_URL = ""
+        private val DEFAULT_ICON = null
     }
 }

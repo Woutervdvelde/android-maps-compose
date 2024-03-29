@@ -1,6 +1,5 @@
 package com.google.maps.android.compose.kml.manager
 
-import android.content.Context
 import android.graphics.Bitmap
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -104,10 +103,9 @@ public class ContainerManager() : KmlComposableManager {
     override suspend fun setStyle(
         styleMaps: HashMap<String, KmlStyleMap>,
         styles: HashMap<String, KmlStyle>,
-        images: HashMap<String, Bitmap>,
-        context: Context
+        images: HashMap<String, Bitmap>
     ) {
-        children.forEach { it.setStyle(styleMaps, styles, images, context) }
+        children.forEach { it.setStyle(styleMaps, styles, images) }
     }
 
     /**
