@@ -7,23 +7,23 @@ import com.google.maps.android.compose.kml.manager.ContainerManager
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import java.io.IOException
+import java.io.InputStream
 
 /**
  * Parses a given KML file into KmlStyle, KmlPlacemark, KmlGroundOverlay and KmlContainer objects
  */
-internal class KmlParser (
+public class KmlParser(
     private val parser: XmlPullParser,
     private val styleMaps: HashMap<String, KmlStyleMap> = hashMapOf(),
     private val styles: HashMap<String, KmlStyle> = hashMapOf(),
-    var container: ContainerManager = ContainerManager(),
+    public var container: ContainerManager = ContainerManager(),
 ) {
-
     /**
      * Parses the KML file stored in the current XmlPullParser.
      * Creates a ContainerManager that stores the relevant data of the KML file.
      */
     @Throws(IOException::class, XmlPullParserException::class)
-    fun parseKml() {
+    internal fun parseKml() {
         var eventType = parser.eventType
 
         while (eventType != XmlPullParser.END_DOCUMENT) {
@@ -78,7 +78,7 @@ internal class KmlParser (
      * @param parser XmlPullParser
      */
     @Throws(XmlPullParserException::class, IOException::class)
-    fun skip(parser: XmlPullParser) {
+    private fun skip(parser: XmlPullParser) {
         check(parser.eventType == XmlPullParser.START_TAG)
         var depth = 1
         while (depth != 0) {
@@ -94,25 +94,43 @@ internal class KmlParser (
      *
      * @param images Images extracted from KMZ
      */
-    suspend fun applyStyles(images: HashMap<String, Bitmap>) {
+    internal suspend fun applyStyles(images: HashMap<String, Bitmap>) {
         container.setStyle(styleMaps, styles, images)
     }
 
-    companion object {
+    public companion object {
         internal const val STYLE_TAG = "Style"
         internal const val STYLE_MAP_TAG = "StyleMap"
         internal const val PLACEMARK_TAG = "Placemark"
         internal const val NAME_TAG = "name"
         internal const val GROUND_OVERLAY_TAG = "GroundOverlay"
         internal val CONTAINER_REGEX = Regex("Folder|Document")
-        internal val UNSUPPORTED_REGEX = Regex("altitude|altitudeModeGroup|altitudeMode|" +
-                "begin|bottomFov|cookie|displayName|displayMode|end|expires|extrude|" +
-                "flyToView|gridOrigin|httpQuery|leftFov|linkDescription|linkName|linkSnippet|" +
-                "listItemType|maxSnippetLines|maxSessionLength|message|minAltitude|minFadeExtent|" +
-                "minLodPixels|minRefreshPeriod|maxAltitude|maxFadeExtent|maxLodPixels|maxHeight|" +
-                "maxWidth|near|NetworkLink|NetworkLinkControl|overlayXY|range|refreshMode|" +
-                "refreshInterval|refreshVisibility|rightFov|roll|rotationXY|screenXY|shape|sourceHref|" +
-                "state|targetHref|tessellate|tileSize|topFov|viewBoundScale|viewFormat|viewRefreshMode|" +
-                "viewRefreshTime|when")
+        internal val UNSUPPORTED_REGEX = Regex(
+            "altitude|altitudeModeGroup|altitudeMode|" +
+                    "begin|bottomFov|cookie|displayName|displayMode|end|expires|extrude|" +
+                    "flyToView|gridOrigin|httpQuery|leftFov|linkDescription|linkName|linkSnippet|" +
+                    "listItemType|maxSnippetLines|maxSessionLength|message|minAltitude|minFadeExtent|" +
+                    "minLodPixels|minRefreshPeriod|maxAltitude|maxFadeExtent|maxLodPixels|maxHeight|" +
+                    "maxWidth|near|NetworkLink|NetworkLinkControl|overlayXY|range|refreshMode|" +
+                    "refreshInterval|refreshVisibility|rightFov|roll|rotationXY|screenXY|shape|sourceHref|" +
+                    "state|targetHref|tessellate|tileSize|topFov|viewBoundScale|viewFormat|viewRefreshMode|" +
+                    "viewRefreshTime|when"
+        )
+
+        /**
+         * Parses an input KML/KMZ file and returns a KmlParser
+         * containing all information if parsed successfully
+         *
+         * @param inputStream inputStream containing KML/KMZ
+         * @return KmlParser on successful parse, otherwise null
+         */
+        public suspend fun parse(inputStream: InputStream): KmlParser? {
+            val parsedKmlData = MapFileParser.parseStream(inputStream)
+            parsedKmlData.parser?.let {
+                it.applyStyles(parsedKmlData.media)
+                return it
+            }
+            return null
+        }
     }
 }

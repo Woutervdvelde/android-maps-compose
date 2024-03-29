@@ -95,12 +95,35 @@ public class MarkerManager(
     }
 
     /**
+     * Sets marker color, also applies random color if RandomColorMode is enabled
+     *
+     * @param color Color as integer
+     */
+    public fun setColor(color: Int) {
+        var finalColor = color.toFloat()
+        if (style.getIconRandomColorMode()) {
+            val randomColor = KmlStyleParser.computeRandomColor(color)
+            finalColor = KmlStyleParser.convertIntColorToHueValue(randomColor)
+        }
+        markerData.value = markerData.value.copy(color = finalColor)
+    }
+
+    /**
      * Applies all available styles to properties
      */
     private fun applyStylesToProperties() {
         setAlpha(style.getIconAlpha())
         setAnchor(style.getIconAnchor())
         setRotation(style.getIconHeading())
+        style.getIconColor()?.let { setColor(it.toInt()) }
+    }
+
+    private fun getIcon(bitmap: Bitmap?): BitmapDescriptor {
+        return bitmap?.let {
+            BitmapDescriptorFactory.fromBitmap(it)
+        } ?: markerData.value.color?.let {
+            BitmapDescriptorFactory.defaultMarker(it)
+        } ?: BitmapDescriptorFactory.defaultMarker()
     }
 
     /**
@@ -108,23 +131,14 @@ public class MarkerManager(
      * Sets the value in markerData
      *
      * @param images All images when present in KMZ file
-     * @param context Context used to get information about display size
      */
     private suspend fun generateIcon(images: HashMap<String, Bitmap>) {
         val bitmap = getMarkerIconBitmap(images)
-
-        val bitmapDescriptor = bitmap?.let {
-            BitmapDescriptorFactory.fromBitmap(resizeIcon(it, style.getIconScale()))
-        } ?: style.getIconColor()?.let {
-            if (style.getIconRandomColorMode()) {
-                val color = KmlStyleParser.computeRandomColor(it.toInt())
-                BitmapDescriptorFactory.defaultMarker(KmlStyleParser.convertIntColorToHueValue(color))
-            } else {
-                BitmapDescriptorFactory.defaultMarker(it)
-            }
-        } ?: BitmapDescriptorFactory.defaultMarker()
-
-        markerData.value = markerData.value.copy(icon = bitmapDescriptor)
+        bitmap?.let {
+            markerData.value = markerData.value.copy(
+                icon = resizeIcon(it, style.getIconScale())
+            )
+        }
     }
 
     /**
@@ -203,7 +217,7 @@ public class MarkerManager(
             title = currentMarkerData.name,
             visible = currentMarkerData.visibility,
             zIndex = currentMarkerData.drawOrder,
-            icon = currentMarkerData.icon,
+            icon = getIcon(currentMarkerData.icon),
         )
     }
 
@@ -225,8 +239,9 @@ internal data class MarkerProperties(
     val drawOrder: Float = DEFAULT_DRAW_ORDER,
     val anchor: Anchor = DEFAULT_ANCHOR,
     val rotation: Int = DEFAULT_ROTATION,
+    val color: Float? = DEFAULT_COLOR,
     val styleUrl: String? = DEFAULT_STYLE_URL,
-    var icon: BitmapDescriptor = BitmapDescriptorFactory.defaultMarker(),
+    var icon: Bitmap? = DEFAULT_ICON,
 ) {
     companion object {
         internal fun from(properties: HashMap<String, Any>): MarkerProperties {
@@ -236,14 +251,16 @@ internal data class MarkerProperties(
             val drawOrder: Float by properties.withDefault { DEFAULT_DRAW_ORDER }
             val styleUrl: String? by properties
             return MarkerProperties(
-                description,
-                name,
-                visibility,
-                DEFAULT_ALPHA,
-                drawOrder,
-                DEFAULT_ANCHOR,
-                DEFAULT_ROTATION,
-                styleUrl
+                description = description,
+                name = name,
+                visibility = visibility,
+                alpha = DEFAULT_ALPHA,
+                drawOrder = drawOrder,
+                anchor = DEFAULT_ANCHOR,
+                rotation = DEFAULT_ROTATION,
+                color = DEFAULT_COLOR,
+                styleUrl = styleUrl,
+                icon = DEFAULT_ICON
             )
         }
 
@@ -254,6 +271,8 @@ internal data class MarkerProperties(
         private const val DEFAULT_DRAW_ORDER = 0f
         private val DEFAULT_ANCHOR = Anchor()
         private const val DEFAULT_ROTATION = 0
+        private val DEFAULT_COLOR = null
         private const val DEFAULT_STYLE_URL = ""
+        private val DEFAULT_ICON = null
     }
 }
