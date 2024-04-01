@@ -1,8 +1,12 @@
 package com.google.maps.android.compose.kml.parser
 
 import android.graphics.Bitmap
+import android.util.Log
 import com.google.maps.android.compose.kml.data.KmlStyle
 import com.google.maps.android.compose.kml.data.KmlStyleMap
+import com.google.maps.android.compose.kml.event.KmlEvent
+import com.google.maps.android.compose.kml.event.KmlEventListener
+import com.google.maps.android.compose.kml.event.KmlEventPublisher
 import com.google.maps.android.compose.kml.manager.ContainerManager
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
@@ -17,7 +21,13 @@ public class KmlParser(
     private val styleMaps: HashMap<String, KmlStyleMap> = hashMapOf(),
     private val styles: HashMap<String, KmlStyle> = hashMapOf(),
     public var container: ContainerManager = ContainerManager(),
-) {
+    public val eventPublisher: KmlEventPublisher = KmlEventPublisher(),
+): KmlEventListener {
+    override fun onEvent(event: KmlEvent) {
+        Log.e("KmlParser", "${event}")
+        eventPublisher.emit(event)
+    }
+
     /**
      * Parses the KML file stored in the current XmlPullParser.
      * Creates a ContainerManager that stores the relevant data of the KML file.
@@ -98,6 +108,10 @@ public class KmlParser(
         container.setStyle(styleMaps, styles, images)
     }
 
+    internal fun setEventListener(listener: KmlEventListener) {
+        container.setEventListener(listener)
+    }
+
     public companion object {
         internal const val STYLE_TAG = "Style"
         internal const val STYLE_MAP_TAG = "StyleMap"
@@ -128,6 +142,7 @@ public class KmlParser(
             val parsedKmlData = MapFileParser.parseStream(inputStream)
             parsedKmlData.parser?.let {
                 it.applyStyles(parsedKmlData.media)
+                it.setEventListener(it)
                 return it
             }
             return null

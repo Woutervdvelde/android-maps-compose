@@ -2,6 +2,7 @@ package com.google.maps.android.compose.kml.manager
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -12,6 +13,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.kml.data.KmlStyle
 import com.google.maps.android.compose.kml.data.KmlStyleMap
+import com.google.maps.android.compose.kml.event.KmlEvent
 import com.google.maps.android.compose.kml.parser.Anchor
 import com.google.maps.android.compose.kml.parser.KmlStyleParser
 import com.google.maps.android.compose.rememberMarkerState
@@ -22,9 +24,8 @@ import kotlin.coroutines.suspendCoroutine
 
 public class MarkerManager(
     private val position: LatLng
-) : KmlComposableManager {
+) : KmlComposableManager() {
     private var markerData: MutableState<MarkerProperties> = mutableStateOf(MarkerProperties())
-    public override var style: KmlStyle = KmlStyle()
 
     override fun setProperties(data: HashMap<String, Any>) {
         markerData.value = MarkerProperties.from(data)
@@ -36,7 +37,6 @@ public class MarkerManager(
      * @param styleMaps All StyleMap tags parsed from the KML file
      * @param styles All Style tags parsed from the KML file
      * @param images All images when present in KMZ file
-     * @param context Current context used to get information about display size
      */
     public override suspend fun setStyle(
         styleMaps: HashMap<String, KmlStyleMap>,
@@ -218,6 +218,11 @@ public class MarkerManager(
             visible = currentMarkerData.visibility,
             zIndex = currentMarkerData.drawOrder,
             icon = getIcon(currentMarkerData.icon),
+            onClick = {
+                Log.e("Marker composable", "onClick")
+                listener?.onEvent(KmlEvent.Marker.Clicked(markerData.value))
+                true
+            }
         )
     }
 
@@ -229,9 +234,9 @@ public class MarkerManager(
 }
 
 /**
- * Internal helper data class containing all maker properties and styles
+ * Helper data class containing all maker properties and styles
  */
-internal data class MarkerProperties(
+public data class MarkerProperties(
     val description: String = DEFAULT_DESCRIPTION,
     val name: String = DEFAULT_NAME,
     val visibility: Boolean = DEFAULT_VISIBILITY,
@@ -241,9 +246,9 @@ internal data class MarkerProperties(
     val rotation: Int = DEFAULT_ROTATION,
     val color: Float? = DEFAULT_COLOR,
     val styleUrl: String? = DEFAULT_STYLE_URL,
-    var icon: Bitmap? = DEFAULT_ICON,
+    val icon: Bitmap? = DEFAULT_ICON,
 ) {
-    companion object {
+    internal companion object {
         internal fun from(properties: HashMap<String, Any>): MarkerProperties {
             val description: String by properties.withDefault { DEFAULT_DESCRIPTION }
             val name: String by properties.withDefault { DEFAULT_NAME }

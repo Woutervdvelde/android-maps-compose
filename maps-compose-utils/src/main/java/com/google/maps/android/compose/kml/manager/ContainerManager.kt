@@ -6,9 +6,9 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.google.maps.android.compose.kml.data.KmlStyle
 import com.google.maps.android.compose.kml.data.KmlStyleMap
+import com.google.maps.android.compose.kml.event.KmlEventListener
 
-public class ContainerManager() : KmlComposableManager {
-    override var style: KmlStyle = KmlStyle()
+public class ContainerManager : KmlComposableManager() {
     private var containerName: String = ""
     private var isActive: MutableState<Boolean> = mutableStateOf(true)
     private val children: MutableList<KmlComposableManager> = mutableListOf()
@@ -50,7 +50,8 @@ public class ContainerManager() : KmlComposableManager {
      *
      * @return List of [ContainerManager]s
      */
-    public fun getContainers(): List<ContainerManager> = children.filterIsInstance<ContainerManager>()
+    public fun getContainers(): List<ContainerManager> =
+        children.filterIsInstance<ContainerManager>()
 
     /**
      * Gets a list of containers from a specific depth in the tree of nested ContainerManagers.
@@ -84,6 +85,15 @@ public class ContainerManager() : KmlComposableManager {
     public fun getMarkers(): List<MarkerManager> = children.filterIsInstance<MarkerManager>()
 
     /**
+     * Adds a child to the ContainerManager
+     *
+     * @param child Any class extending from the [KmlComposableManager]
+     */
+    internal fun addChild(child: KmlComposableManager) {
+        children.add(child)
+    }
+
+    /**
      *  Sets properties from KML relevant to the container
      *
      *  @param data HashMap containing related properties of the container
@@ -98,7 +108,6 @@ public class ContainerManager() : KmlComposableManager {
      * @param styleMaps All StyleMap tags parsed from the KML file
      * @param styles All Style tags parsed from the KML file
      * @param images All images when present in KMZ file
-     * @param context Current context used to get information about display size
      */
     override suspend fun setStyle(
         styleMaps: HashMap<String, KmlStyleMap>,
@@ -109,12 +118,12 @@ public class ContainerManager() : KmlComposableManager {
     }
 
     /**
-     * Adds a child to the ContainerManager
+     * Sets the object that uses the KmlEventListener interface for children
      *
-     * @param child Any class extending from the [KmlComposableManager]
+     * @param eventListener KmlEventListener to be used
      */
-    internal fun addChild(child: KmlComposableManager) {
-        children.add(child)
+    override fun setEventListener(eventListener: KmlEventListener) {
+        children.forEach { it.setEventListener(eventListener) }
     }
 
     /**
