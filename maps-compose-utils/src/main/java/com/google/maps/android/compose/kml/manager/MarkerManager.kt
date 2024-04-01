@@ -247,6 +247,7 @@ public data class MarkerProperties(
     val color: Float? = DEFAULT_COLOR,
     val styleUrl: String? = DEFAULT_STYLE_URL,
     val icon: Bitmap? = DEFAULT_ICON,
+    val extendedData: HashMap<String, String>? = DEFAULT_EXTENDED_DATA
 ) {
     internal companion object {
         internal fun from(properties: HashMap<String, Any>): MarkerProperties {
@@ -255,6 +256,7 @@ public data class MarkerProperties(
             val visibility: Boolean by properties.withDefault { DEFAULT_VISIBILITY }
             val drawOrder: Float by properties.withDefault { DEFAULT_DRAW_ORDER }
             val styleUrl: String? by properties
+            val extendedData: HashMap<String, String>? = properties["ExtendedData"] as? HashMap<String, String>
             return MarkerProperties(
                 description = description,
                 name = name,
@@ -265,7 +267,8 @@ public data class MarkerProperties(
                 rotation = DEFAULT_ROTATION,
                 color = DEFAULT_COLOR,
                 styleUrl = styleUrl,
-                icon = DEFAULT_ICON
+                icon = DEFAULT_ICON,
+                extendedData = extendedData
             )
         }
 
@@ -279,5 +282,6 @@ public data class MarkerProperties(
         private val DEFAULT_COLOR = null
         private const val DEFAULT_STYLE_URL = ""
         private val DEFAULT_ICON = null
+        private val DEFAULT_EXTENDED_DATA = null
     }
 }
