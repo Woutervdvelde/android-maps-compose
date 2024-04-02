@@ -73,16 +73,19 @@ internal class KmlPlacemarkParser {
 
         private fun parseExtendedData(parser: XmlPullParser): HashMap<String, String> {
             val extendedData = hashMapOf<String, String>()
-            var currentData: String = ""
+            var currentData = ExtendedData.empty()
             var eventType = parser.eventType
             while (!(eventType == XmlPullParser.END_TAG && parser.name.equals(EXTENDED_DATA_TAG))) {
                 if (eventType == XmlPullParser.START_TAG) {
                     when (parser.name) {
                         DATA_TAG ->
-                            currentData = parser.getAttributeValue(null, "name")
+                            currentData.name = parser.getAttributeValue(null, "name")
+
+                        DISPLAY_NAME_TAG ->
+                            currentData.displayName = parser.nextText()
 
                         VALUE_TAG ->
-                            extendedData[currentData] = parser.nextText()
+                            currentData.value = parser.nextText()
                     }
                 }
                 eventType = parser.next()
@@ -107,6 +110,7 @@ internal class KmlPlacemarkParser {
         private const val EXTENDED_DATA_TAG = "ExtendedData"
         private const val DATA_TAG = "Data"
         private const val VALUE_TAG = "value"
+        private const val DISPLAY_NAME_TAG = "displayName"
     }
 
     /**
@@ -138,6 +142,16 @@ internal class KmlPlacemarkParser {
                 val latLng = LatLng(lat, lng)
                 return LatLngAlt(latLng, alt)
             }
+        }
+    }
+
+    data class ExtendedData(
+        var name: String,
+        var displayName: String?,
+        var value: String
+    ) {
+        companion object {
+            fun empty(): ExtendedData = ExtendedData(name = "", displayName = null, value = "")
         }
     }
 }
