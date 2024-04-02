@@ -2,7 +2,6 @@ package com.google.maps.android.compose.kml.manager
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -219,7 +218,6 @@ public class MarkerManager(
             zIndex = currentMarkerData.drawOrder,
             icon = getIcon(currentMarkerData.icon),
             onClick = {
-                Log.e("Marker composable", "onClick")
                 listener?.onEvent(KmlEvent.Marker.Clicked(markerData.value))
                 true
             }

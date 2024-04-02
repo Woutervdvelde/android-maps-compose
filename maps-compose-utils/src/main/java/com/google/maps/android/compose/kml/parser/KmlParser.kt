@@ -1,7 +1,6 @@
 package com.google.maps.android.compose.kml.parser
 
 import android.graphics.Bitmap
-import android.util.Log
 import com.google.maps.android.compose.kml.data.KmlStyle
 import com.google.maps.android.compose.kml.data.KmlStyleMap
 import com.google.maps.android.compose.kml.event.KmlEvent
@@ -24,7 +23,6 @@ public class KmlParser(
     public val eventPublisher: KmlEventPublisher = KmlEventPublisher(),
 ): KmlEventListener {
     override fun onEvent(event: KmlEvent) {
-        Log.e("KmlParser", "${event}")
         eventPublisher.emit(event)
     }
 

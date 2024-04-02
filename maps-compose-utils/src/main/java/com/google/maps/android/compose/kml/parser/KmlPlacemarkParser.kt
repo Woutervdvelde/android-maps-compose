@@ -65,7 +65,7 @@ internal class KmlPlacemarkParser {
             }
 
             if (latLngAlt == null) {
-                throw IllegalArgumentException("KML ")
+                throw IllegalArgumentException("KML doesn't contain coordinates for placemark point")
             }
 
             return MarkerManager(latLngAlt.latLng)
