@@ -14,6 +14,7 @@ import com.google.maps.android.compose.kml.data.KmlStyle
 import com.google.maps.android.compose.kml.data.KmlStyleMap
 import com.google.maps.android.compose.kml.event.KmlEvent
 import com.google.maps.android.compose.kml.parser.Anchor
+import com.google.maps.android.compose.kml.parser.ExtendedData
 import com.google.maps.android.compose.kml.parser.KmlStyleParser
 import com.google.maps.android.compose.rememberMarkerState
 import java.io.IOException
@@ -245,7 +246,7 @@ public data class MarkerProperties(
     val color: Float? = DEFAULT_COLOR,
     val styleUrl: String? = DEFAULT_STYLE_URL,
     val icon: Bitmap? = DEFAULT_ICON,
-    val extendedData: HashMap<String, String>? = DEFAULT_EXTENDED_DATA
+    val extendedData: List<ExtendedData>? = DEFAULT_EXTENDED_DATA
 ) {
     internal companion object {
         internal fun from(properties: HashMap<String, Any>): MarkerProperties {
@@ -254,7 +255,7 @@ public data class MarkerProperties(
             val visibility: Boolean by properties.withDefault { DEFAULT_VISIBILITY }
             val drawOrder: Float by properties.withDefault { DEFAULT_DRAW_ORDER }
             val styleUrl: String? by properties
-            val extendedData: HashMap<String, String>? = properties["ExtendedData"] as? HashMap<String, String>
+            val extendedData: List<ExtendedData>? = properties["ExtendedData"] as? List<ExtendedData>
             return MarkerProperties(
                 description = description,
                 name = name,
