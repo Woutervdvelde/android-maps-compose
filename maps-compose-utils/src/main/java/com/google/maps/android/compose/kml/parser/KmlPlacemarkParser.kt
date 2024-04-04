@@ -53,6 +53,7 @@ internal class KmlPlacemarkParser {
          * Creates a MarkerManager based on the given KML data, coordinates will be extracted from the <point> tag
          *
          * @param parser XmlPullParser containing KML Point tag
+         * @return MarkerManager containing the point tag data
          */
         private fun createMarker(parser: XmlPullParser): MarkerManager {
             var eventType = parser.eventType
@@ -72,7 +73,10 @@ internal class KmlPlacemarkParser {
         }
 
         /**
+         * Extracts data from KML ExtendedData tag, returns a list of [ExtendedData] containing all Data tags inside the ExtendedData
          *
+         * @param parser XmlPullParser containing KML ExtendedData tag
+         * @return list of [ExtendedData] containing name, displayName and value from data and value tags
          */
         private fun parseExtendedData(parser: XmlPullParser): List<ExtendedData> {
             val extendedData: MutableList<ExtendedData> = mutableListOf()
