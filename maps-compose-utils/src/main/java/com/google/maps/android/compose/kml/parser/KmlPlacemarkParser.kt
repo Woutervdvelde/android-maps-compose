@@ -20,7 +20,7 @@ internal class KmlPlacemarkParser {
         fun parsePlacemark(parser: XmlPullParser, container: ContainerManager) {
             var eventType = parser.eventType
             val properties: HashMap<String, Any> = hashMapOf()
-            val extendedData: HashMap<String, String> = hashMapOf()
+            val extendedData: MutableList<ExtendedData> = mutableListOf()
             var placemark: KmlComposableManager? = null
 
             while (!(eventType == XmlPullParser.END_TAG && parser.name == "Placemark")) {
@@ -38,14 +38,14 @@ internal class KmlPlacemarkParser {
                         //TODO()
                     } else if (parser.name.equals(EXTENDED_DATA_TAG)) {
                         val parsedData = parseExtendedData(parser)
-                        extendedData.putAll(parsedData)
+                        extendedData.addAll(parsedData)
                     }
                 }
                 eventType = parser.next()
             }
 
             if (extendedData.isNotEmpty())
-                properties[EXTENDED_DATA_TAG] = extendedData
+                properties[EXTENDED_DATA_TAG] = extendedData.toList()
             placemark?.setProperties(properties)
         }
 
@@ -53,6 +53,7 @@ internal class KmlPlacemarkParser {
          * Creates a MarkerManager based on the given KML data, coordinates will be extracted from the <point> tag
          *
          * @param parser XmlPullParser containing KML Point tag
+         * @return MarkerManager containing the point tag data
          */
         private fun createMarker(parser: XmlPullParser): MarkerManager {
             var eventType = parser.eventType
@@ -71,10 +72,17 @@ internal class KmlPlacemarkParser {
             return MarkerManager(latLngAlt.latLng)
         }
 
-        private fun parseExtendedData(parser: XmlPullParser): HashMap<String, String> {
-            val extendedData = hashMapOf<String, String>()
+        /**
+         * Extracts data from KML ExtendedData tag, returns a list of [ExtendedData] containing all Data tags inside the ExtendedData
+         *
+         * @param parser XmlPullParser containing KML ExtendedData tag
+         * @return list of [ExtendedData] containing name, displayName and value from data and value tags
+         */
+        private fun parseExtendedData(parser: XmlPullParser): List<ExtendedData> {
+            val extendedData: MutableList<ExtendedData> = mutableListOf()
             var currentData = ExtendedData.empty()
             var eventType = parser.eventType
+
             while (!(eventType == XmlPullParser.END_TAG && parser.name.equals(EXTENDED_DATA_TAG))) {
                 if (eventType == XmlPullParser.START_TAG) {
                     when (parser.name) {
@@ -84,8 +92,11 @@ internal class KmlPlacemarkParser {
                         DISPLAY_NAME_TAG ->
                             currentData.displayName = parser.nextText()
 
-                        VALUE_TAG ->
+                        VALUE_TAG -> {
                             currentData.value = parser.nextText()
+                            extendedData.add(currentData)
+                            currentData = ExtendedData.empty()
+                        }
                     }
                 }
                 eventType = parser.next()
@@ -144,14 +155,14 @@ internal class KmlPlacemarkParser {
             }
         }
     }
+}
 
-    data class ExtendedData(
-        var name: String,
-        var displayName: String?,
-        var value: String
-    ) {
-        companion object {
-            fun empty(): ExtendedData = ExtendedData(name = "", displayName = null, value = "")
-        }
+public data class ExtendedData(
+    var name: String,
+    var displayName: String?,
+    var value: String
+) {
+    internal companion object {
+        fun empty(): ExtendedData = ExtendedData(name = "", displayName = null, value = "")
     }
 }
