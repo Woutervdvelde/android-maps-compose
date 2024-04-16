@@ -41,12 +41,12 @@ internal class KmlGroundOverlayParser: KmlFeatureParser() {
 
             if (extendedData.isNotEmpty())
                 properties[EXTENDED_DATA_TAG] = extendedData.toList()
-            compass["rotation"]?.let { properties["rotation"] = it }
+            compass[ROTATION_TAG]?.let { properties[ROTATION_TAG] = it }
 
             groundOverlay.setProperties(properties)
             groundOverlay.setCompass(LatLngBounds(
-                LatLng(compass["south"]!!, compass["west"]!!),
-                LatLng(compass["north"]!!, compass["east"]!!)
+                LatLng(compass[SOUTH_TAG]!!, compass[WEST_TAG]!!),
+                LatLng(compass[NORTH_TAG]!!, compass[EAST_TAG]!!)
             ))
 
             container.addChild(groundOverlay)
@@ -72,7 +72,12 @@ internal class KmlGroundOverlayParser: KmlFeatureParser() {
             }
         }
 
-        private val COMPASS_REGEX = Regex("north|south|east|west|rotation")
+        private const val NORTH_TAG = "north"
+        private const val EAST_TAG = "east"
+        private const val SOUTH_TAG = "south"
+        private const val WEST_TAG = "west"
+        private const val ROTATION_TAG = "rotation"
+        private val COMPASS_REGEX = Regex("$NORTH_TAG|$EAST_TAG|$SOUTH_TAG|$WEST_TAG|$ROTATION_TAG")
         private const val ICON_TAG = "Icon"
         private const val ICON_HREF_TAG = "href"
     }

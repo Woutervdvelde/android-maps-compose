@@ -19,7 +19,7 @@ internal abstract class KmlFeatureParser {
                 if (eventType == XmlPullParser.START_TAG) {
                     when (parser.name) {
                         DATA_TAG ->
-                            currentData.name = parser.getAttributeValue(null, "name")
+                            currentData.name = parser.getAttributeValue(null, KmlParser.NAME_TAG)
 
                         DISPLAY_NAME_TAG ->
                             currentData.displayName = parser.nextText()
