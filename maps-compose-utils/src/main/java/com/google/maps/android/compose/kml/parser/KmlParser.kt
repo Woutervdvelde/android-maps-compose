@@ -67,6 +67,8 @@ public class KmlParser(
                     containerManager.setName(parser.nextText())
                 } else if (parser.name.equals(PLACEMARK_TAG)) {
                     KmlPlacemarkParser.parsePlacemark(parser, containerManager)
+                }  else if (parser.name.equals(GROUND_OVERLAY_TAG)) {
+                    KmlGroundOverlayParser.parseGroundOverlay(parser, containerManager)
                 } else if (parser.name.equals(STYLE_MAP_TAG)) {
                     val styleMap = KmlStyleParser.parseStyleMap(parser)
                     styleMaps[styleMap.getId()] = styleMap
