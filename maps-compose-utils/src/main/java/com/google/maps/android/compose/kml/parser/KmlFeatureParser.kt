@@ -38,7 +38,7 @@ internal abstract class KmlFeatureParser {
         }
 
         internal val PROPERTY_REGEX =
-            Regex("name|description|drawOrder|visibility|address|phoneNumber|styleUrl")
+            Regex("name|description|drawOrder|visibility|address|phoneNumber|styleUrl|tessellate")
         internal const val EXTENDED_DATA_TAG = "ExtendedData"
         private const val DATA_TAG = "Data"
         private const val VALUE_TAG = "value"

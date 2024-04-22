@@ -21,7 +21,7 @@ public class KmlParser(
     private val styles: HashMap<String, KmlStyle> = hashMapOf(),
     public var container: ContainerManager = ContainerManager(),
     public val eventPublisher: KmlEventPublisher = KmlEventPublisher(),
-): KmlEventListener {
+) : KmlEventListener {
     override fun onEvent(event: KmlEvent) {
         eventPublisher.emit(event)
     }
@@ -67,7 +67,7 @@ public class KmlParser(
                     containerManager.setName(parser.nextText())
                 } else if (parser.name.equals(PLACEMARK_TAG)) {
                     KmlPlacemarkParser.parsePlacemark(parser, containerManager)
-                }  else if (parser.name.equals(GROUND_OVERLAY_TAG)) {
+                } else if (parser.name.equals(GROUND_OVERLAY_TAG)) {
                     KmlGroundOverlayParser.parseGroundOverlay(parser, containerManager)
                 } else if (parser.name.equals(STYLE_MAP_TAG)) {
                     val styleMap = KmlStyleParser.parseStyleMap(parser)
@@ -130,6 +130,15 @@ public class KmlParser(
                     "state|targetHref|tessellate|tileSize|topFov|viewBoundScale|viewFormat|viewRefreshMode|" +
                     "viewRefreshTime|when"
         )
+
+        internal fun convertPropertyToBoolean(
+            properties: HashMap<String, Any>,
+            key: String,
+            defaultValue: Boolean = false
+        ): Boolean {
+            val value = properties[key] as? String
+            return value?.let { it == "1" } ?: defaultValue
+        }
 
         /**
          * Parses an input KML/KMZ file and returns a KmlParser

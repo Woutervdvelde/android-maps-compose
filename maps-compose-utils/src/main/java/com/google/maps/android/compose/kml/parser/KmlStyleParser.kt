@@ -7,6 +7,7 @@ import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import java.io.IOException
 import java.util.Random
+import androidx.compose.ui.graphics.Color as ComposeColor
 
 internal class KmlStyleParser {
     companion object {
@@ -56,7 +57,7 @@ internal class KmlStyleParser {
                 if (eventType == XmlPullParser.START_TAG) {
                     when (parser.name) {
                         ICON_STYLE_TAG -> parseIconStyle(parser, style)
-                        LINE_STYLE_TAG -> return style //TODO()
+                        LINE_STYLE_TAG -> parseLineStyle(parser, style)
                         POLY_STYLE_TAG -> return style //TODO()
                         BALLOON_STYLE_TAG -> return style //TODO()
                     }
@@ -100,6 +101,29 @@ internal class KmlStyleParser {
         }
 
         /**
+         * Receives input from the XMLPullParser and assigns relevant properties to a [KmlStyle]
+         *
+         * @param parser The XMLPullParser
+         * @param style The KmlStyle properties should be saved in
+         */
+        private fun parseLineStyle(parser: XmlPullParser, style: KmlStyle) {
+            var eventType = parser.eventType
+
+            while (!(eventType == XmlPullParser.END_TAG && parser.name.equals(LINE_STYLE_TAG))) {
+                if (eventType == XmlPullParser.START_TAG) {
+                    if (parser.name.equals(STYLE_COLOR_TAG)) {
+                        val stringColor = convertColorToAARRGGB(parser.nextText())
+                        style.setLineColor(convertStringToColor(stringColor))
+                    } else if (parser.name.equals(WIDTH_TAG)) {
+                        style.setLineWidth(parser.nextText().toFloat())
+                    }
+                }
+
+                eventType = parser.next()
+            }
+        }
+
+        /**
          * Sets the hot spot for the icon
          *
          * @param parser The XmlPullParser
@@ -118,7 +142,7 @@ internal class KmlStyleParser {
          * Parses color value from KML data in AABBGGRR format and returns the hue value
          *
          * @param color Color in AABBGGRR format
-         * @return Float hue value from color
+         * @return Pair with first containing float hue value from color and as second the alpha
          */
         private fun parseKmlColor(color: String): Pair<Float, Float> {
             val c = color.substringAfter('#')
@@ -167,6 +191,18 @@ internal class KmlStyleParser {
             }
         }
 
+        private fun convertStringToColor(color: String): ComposeColor {
+            require(color.length == 6 || color.length == 8)
+            val colorLong = color.toLong(radix = 16)
+            val colorWithAlpha = if (color.length == 6) {
+                0xFF000000.toInt() or colorLong.toInt()
+            } else {
+                colorLong.toInt()
+            }
+
+            return ComposeColor(colorWithAlpha)
+        }
+
         /**
          * Computes a random color given an integer. Algorithm to compute the random color can be found in
          * https://developers.google.com/kml/documentation/kmlreference#colormode
@@ -210,6 +246,7 @@ internal class KmlStyleParser {
         private const val LINE_STYLE_TAG = "LineStyle"
         private const val POLY_STYLE_TAG = "PolyStyle"
         private const val BALLOON_STYLE_TAG = "BalloonStyle"
+        private const val WIDTH_TAG = "width"
         private const val COLOR_MODE_RANDOM = "random"
         private const val HSV_VALUES = 3
         private const val HUE_VALUE = 0
