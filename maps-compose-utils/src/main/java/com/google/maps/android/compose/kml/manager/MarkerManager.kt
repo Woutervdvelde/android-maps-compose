@@ -11,6 +11,8 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.kml.data.KmlStyle
 import com.google.maps.android.compose.kml.data.KmlStyleMap
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.EXTENDED_DATA_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.VISIBILITY_TAG
 import com.google.maps.android.compose.kml.event.KmlEvent
 import com.google.maps.android.compose.kml.parser.Anchor
 import com.google.maps.android.compose.kml.parser.ExtendedData
@@ -209,11 +211,11 @@ public class MarkerManager(
                 val description: String by properties.withDefault { DEFAULT_DESCRIPTION }
                 val name: String by properties.withDefault { DEFAULT_NAME }
                 val visibility: Boolean =
-                    convertPropertyToBoolean(properties, "visibility", DEFAULT_VISIBILITY)
+                    convertPropertyToBoolean(properties, VISIBILITY_TAG, DEFAULT_VISIBILITY)
                 val drawOrder: Float by properties.withDefault { DEFAULT_DRAW_ORDER }
                 val styleUrl: String? by properties.withDefault { DEFAULT_STYLE_URL }
                 val extendedData: List<ExtendedData>? =
-                    properties["ExtendedData"] as? List<ExtendedData>
+                    properties[EXTENDED_DATA_TAG] as? List<ExtendedData>
                 return MarkerProperties(
                     description = description,
                     name = name,

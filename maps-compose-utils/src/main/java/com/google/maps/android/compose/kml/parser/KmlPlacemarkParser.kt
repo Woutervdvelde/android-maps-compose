@@ -1,7 +1,13 @@
 package com.google.maps.android.compose.kml.parser
 
-import android.util.Log
 import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.COORDINATES_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.EXTENDED_DATA_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.LINE_STRING_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.MULTI_GEOMETRY_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.PLACEMARK_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.POINT_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.POLYGON_TAG
 import com.google.maps.android.compose.kml.manager.ContainerManager
 import com.google.maps.android.compose.kml.manager.KmlComposableManager
 import com.google.maps.android.compose.kml.manager.MarkerManager
@@ -25,7 +31,7 @@ internal class KmlPlacemarkParser: KmlFeatureParser() {
             val extendedData: MutableList<ExtendedData> = mutableListOf()
             var placemark: KmlComposableManager? = null
 
-            while (!(eventType == XmlPullParser.END_TAG && parser.name == KmlParser.PLACEMARK_TAG)) {
+            while (!(eventType == XmlPullParser.END_TAG && parser.name == PLACEMARK_TAG)) {
                 if (eventType == XmlPullParser.START_TAG) {
                     if (parser.name.matches(PROPERTY_REGEX)) {
                         properties[parser.name] = parser.nextText()
@@ -37,7 +43,7 @@ internal class KmlPlacemarkParser: KmlFeatureParser() {
                         properties.putAll(data)
                     } else if (parser.name.equals(POLYGON_TAG)) {
                         //TODO()
-                    } else if (parser.name.equals(MUTLI_GEOMETRY_TAG)) {
+                    } else if (parser.name.equals(MULTI_GEOMETRY_TAG)) {
                         //TODO()
                     } else if (parser.name.equals(EXTENDED_DATA_TAG)) {
                         extendedData.addAll(parseExtendedData(parser))
@@ -110,29 +116,7 @@ internal class KmlPlacemarkParser: KmlFeatureParser() {
             )
         }
 
-        /**
-         *
-         */
-        private fun parseCoordinates(input: String): List<LatLng> {
-            return input.trim().split("\n").map {
-                Log.e("TAG", it)
-                val coordinate = it.split(LAT_LNG_ALT_SEPARATOR)
-                val lat = coordinate[LATITUDE_INDEX].toDouble()
-                val lng = coordinate[LONGITUDE_INDEX].toDouble()
-                LatLng(lat, lng)
-            }
-        }
-
-
         private val BOUNDARY_REGEX = Regex("outerBoundaryIs|innerBoundaryIs")
-        private const val LONGITUDE_INDEX = 0
-        private const val LATITUDE_INDEX = 1
-        private const val LAT_LNG_ALT_SEPARATOR = ","
-        private const val POINT_TAG = "Point"
-        private const val LINE_STRING_TAG = "LineString"
-        private const val POLYGON_TAG = "Polygon"
-        private const val MUTLI_GEOMETRY_TAG = "MultiGeometry"
-        private const val COORDINATES_TAG = "coordinates"
     }
 }
 

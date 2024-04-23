@@ -3,6 +3,11 @@ package com.google.maps.android.compose.kml.parser
 import android.graphics.Bitmap
 import com.google.maps.android.compose.kml.data.KmlStyle
 import com.google.maps.android.compose.kml.data.KmlStyleMap
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.GROUND_OVERLAY_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.NAME_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.PLACEMARK_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.STYLE_MAP_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.STYLE_TAG
 import com.google.maps.android.compose.kml.event.KmlEvent
 import com.google.maps.android.compose.kml.event.KmlEventListener
 import com.google.maps.android.compose.kml.event.KmlEventPublisher
@@ -113,11 +118,6 @@ public class KmlParser(
     }
 
     public companion object {
-        internal const val STYLE_TAG = "Style"
-        internal const val STYLE_MAP_TAG = "StyleMap"
-        internal const val PLACEMARK_TAG = "Placemark"
-        internal const val NAME_TAG = "name"
-        internal const val GROUND_OVERLAY_TAG = "GroundOverlay"
         internal val CONTAINER_REGEX = Regex("Folder|Document")
         internal val UNSUPPORTED_REGEX = Regex(
             "altitude|altitudeModeGroup|altitudeMode|" +

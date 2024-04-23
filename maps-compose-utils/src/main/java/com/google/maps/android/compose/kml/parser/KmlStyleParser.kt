@@ -3,6 +3,21 @@ package com.google.maps.android.compose.kml.parser
 import android.graphics.Color
 import com.google.maps.android.compose.kml.data.KmlStyle
 import com.google.maps.android.compose.kml.data.KmlStyleMap
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.BALLOON_STYLE_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.HREF_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.ICON_STYLE_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.LINE_STYLE_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.POLY_STYLE_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.STYLE_COLOR_MODE_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.STYLE_COLOR_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.STYLE_HEADING_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.STYLE_HOTSPOT_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.STYLE_MAP_KEY_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.STYLE_MAP_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.STYLE_SCALE_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.STYLE_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.STYLE_URL_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.WIDTH_TAG
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import java.io.IOException
@@ -24,7 +39,7 @@ internal class KmlStyleParser {
             val styleMap = KmlStyleMap()
             styleMap.setId(parser.getAttributeValue(null, "id"))
 
-            while (!(eventType == XmlPullParser.END_TAG && parser.name.equals(KmlParser.STYLE_MAP_TAG))) {
+            while (!(eventType == XmlPullParser.END_TAG && parser.name.equals(STYLE_MAP_TAG))) {
                 if (eventType == XmlPullParser.START_TAG) {
                     if (parser.name.equals(STYLE_MAP_KEY_TAG)) {
                         styleKey = parser.nextText()
@@ -53,7 +68,7 @@ internal class KmlStyleParser {
             val style = KmlStyle()
             style.setId(parser.getAttributeValue(null, "id"))
 
-            while (!(eventType == XmlPullParser.END_TAG && parser.name.equals(KmlParser.STYLE_TAG))) {
+            while (!(eventType == XmlPullParser.END_TAG && parser.name.equals(STYLE_TAG))) {
                 if (eventType == XmlPullParser.START_TAG) {
                     when (parser.name) {
                         ICON_STYLE_TAG -> parseIconStyle(parser, style)
@@ -79,7 +94,7 @@ internal class KmlStyleParser {
 
             while (!(eventType == XmlPullParser.END_TAG && parser.name.equals(ICON_STYLE_TAG))) {
                 if (eventType == XmlPullParser.START_TAG) {
-                    if (parser.name.equals(ICON_HREF_TAG)) {
+                    if (parser.name.equals(HREF_TAG)) {
                         style.setIconUrl(parser.nextText())
                     } else if (parser.name.equals(STYLE_SCALE_TAG)) {
                         style.setIconScale(parser.nextText().toFloat())
@@ -233,20 +248,8 @@ internal class KmlStyleParser {
             return Color.rgb(red, green, blue)
         }
 
-        private const val STYLE_MAP_KEY_TAG = "key"
-        private const val STYLE_URL_TAG = "styleUrl"
+
         private const val STYLE_MAP_NORMAL_STYLE = "normal"
-        private const val ICON_STYLE_TAG = "IconStyle"
-        private const val ICON_HREF_TAG = "href"
-        private const val STYLE_SCALE_TAG = "scale"
-        private const val STYLE_HEADING_TAG = "heading"
-        private const val STYLE_HOTSPOT_TAG = "hotSpot"
-        private const val STYLE_COLOR_TAG = "color"
-        private const val STYLE_COLOR_MODE_TAG = "colorMode"
-        private const val LINE_STYLE_TAG = "LineStyle"
-        private const val POLY_STYLE_TAG = "PolyStyle"
-        private const val BALLOON_STYLE_TAG = "BalloonStyle"
-        private const val WIDTH_TAG = "width"
         private const val COLOR_MODE_RANDOM = "random"
         private const val HSV_VALUES = 3
         private const val HUE_VALUE = 0

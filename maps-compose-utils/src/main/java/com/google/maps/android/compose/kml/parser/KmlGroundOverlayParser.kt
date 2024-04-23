@@ -2,6 +2,15 @@ package com.google.maps.android.compose.kml.parser
 
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.EAST_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.EXTENDED_DATA_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.GROUND_OVERLAY_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.HREF_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.ICON_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.NORTH_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.ROTATION_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.SOUTH_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.WEST_TAG
 import com.google.maps.android.compose.kml.manager.ContainerManager
 import com.google.maps.android.compose.kml.manager.GroundOverlayManager
 import org.xmlpull.v1.XmlPullParser
@@ -24,7 +33,7 @@ internal class KmlGroundOverlayParser: KmlFeatureParser() {
             val compass: HashMap<String, Double> = hashMapOf()
             val groundOverlay: GroundOverlayManager = GroundOverlayManager()
 
-            while (!(eventType == XmlPullParser.END_TAG && parser.name == KmlParser.GROUND_OVERLAY_TAG)) {
+            while (!(eventType == XmlPullParser.END_TAG && parser.name == GROUND_OVERLAY_TAG)) {
                 if (eventType == XmlPullParser.START_TAG) {
                     if (parser.name.matches(PROPERTY_REGEX)) {
                         properties[parser.name] = parser.nextText()
@@ -63,8 +72,8 @@ internal class KmlGroundOverlayParser: KmlFeatureParser() {
 
             while (!(eventType == XmlPullParser.END_TAG && parser.name.equals(ICON_TAG))) {
                 if (eventType == XmlPullParser.START_TAG) {
-                    if (parser.name.equals(ICON_HREF_TAG)) {
-                        properties[ICON_HREF_TAG] = parser.nextText()
+                    if (parser.name.equals(HREF_TAG)) {
+                        properties[HREF_TAG] = parser.nextText()
                     }
                 }
 
@@ -72,13 +81,7 @@ internal class KmlGroundOverlayParser: KmlFeatureParser() {
             }
         }
 
-        private const val NORTH_TAG = "north"
-        private const val EAST_TAG = "east"
-        private const val SOUTH_TAG = "south"
-        private const val WEST_TAG = "west"
-        private const val ROTATION_TAG = "rotation"
+
         private val COMPASS_REGEX = Regex("$NORTH_TAG|$EAST_TAG|$SOUTH_TAG|$WEST_TAG|$ROTATION_TAG")
-        private const val ICON_TAG = "Icon"
-        private const val ICON_HREF_TAG = "href"
     }
 }
