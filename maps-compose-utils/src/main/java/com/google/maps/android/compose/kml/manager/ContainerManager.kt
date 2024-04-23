@@ -80,9 +80,24 @@ public class ContainerManager : KmlComposableManager() {
 
     /**
      * Gets a list of markers that are direct children of this ContainerManager
+     *
      * @return List of [MarkerManager]s
      */
     public fun getMarkers(): List<MarkerManager> = children.filterIsInstance<MarkerManager>()
+
+    /**
+     * Gets a list of polylines that are direct children of this ContainerManager
+     *
+     * @return List of [PolylineManager]s
+     */
+    public fun getPolylines(): List<PolylineManager> = children.filterIsInstance<PolylineManager>()
+
+    /**
+     * Gets a list of ground overlays that are direct children of this ContainerManager
+     *
+     * @return List of [GroundOverlayManager]s
+     */
+    public fun getGroundOverlays(): List<GroundOverlayManager> = children.filterIsInstance<GroundOverlayManager>()
 
     /**
      * Adds a child to the ContainerManager
