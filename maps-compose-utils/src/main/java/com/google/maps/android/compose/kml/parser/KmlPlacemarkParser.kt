@@ -8,7 +8,7 @@ import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import java.io.IOException
 
-internal class KmlPlacemarkParser {
+internal class KmlPlacemarkParser: KmlFeatureParser() {
     companion object {
         /**
          * Parses a Placemark KML tag from the XmlPullParser and adds it to the provided container
@@ -20,16 +20,15 @@ internal class KmlPlacemarkParser {
         fun parsePlacemark(parser: XmlPullParser, container: ContainerManager) {
             var eventType = parser.eventType
             val properties: HashMap<String, Any> = hashMapOf()
-            val extendedData: HashMap<String, String> = hashMapOf()
+            val extendedData: MutableList<ExtendedData> = mutableListOf()
             var placemark: KmlComposableManager? = null
 
-            while (!(eventType == XmlPullParser.END_TAG && parser.name == "Placemark")) {
+            while (!(eventType == XmlPullParser.END_TAG && parser.name == KmlParser.PLACEMARK_TAG)) {
                 if (eventType == XmlPullParser.START_TAG) {
                     if (parser.name.matches(PROPERTY_REGEX)) {
                         properties[parser.name] = parser.nextText()
                     } else if (parser.name.equals(POINT_TAG)) {
                         placemark = createMarker(parser)
-                        container.addChild(placemark)
                     } else if (parser.name.equals(LINE_STRING_TAG)) {
                         //TODO()
                     } else if (parser.name.equals(POLYGON_TAG)) {
@@ -37,22 +36,26 @@ internal class KmlPlacemarkParser {
                     } else if (parser.name.equals(MUTLI_GEOMETRY_TAG)) {
                         //TODO()
                     } else if (parser.name.equals(EXTENDED_DATA_TAG)) {
-                        val parsedData = parseExtendedData(parser)
-                        extendedData.putAll(parsedData)
+                        extendedData.addAll(parseExtendedData(parser))
                     }
                 }
                 eventType = parser.next()
             }
 
             if (extendedData.isNotEmpty())
-                properties[EXTENDED_DATA_TAG] = extendedData
-            placemark?.setProperties(properties)
+                properties[EXTENDED_DATA_TAG] = extendedData.toList()
+
+            placemark?.let {
+                it.setProperties(properties)
+                container.addChild(it)
+            }
         }
 
         /**
          * Creates a MarkerManager based on the given KML data, coordinates will be extracted from the <point> tag
          *
          * @param parser XmlPullParser containing KML Point tag
+         * @return MarkerManager containing the point tag data
          */
         private fun createMarker(parser: XmlPullParser): MarkerManager {
             var eventType = parser.eventType
@@ -71,33 +74,8 @@ internal class KmlPlacemarkParser {
             return MarkerManager(latLngAlt.latLng)
         }
 
-        private fun parseExtendedData(parser: XmlPullParser): HashMap<String, String> {
-            val extendedData = hashMapOf<String, String>()
-            var currentData = ExtendedData.empty()
-            var eventType = parser.eventType
-            while (!(eventType == XmlPullParser.END_TAG && parser.name.equals(EXTENDED_DATA_TAG))) {
-                if (eventType == XmlPullParser.START_TAG) {
-                    when (parser.name) {
-                        DATA_TAG ->
-                            currentData.name = parser.getAttributeValue(null, "name")
 
-                        DISPLAY_NAME_TAG ->
-                            currentData.displayName = parser.nextText()
-
-                        VALUE_TAG ->
-                            currentData.value = parser.nextText()
-                    }
-                }
-                eventType = parser.next()
-            }
-
-            return extendedData
-        }
-
-        private val PROPERTY_REGEX =
-            Regex("name|description|drawOrder|visibility|address|phoneNumber|styleUrl")
         private val BOUNDARY_REGEX = Regex("outerBoundaryIs|innerBoundaryIs")
-        private val COMPASS_REGEX = Regex("north|south|east|west")
         private const val LONGITUDE_INDEX = 0
         private const val LATITUDE_INDEX = 1
         private const val ALTITUDE_INDEX = 2
@@ -107,10 +85,6 @@ internal class KmlPlacemarkParser {
         private const val POLYGON_TAG = "Polygon"
         private const val MUTLI_GEOMETRY_TAG = "MultiGeometry"
         private const val COORDINATES_TAG = "coordinates"
-        private const val EXTENDED_DATA_TAG = "ExtendedData"
-        private const val DATA_TAG = "Data"
-        private const val VALUE_TAG = "value"
-        private const val DISPLAY_NAME_TAG = "displayName"
     }
 
     /**
@@ -144,14 +118,14 @@ internal class KmlPlacemarkParser {
             }
         }
     }
+}
 
-    data class ExtendedData(
-        var name: String,
-        var displayName: String?,
-        var value: String
-    ) {
-        companion object {
-            fun empty(): ExtendedData = ExtendedData(name = "", displayName = null, value = "")
-        }
+public data class ExtendedData(
+    var name: String,
+    var displayName: String?,
+    var value: String
+) {
+    internal companion object {
+        fun empty(): ExtendedData = ExtendedData(name = "", displayName = null, value = "")
     }
 }

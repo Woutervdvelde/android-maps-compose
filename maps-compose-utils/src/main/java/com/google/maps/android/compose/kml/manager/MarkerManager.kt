@@ -1,7 +1,6 @@
 package com.google.maps.android.compose.kml.manager
 
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -14,12 +13,9 @@ import com.google.maps.android.compose.kml.data.KmlStyle
 import com.google.maps.android.compose.kml.data.KmlStyleMap
 import com.google.maps.android.compose.kml.event.KmlEvent
 import com.google.maps.android.compose.kml.parser.Anchor
+import com.google.maps.android.compose.kml.parser.ExtendedData
 import com.google.maps.android.compose.kml.parser.KmlStyleParser
 import com.google.maps.android.compose.rememberMarkerState
-import java.io.IOException
-import java.net.URL
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 public class MarkerManager(
     private val position: LatLng
@@ -30,13 +26,6 @@ public class MarkerManager(
         markerData.value = MarkerProperties.from(data)
     }
 
-    /**
-     * Sets the styles received from the KML Parser
-     *
-     * @param styleMaps All StyleMap tags parsed from the KML file
-     * @param styles All Style tags parsed from the KML file
-     * @param images All images when present in KMZ file
-     */
     public override suspend fun setStyle(
         styleMaps: HashMap<String, KmlStyleMap>,
         styles: HashMap<String, KmlStyle>,
@@ -132,45 +121,11 @@ public class MarkerManager(
      * @param images All images when present in KMZ file
      */
     private suspend fun generateIcon(images: HashMap<String, Bitmap>) {
-        val bitmap = getMarkerIconBitmap(images)
-        bitmap?.let {
-            markerData.value = markerData.value.copy(
-                icon = resizeIcon(it, style.getIconScale())
-            )
-        }
-    }
-
-    /**
-     * Tries to get the marker Icon from the images in the KMZ or through a url.
-     *
-     * @param images All images when present in KMZ file
-     * @return Bitmap when available in HashMap or fetched via url, null otherwise
-     */
-    private suspend fun getMarkerIconBitmap(images: HashMap<String, Bitmap>): Bitmap? {
-        val iconUrl = style.getIconUrl()
-        iconUrl?.let { images[it]?.let { bitmap -> return bitmap } } //bitmap exists in parsed KMZ
-
-        if (iconUrl != null && iconUrl.lowercase().startsWith("https")) {
-            fetchIconFromUrl(iconUrl)?.let { return it }
-        }
-
-        return null
-    }
-
-    /**
-     * Fetches an image from a URL and converts it to a Bitmap
-     *
-     * @param url Source of the image
-     * @return Bitmap when the url request is successful, null otherwise
-     */
-    private suspend fun fetchIconFromUrl(url: String): Bitmap? {
-        return suspendCoroutine { continuation ->
-            try {
-                val inputStream = URL(url).openConnection().getInputStream()
-                continuation.resume(BitmapFactory.decodeStream(inputStream))
-            } catch (e: IOException) {
-                e.printStackTrace()
-                continuation.resume(null)
+        style.getIconUrl()?.let { url ->
+            getBitmap(url, images)?.let {
+                markerData.value = markerData.value.copy(
+                    icon = resizeIcon(it, style.getIconScale())
+                )
             }
         }
     }
@@ -207,21 +162,23 @@ public class MarkerManager(
         val markerState = rememberMarkerState(position = position)
         val currentMarkerData = markerData.value
 
-        Marker(
-            state = markerState,
-            alpha = currentMarkerData.alpha,
-            anchor = Offset(currentMarkerData.anchor.x, currentMarkerData.anchor.y),
-            rotation = currentMarkerData.rotation.toFloat(),
-            snippet = currentMarkerData.description,
-            title = currentMarkerData.name,
-            visible = currentMarkerData.visibility,
-            zIndex = currentMarkerData.drawOrder,
-            icon = getIcon(currentMarkerData.icon),
-            onClick = {
-                listener?.onEvent(KmlEvent.Marker.Clicked(markerData.value))
-                true
-            }
-        )
+        if (currentMarkerData.visibility) {
+            Marker(
+                state = markerState,
+                alpha = currentMarkerData.alpha,
+                anchor = Offset(currentMarkerData.anchor.x, currentMarkerData.anchor.y),
+                rotation = currentMarkerData.rotation.toFloat(),
+                snippet = currentMarkerData.description,
+                title = currentMarkerData.name,
+                visible = currentMarkerData.visibility,
+                zIndex = currentMarkerData.drawOrder,
+                icon = getIcon(currentMarkerData.icon),
+                onClick = {
+                    listener?.onEvent(KmlEvent.Marker.Clicked(markerData.value))
+                    true
+                }
+            )
+        }
     }
 
     private companion object {
@@ -229,57 +186,45 @@ public class MarkerManager(
         const val DEFAULT_ICON_WIDTH: Float = 110f
         const val DEFAULT_ICON_HEIGHT: Float = 110f
     }
-}
 
-/**
- * Helper data class containing all maker properties and styles
- */
-public data class MarkerProperties(
-    val description: String = DEFAULT_DESCRIPTION,
-    val name: String = DEFAULT_NAME,
-    val visibility: Boolean = DEFAULT_VISIBILITY,
-    val alpha: Float = DEFAULT_ALPHA,
-    val drawOrder: Float = DEFAULT_DRAW_ORDER,
-    val anchor: Anchor = DEFAULT_ANCHOR,
-    val rotation: Int = DEFAULT_ROTATION,
-    val color: Float? = DEFAULT_COLOR,
-    val styleUrl: String? = DEFAULT_STYLE_URL,
-    val icon: Bitmap? = DEFAULT_ICON,
-    val extendedData: HashMap<String, String>? = DEFAULT_EXTENDED_DATA
-) {
-    internal companion object {
-        internal fun from(properties: HashMap<String, Any>): MarkerProperties {
-            val description: String by properties.withDefault { DEFAULT_DESCRIPTION }
-            val name: String by properties.withDefault { DEFAULT_NAME }
-            val visibility: Boolean by properties.withDefault { DEFAULT_VISIBILITY }
-            val drawOrder: Float by properties.withDefault { DEFAULT_DRAW_ORDER }
-            val styleUrl: String? by properties
-            val extendedData: HashMap<String, String>? = properties["ExtendedData"] as? HashMap<String, String>
-            return MarkerProperties(
-                description = description,
-                name = name,
-                visibility = visibility,
-                alpha = DEFAULT_ALPHA,
-                drawOrder = drawOrder,
-                anchor = DEFAULT_ANCHOR,
-                rotation = DEFAULT_ROTATION,
-                color = DEFAULT_COLOR,
-                styleUrl = styleUrl,
-                icon = DEFAULT_ICON,
-                extendedData = extendedData
-            )
+    /**
+     * Helper data class containing all maker properties and styles
+     */
+    public data class MarkerProperties(
+        val description: String = DEFAULT_DESCRIPTION,
+        val name: String = DEFAULT_NAME,
+        val visibility: Boolean = DEFAULT_VISIBILITY,
+        val alpha: Float = DEFAULT_ALPHA,
+        val drawOrder: Float = DEFAULT_DRAW_ORDER,
+        val anchor: Anchor = DEFAULT_ANCHOR,
+        val rotation: Int = DEFAULT_ROTATION,
+        val color: Float? = DEFAULT_COLOR,
+        val styleUrl: String? = DEFAULT_STYLE_URL,
+        val icon: Bitmap? = DEFAULT_ICON,
+        val extendedData: List<ExtendedData>? = DEFAULT_EXTENDED_DATA
+    ) {
+        internal companion object {
+            internal fun from(properties: HashMap<String, Any>): MarkerProperties {
+                val description: String by properties.withDefault { DEFAULT_DESCRIPTION }
+                val name: String by properties.withDefault { DEFAULT_NAME }
+                val visibility: Boolean by properties.withDefault { DEFAULT_VISIBILITY }
+                val drawOrder: Float by properties.withDefault { DEFAULT_DRAW_ORDER }
+                val styleUrl: String? by properties.withDefault { DEFAULT_STYLE_URL }
+                val extendedData: List<ExtendedData>? = properties["ExtendedData"] as? List<ExtendedData>
+                return MarkerProperties(
+                    description = description,
+                    name = name,
+                    visibility = visibility,
+                    alpha = DEFAULT_ALPHA,
+                    drawOrder = drawOrder,
+                    anchor = DEFAULT_ANCHOR,
+                    rotation = DEFAULT_ROTATION,
+                    color = DEFAULT_COLOR,
+                    styleUrl = styleUrl,
+                    icon = DEFAULT_ICON,
+                    extendedData = extendedData
+                )
+            }
         }
-
-        private const val DEFAULT_DESCRIPTION = ""
-        private const val DEFAULT_NAME = ""
-        private const val DEFAULT_VISIBILITY = true
-        private const val DEFAULT_ALPHA = 1f
-        private const val DEFAULT_DRAW_ORDER = 0f
-        private val DEFAULT_ANCHOR = Anchor()
-        private const val DEFAULT_ROTATION = 0
-        private val DEFAULT_COLOR = null
-        private const val DEFAULT_STYLE_URL = ""
-        private val DEFAULT_ICON = null
-        private val DEFAULT_EXTENDED_DATA = null
     }
 }
