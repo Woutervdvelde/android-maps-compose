@@ -1,5 +1,6 @@
 package com.google.maps.android.compose.kml.data
 
+import androidx.compose.ui.graphics.Color
 import com.google.maps.android.compose.kml.parser.Anchor
 
 public class KmlStyle: KmlStyleId() {
@@ -10,6 +11,9 @@ public class KmlStyle: KmlStyleId() {
     private var mIconColor: Float? = DEFAULT_ICON_COLOR
     private var mIconAlpha: Float = DEFAULT_ICON_ALPHA
     private var mIconColorModeRandom: Boolean = DEFAULT_ICON_COLOR_MODE_RANDOM
+
+    private var mLineColor: Color = DEFAULT_LINE_COLOR
+    private var mLineWidth: Float = DEFAULT_LINE_WIDTH
 
     /**
      * Gets the current iconUrl of the marker
@@ -121,6 +125,39 @@ public class KmlStyle: KmlStyleId() {
         mIconColorModeRandom = isRandomMode
     }
 
+    /**
+     * Gets the color of the line
+     *
+     * @return color
+     */
+    public fun getLineColor(): Color = mLineColor
+
+
+    /**
+     * Sets the line color
+     *
+     * @param color Color of the line
+     */
+    internal fun setLineColor(color: Color) {
+        mLineColor = color
+    }
+
+    /**
+     * Gets the width of the line in pixels
+     *
+     * @return width in pixels
+     */
+    public fun getLineWidth(): Float = mLineWidth
+
+    /**
+     * Sets the line width
+     *
+     * @param width width of the line in pixels
+     */
+    internal fun setLineWidth(width: Float) {
+        mLineWidth = width
+    }
+
     internal companion object {
         val DEFAULT_ICON_URL = null
         const val DEFAULT_ICON_SCALE = 1f
@@ -129,5 +166,8 @@ public class KmlStyle: KmlStyleId() {
         val DEFAULT_ICON_COLOR = null
         const val DEFAULT_ICON_ALPHA = 1f
         const val DEFAULT_ICON_COLOR_MODE_RANDOM = false
+
+        val DEFAULT_LINE_COLOR = Color.Black
+        const val DEFAULT_LINE_WIDTH = 1f
     }
 }

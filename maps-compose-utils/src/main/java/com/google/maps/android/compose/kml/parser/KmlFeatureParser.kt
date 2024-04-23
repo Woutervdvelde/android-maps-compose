@@ -1,5 +1,15 @@
 package com.google.maps.android.compose.kml.parser
 
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.DATA_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.DESCRIPTION_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.DISPLAY_NAME_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.EXTENDED_DATA_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.NAME_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.STYLE_URL_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.TESSELLATE_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.VALUE_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.VISIBILITY_TAG
 import org.xmlpull.v1.XmlPullParser
 
 internal abstract class KmlFeatureParser {
@@ -19,7 +29,7 @@ internal abstract class KmlFeatureParser {
                 if (eventType == XmlPullParser.START_TAG) {
                     when (parser.name) {
                         DATA_TAG ->
-                            currentData.name = parser.getAttributeValue(null, KmlParser.NAME_TAG)
+                            currentData.name = parser.getAttributeValue(null, NAME_TAG)
 
                         DISPLAY_NAME_TAG ->
                             currentData.displayName = parser.nextText()
@@ -37,11 +47,22 @@ internal abstract class KmlFeatureParser {
             return extendedData
         }
 
+        /**
+         *
+         */
+        internal fun parseCoordinates(input: String): List<LatLng> {
+            return input.trim().split("\n").map {
+                val coordinate = it.split(LAT_LNG_ALT_SEPARATOR)
+                val lat = coordinate[LATITUDE_INDEX].toDouble()
+                val lng = coordinate[LONGITUDE_INDEX].toDouble()
+                LatLng(lat, lng)
+            }
+        }
+
         internal val PROPERTY_REGEX =
-            Regex("name|description|drawOrder|visibility|address|phoneNumber|styleUrl")
-        internal const val EXTENDED_DATA_TAG = "ExtendedData"
-        private const val DATA_TAG = "Data"
-        private const val VALUE_TAG = "value"
-        private const val DISPLAY_NAME_TAG = "displayName"
+            Regex("$NAME_TAG|$DESCRIPTION_TAG|drawOrder|$VISIBILITY_TAG|address|phoneNumber|$STYLE_URL_TAG|$TESSELLATE_TAG")
+        private const val LONGITUDE_INDEX = 0
+        private const val LATITUDE_INDEX = 1
+        private const val LAT_LNG_ALT_SEPARATOR = ","
     }
 }

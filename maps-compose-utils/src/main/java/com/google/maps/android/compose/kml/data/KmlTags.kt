@@ -1,0 +1,43 @@
+package com.google.maps.android.compose.kml.data
+
+internal class KmlTags {
+    internal companion object {
+        const val BALLOON_STYLE_TAG = "BalloonStyle"
+        const val COORDINATES_TAG = "coordinates"
+        const val DATA_TAG = "Data"
+        const val DESCRIPTION_TAG = "description"
+        const val DISPLAY_NAME_TAG = "displayName"
+        const val EXTENDED_DATA_TAG = "ExtendedData"
+        const val GROUND_OVERLAY_TAG = "GroundOverlay"
+        const val HREF_TAG = "href"
+        const val ICON_TAG = "Icon"
+        const val ICON_STYLE_TAG = "IconStyle"
+        const val LINE_STRING_TAG = "LineString"
+        const val LINE_STYLE_TAG = "LineStyle"
+        const val MULTI_GEOMETRY_TAG = "MultiGeometry"
+        const val NAME_TAG = "name"
+        const val PLACEMARK_TAG = "Placemark"
+        const val POINT_TAG = "Point"
+        const val POLYGON_TAG = "Polygon"
+        const val POLY_STYLE_TAG = "PolyStyle"
+        const val ROTATION_TAG = "rotation"
+        const val STYLE_COLOR_MODE_TAG = "colorMode"
+        const val STYLE_COLOR_TAG = "color"
+        const val STYLE_HEADING_TAG = "heading"
+        const val STYLE_HOTSPOT_TAG = "hotSpot"
+        const val STYLE_MAP_KEY_TAG = "key"
+        const val STYLE_MAP_TAG = "StyleMap"
+        const val STYLE_SCALE_TAG = "scale"
+        const val STYLE_TAG = "Style"
+        const val STYLE_URL_TAG = "styleUrl"
+        const val TESSELLATE_TAG = "tessellate"
+        const val VALUE_TAG = "value"
+        const val VISIBILITY_TAG = "visibility"
+        const val WIDTH_TAG = "width"
+
+        const val NORTH_TAG = "north"
+        const val EAST_TAG = "east"
+        const val SOUTH_TAG = "south"
+        const val WEST_TAG = "west"
+    }
+}

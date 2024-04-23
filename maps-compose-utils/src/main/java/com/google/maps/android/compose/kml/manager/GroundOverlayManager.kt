@@ -11,8 +11,10 @@ import com.google.maps.android.compose.GroundOverlay
 import com.google.maps.android.compose.GroundOverlayPosition
 import com.google.maps.android.compose.kml.data.KmlStyle
 import com.google.maps.android.compose.kml.data.KmlStyleMap
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.EXTENDED_DATA_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.VISIBILITY_TAG
 import com.google.maps.android.compose.kml.parser.ExtendedData
-import com.google.maps.android.compose.kml.parser.KmlFeatureParser.Companion.EXTENDED_DATA_TAG
+import com.google.maps.android.compose.kml.parser.KmlParser
 
 public class GroundOverlayManager : KmlComposableManager() {
     private var groundOverlayData: MutableState<GroundOverlayProperties> = mutableStateOf(
@@ -97,7 +99,8 @@ public class GroundOverlayManager : KmlComposableManager() {
             internal fun from(properties: HashMap<String, Any>): GroundOverlayProperties {
                 val name: String by properties.withDefault { DEFAULT_NAME }
                 val description: String by properties.withDefault { DEFAULT_DESCRIPTION }
-                val visibility: Boolean by properties.withDefault { DEFAULT_VISIBILITY }
+                val visibility: Boolean =
+                    KmlParser.convertPropertyToBoolean(properties, VISIBILITY_TAG, DEFAULT_VISIBILITY)
                 val drawOrder: Float by properties.withDefault { DEFAULT_DRAW_ORDER }
                 val rotation: Int by properties.withDefault { DEFAULT_ROTATION }
                 val href: String by properties.withDefault { DEFAULT_ICON_URL }

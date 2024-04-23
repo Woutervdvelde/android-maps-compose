@@ -84,7 +84,7 @@ internal class MapFileParser {
             factory.isNamespaceAware = true
             val parser = factory.newPullParser()
             parser.setInput(stream, null)
-            return parser;
+            return parser
         }
 
         internal data class ParsedKmlData(
