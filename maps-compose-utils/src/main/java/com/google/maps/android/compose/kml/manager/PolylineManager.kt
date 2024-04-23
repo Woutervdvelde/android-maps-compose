@@ -5,7 +5,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
+import com.google.android.gms.maps.model.ButtCap
+import com.google.android.gms.maps.model.Cap
+import com.google.android.gms.maps.model.JointType
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.PatternItem
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.kml.data.KmlStyle
 import com.google.maps.android.compose.kml.data.KmlStyleMap
@@ -47,7 +51,32 @@ public class PolylineManager(
     }
 
     /**
-     * Sets line color
+     * Sets the cap at the start vertex of the polyline
+     *
+     * @param cap any [Cap] subclass
+     */
+    public fun setStartCap(cap: Cap) {
+        polylineData.value = polylineData.value.copy(startCap = cap)
+    }
+
+    /**
+     * Sets the cap at the end vertex of the polyline
+     *
+     * @param cap any [Cap] subclass
+     */
+    public fun setEndCap(cap: Cap) {
+        polylineData.value = polylineData.value.copy(endCap = cap)
+    }
+
+    /**
+     *
+     */
+    public fun setJointType(jointType: Int) {
+        polylineData.value = polylineData.value.copy(jointType = jointType)
+    }
+
+    /**
+     * Sets polyline color
      *
      * @param color color of the line
      */
@@ -56,7 +85,25 @@ public class PolylineManager(
     }
 
     /**
-     * Sets line width
+     * Sets the pattern for the polyline
+     *
+     * @param pattern List of patternItems creating the pattern
+     */
+    public fun setPattern(pattern: List<PatternItem>) {
+        polylineData.value = polylineData.value.copy(pattern = pattern)
+    }
+
+    /**
+     * Sets the visibility of the polyline
+     *
+     * @param visible True when line should be visible, false if not
+     */
+    public fun setVisibility(visible: Boolean) {
+        polylineData.value = polylineData.value.copy(visibility = visible)
+    }
+
+    /**
+     * Sets polyline width
      *
      * @param width width of the line
      */
@@ -76,7 +123,11 @@ public class PolylineManager(
                 geodesic = data.tessellate,
                 width = data.width,
                 zIndex = data.drawOrder,
-                clickable = true
+                clickable = true,
+                jointType = data.jointType,
+                startCap = data.startCap,
+                endCap = data.endCap,
+                pattern = data.pattern
             )
         }
     }
@@ -90,7 +141,11 @@ public class PolylineManager(
         val tessellate: Boolean = DEFAULT_TESSELLATE,
         val width: Float = DEFAULT_WIDTH,
         val styleUrl: String? = DEFAULT_STYLE_URL,
-        val extendedData: List<ExtendedData>? = DEFAULT_EXTENDED_DATA
+        val extendedData: List<ExtendedData>? = DEFAULT_EXTENDED_DATA,
+        val startCap: Cap = DEFAULT_CAP,
+        val endCap: Cap = DEFAULT_CAP,
+        val jointType: Int = DEFAULT_JOINT_TYPE,
+        val pattern: List<PatternItem>? = DEFAULT_PATTERN
     ) {
         internal companion object {
             internal fun from(properties: HashMap<String, Any>): PolylineProperties {
@@ -116,6 +171,9 @@ public class PolylineManager(
             }
 
             private val DEFAULT_COLOR = Color.Black
+            private val DEFAULT_CAP = ButtCap()
+            private val DEFAULT_PATTERN = null
+            private const val DEFAULT_JOINT_TYPE = JointType.DEFAULT
             private const val DEFAULT_TESSELLATE = false
             private const val DEFAULT_WIDTH = 1f
         }
