@@ -117,23 +117,22 @@ public class PolylineManager(
     override fun Render() {
         val data = polylineData.value
 
-        if (data.visibility) {
-            Polyline(
-                points = coordinates,
-                color = data.color,
-                geodesic = data.tessellate,
-                width = data.width,
-                zIndex = data.drawOrder,
-                clickable = true,
-                jointType = data.jointType,
-                startCap = data.startCap,
-                endCap = data.endCap,
-                pattern = data.pattern,
-                onClick = {
-                    listener?.onEvent(KmlEvent.Polyline.Clicked(polylineData.value))
-                }
-            )
-        }
+        Polyline(
+            points = coordinates,
+            color = data.color,
+            geodesic = data.tessellate,
+            width = data.width,
+            zIndex = data.drawOrder,
+            visible = data.visibility,
+            clickable = true,
+            jointType = data.jointType,
+            startCap = data.startCap,
+            endCap = data.endCap,
+            pattern = data.pattern,
+            onClick = {
+                listener?.onEvent(KmlEvent.Polyline.Clicked(polylineData.value))
+            }
+        )
     }
 
     public data class PolylineProperties(

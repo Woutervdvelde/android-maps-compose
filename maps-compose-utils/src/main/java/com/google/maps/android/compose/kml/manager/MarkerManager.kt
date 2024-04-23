@@ -165,23 +165,21 @@ public class MarkerManager(
         val markerState = rememberMarkerState(position = position)
         val currentMarkerData = markerData.value
 
-        if (currentMarkerData.visibility) {
-            Marker(
-                state = markerState,
-                alpha = currentMarkerData.alpha,
-                anchor = Offset(currentMarkerData.anchor.x, currentMarkerData.anchor.y),
-                rotation = currentMarkerData.rotation.toFloat(),
-                snippet = currentMarkerData.description,
-                title = currentMarkerData.name,
-                visible = currentMarkerData.visibility,
-                zIndex = currentMarkerData.drawOrder,
-                icon = getIcon(currentMarkerData.icon),
-                onClick = {
-                    listener?.onEvent(KmlEvent.Marker.Clicked(markerData.value))
-                    true
-                }
-            )
-        }
+        Marker(
+            state = markerState,
+            alpha = currentMarkerData.alpha,
+            anchor = Offset(currentMarkerData.anchor.x, currentMarkerData.anchor.y),
+            rotation = currentMarkerData.rotation.toFloat(),
+            snippet = currentMarkerData.description,
+            title = currentMarkerData.name,
+            visible = currentMarkerData.visibility,
+            zIndex = currentMarkerData.drawOrder,
+            icon = getIcon(currentMarkerData.icon),
+            onClick = {
+                listener?.onEvent(KmlEvent.Marker.Clicked(markerData.value))
+                true
+            }
+        )
     }
 
     private companion object {
