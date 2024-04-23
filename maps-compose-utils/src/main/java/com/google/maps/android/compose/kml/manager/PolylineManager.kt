@@ -16,6 +16,7 @@ import com.google.maps.android.compose.kml.data.KmlStyleMap
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.EXTENDED_DATA_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.TESSELLATE_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.VISIBILITY_TAG
+import com.google.maps.android.compose.kml.event.KmlEvent
 import com.google.maps.android.compose.kml.parser.ExtendedData
 import com.google.maps.android.compose.kml.parser.KmlParser.Companion.convertPropertyToBoolean
 
@@ -127,7 +128,10 @@ public class PolylineManager(
                 jointType = data.jointType,
                 startCap = data.startCap,
                 endCap = data.endCap,
-                pattern = data.pattern
+                pattern = data.pattern,
+                onClick = {
+                    listener?.onEvent(KmlEvent.Polyline.Clicked(polylineData.value))
+                }
             )
         }
     }

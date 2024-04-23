@@ -1,6 +1,7 @@
 package com.google.maps.android.compose.kml.event
 
 import com.google.maps.android.compose.kml.manager.MarkerManager
+import com.google.maps.android.compose.kml.manager.PolylineManager
 import java.util.concurrent.CopyOnWriteArrayList
 
 public class KmlEventPublisher {
@@ -26,5 +27,9 @@ internal interface KmlEventListener {
 public sealed class KmlEvent {
     public sealed class Marker : KmlEvent() {
         public data class Clicked(val data: MarkerManager.MarkerProperties) : Marker()
+    }
+
+    public sealed class Polyline : KmlEvent() {
+        public data class Clicked(val data: PolylineManager.PolylineProperties) : Polyline()
     }
 }
