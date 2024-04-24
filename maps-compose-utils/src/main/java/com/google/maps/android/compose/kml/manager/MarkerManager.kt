@@ -11,9 +11,12 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.kml.data.KmlStyle
 import com.google.maps.android.compose.kml.data.KmlStyleMap
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.EXTENDED_DATA_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.VISIBILITY_TAG
 import com.google.maps.android.compose.kml.event.KmlEvent
 import com.google.maps.android.compose.kml.parser.Anchor
 import com.google.maps.android.compose.kml.parser.ExtendedData
+import com.google.maps.android.compose.kml.parser.KmlParser.Companion.convertPropertyToBoolean
 import com.google.maps.android.compose.kml.parser.KmlStyleParser
 import com.google.maps.android.compose.rememberMarkerState
 
@@ -162,23 +165,21 @@ public class MarkerManager(
         val markerState = rememberMarkerState(position = position)
         val currentMarkerData = markerData.value
 
-        if (currentMarkerData.visibility) {
-            Marker(
-                state = markerState,
-                alpha = currentMarkerData.alpha,
-                anchor = Offset(currentMarkerData.anchor.x, currentMarkerData.anchor.y),
-                rotation = currentMarkerData.rotation.toFloat(),
-                snippet = currentMarkerData.description,
-                title = currentMarkerData.name,
-                visible = currentMarkerData.visibility,
-                zIndex = currentMarkerData.drawOrder,
-                icon = getIcon(currentMarkerData.icon),
-                onClick = {
-                    listener?.onEvent(KmlEvent.Marker.Clicked(markerData.value))
-                    true
-                }
-            )
-        }
+        Marker(
+            state = markerState,
+            alpha = currentMarkerData.alpha,
+            anchor = Offset(currentMarkerData.anchor.x, currentMarkerData.anchor.y),
+            rotation = currentMarkerData.rotation.toFloat(),
+            snippet = currentMarkerData.description,
+            title = currentMarkerData.name,
+            visible = currentMarkerData.visibility,
+            zIndex = currentMarkerData.drawOrder,
+            icon = getIcon(currentMarkerData.icon),
+            onClick = {
+                listener?.onEvent(KmlEvent.Marker.Clicked(markerData.value))
+                true
+            }
+        )
     }
 
     private companion object {
@@ -207,10 +208,12 @@ public class MarkerManager(
             internal fun from(properties: HashMap<String, Any>): MarkerProperties {
                 val description: String by properties.withDefault { DEFAULT_DESCRIPTION }
                 val name: String by properties.withDefault { DEFAULT_NAME }
-                val visibility: Boolean by properties.withDefault { DEFAULT_VISIBILITY }
+                val visibility: Boolean =
+                    convertPropertyToBoolean(properties, VISIBILITY_TAG, DEFAULT_VISIBILITY)
                 val drawOrder: Float by properties.withDefault { DEFAULT_DRAW_ORDER }
                 val styleUrl: String? by properties.withDefault { DEFAULT_STYLE_URL }
-                val extendedData: List<ExtendedData>? = properties["ExtendedData"] as? List<ExtendedData>
+                val extendedData: List<ExtendedData>? =
+                    properties[EXTENDED_DATA_TAG] as? List<ExtendedData>
                 return MarkerProperties(
                     description = description,
                     name = name,

@@ -3,6 +3,11 @@ package com.google.maps.android.compose.kml.parser
 import android.graphics.Bitmap
 import com.google.maps.android.compose.kml.data.KmlStyle
 import com.google.maps.android.compose.kml.data.KmlStyleMap
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.GROUND_OVERLAY_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.NAME_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.PLACEMARK_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.STYLE_MAP_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.STYLE_TAG
 import com.google.maps.android.compose.kml.event.KmlEvent
 import com.google.maps.android.compose.kml.event.KmlEventListener
 import com.google.maps.android.compose.kml.event.KmlEventPublisher
@@ -21,7 +26,7 @@ public class KmlParser(
     private val styles: HashMap<String, KmlStyle> = hashMapOf(),
     public var container: ContainerManager = ContainerManager(),
     public val eventPublisher: KmlEventPublisher = KmlEventPublisher(),
-): KmlEventListener {
+) : KmlEventListener {
     override fun onEvent(event: KmlEvent) {
         eventPublisher.emit(event)
     }
@@ -67,7 +72,7 @@ public class KmlParser(
                     containerManager.setName(parser.nextText())
                 } else if (parser.name.equals(PLACEMARK_TAG)) {
                     KmlPlacemarkParser.parsePlacemark(parser, containerManager)
-                }  else if (parser.name.equals(GROUND_OVERLAY_TAG)) {
+                } else if (parser.name.equals(GROUND_OVERLAY_TAG)) {
                     KmlGroundOverlayParser.parseGroundOverlay(parser, containerManager)
                 } else if (parser.name.equals(STYLE_MAP_TAG)) {
                     val styleMap = KmlStyleParser.parseStyleMap(parser)
@@ -113,11 +118,6 @@ public class KmlParser(
     }
 
     public companion object {
-        internal const val STYLE_TAG = "Style"
-        internal const val STYLE_MAP_TAG = "StyleMap"
-        internal const val PLACEMARK_TAG = "Placemark"
-        internal const val NAME_TAG = "name"
-        internal const val GROUND_OVERLAY_TAG = "GroundOverlay"
         internal val CONTAINER_REGEX = Regex("Folder|Document")
         internal val UNSUPPORTED_REGEX = Regex(
             "altitude|altitudeModeGroup|altitudeMode|" +
@@ -130,6 +130,15 @@ public class KmlParser(
                     "state|targetHref|tessellate|tileSize|topFov|viewBoundScale|viewFormat|viewRefreshMode|" +
                     "viewRefreshTime|when"
         )
+
+        internal fun convertPropertyToBoolean(
+            properties: HashMap<String, Any>,
+            key: String,
+            defaultValue: Boolean = false
+        ): Boolean {
+            val value = properties[key] as? String
+            return value?.let { it == "1" } ?: defaultValue
+        }
 
         /**
          * Parses an input KML/KMZ file and returns a KmlParser
