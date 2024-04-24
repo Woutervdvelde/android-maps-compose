@@ -13,12 +13,14 @@ import com.google.android.gms.maps.model.PatternItem
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.kml.data.KmlStyle
 import com.google.maps.android.compose.kml.data.KmlStyleMap
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.DRAW_ORDER_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.EXTENDED_DATA_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.TESSELLATE_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.VISIBILITY_TAG
 import com.google.maps.android.compose.kml.event.KmlEvent
 import com.google.maps.android.compose.kml.parser.ExtendedData
 import com.google.maps.android.compose.kml.parser.KmlParser.Companion.convertPropertyToBoolean
+import com.google.maps.android.compose.kml.parser.KmlParser.Companion.convertPropertyToFloat
 
 public class PolylineManager(
     private val coordinates: List<LatLng>
@@ -29,6 +31,8 @@ public class PolylineManager(
     override fun setProperties(data: HashMap<String, Any>) {
         polylineData.value = PolylineProperties.from(data)
     }
+
+    public fun getProperties(): PolylineProperties = polylineData.value.copy()
 
     override suspend fun setStyle(
         styleMaps: HashMap<String, KmlStyleMap>,
@@ -156,7 +160,7 @@ public class PolylineManager(
                 val description: String by properties.withDefault { DEFAULT_DESCRIPTION }
                 val visibility: Boolean =
                     convertPropertyToBoolean(properties, VISIBILITY_TAG, DEFAULT_VISIBILITY)
-                val drawOrder: Float by properties.withDefault { DEFAULT_DRAW_ORDER }
+                val drawOrder: Float = convertPropertyToFloat(properties, DRAW_ORDER_TAG, DEFAULT_DRAW_ORDER)
                 val styleUrl: String? by properties.withDefault { DEFAULT_STYLE_URL }
                 val extendedData: List<ExtendedData>? =
                     properties[EXTENDED_DATA_TAG] as? List<ExtendedData>

@@ -140,6 +140,15 @@ public class KmlParser(
             return value?.let { it == "1" } ?: defaultValue
         }
 
+        internal fun convertPropertyToFloat(
+            properties: HashMap<String, Any>,
+            key: String,
+            defaultValue: Float = 1f
+        ): Float {
+            val value = properties[key] as? String
+            return value?.toFloat() ?: defaultValue
+        }
+
         /**
          * Parses an input KML/KMZ file and returns a KmlParser
          * containing all information if parsed successfully

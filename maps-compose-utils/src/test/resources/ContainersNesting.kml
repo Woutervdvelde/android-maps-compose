@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <!-- Root Document -->
+    <name>Root Document</name>
+    <Folder>
+      <!-- First Folder -->
+      <name>Folder 1</name>
+      <Folder>
+        <!-- Nested Folder -->
+        <name>Folder 2</name>
+        <Folder>
+          <!-- Another Nested Folder -->
+          <name>Folder 3</name>
+        </Folder>
+      </Folder>
+    </Folder>
+    <Folder>
+      <!-- Second Folder -->
+      <name>Folder 4</name>
+      <Document>
+        <!-- Nested Document -->
+        <name>Document 1</name>
+        <Folder>
+          <!-- Nested Folder inside Document -->
+          <name>Folder 5</name>
+        </Folder>
+      </Document>
+    </Folder>
+  </Document>
+</kml>

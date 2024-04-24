@@ -7,6 +7,7 @@ internal class KmlTags {
         const val DATA_TAG = "Data"
         const val DESCRIPTION_TAG = "description"
         const val DISPLAY_NAME_TAG = "displayName"
+        const val DRAW_ORDER_TAG = "drawOrder"
         const val EXTENDED_DATA_TAG = "ExtendedData"
         const val GROUND_OVERLAY_TAG = "GroundOverlay"
         const val HREF_TAG = "href"

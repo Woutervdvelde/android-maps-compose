@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+    <Document>
+        <name>Root Document</name>
+
+        <!-- First line -->
+        <Style id="first-normal">
+          <LineStyle>
+            <color>ff000000</color>
+            <width>1</width>
+          </LineStyle>
+        </Style>
+        <StyleMap id="first">
+          <Pair>
+            <key>normal</key>
+            <styleUrl>#first-normal</styleUrl>
+          </Pair>
+        </StyleMap>
+        <Placemark>
+            <name>first</name>
+            <styleUrl>#first</styleUrl>
+            <visibility>1</visibility>
+            <LineString>
+                <tessellate>1</tessellate>
+                <drawOrder>1</drawOrder>
+                <coordinates>
+                    6.087,52.509,0
+                    6.086,52.508,0
+                    6.085,52.507,0
+                </coordinates>
+            </LineString>
+        </Placemark>
+
+        <!-- Second line -->
+        <Style id="second-normal">
+          <LineStyle>
+            <color>ff0000ff</color>
+            <width>15</width>
+          </LineStyle>
+        </Style>
+        <StyleMap id="second">
+          <Pair>
+            <key>normal</key>
+            <styleUrl>#second-normal</styleUrl>
+          </Pair>
+        </StyleMap>
+        <Placemark>
+            <name>second</name>
+            <styleUrl>#second</styleUrl>
+            <visibility>1</visibility>
+            <LineString>
+                <tessellate>1</tessellate>
+                <drawOrder>2</drawOrder>
+                <coordinates>
+                    6.087,52.509,0
+                </coordinates>
+            </LineString>
+        </Placemark>
+
+        <!-- Third line -->
+        <Style id="third-normal">
+          <LineStyle>
+            <color>7f0000ff</color> <!-- Approx 50% alpha -->
+            <width>20</width>
+          </LineStyle>
+        </Style>
+        <StyleMap id="third">
+          <Pair>
+            <key>normal</key>
+            <styleUrl>#third-normal</styleUrl>
+          </Pair>
+        </StyleMap>
+        <Placemark>
+            <name>third</name>
+            <styleUrl>#third</styleUrl>
+            <visibility>0</visibility>
+            <LineString>
+                <tessellate>1</tessellate>
+                <drawOrder>3</drawOrder>
+                <coordinates>
+                    6.087,52.509,0
+                    6.086,52.508,0
+                    6.085,52.507,0
+                    6.084,52.506,0
+                </coordinates>
+            </LineString>
+        </Placemark>
+
+        <!-- Fourth line -->
+        <Style id="fourth-normal">
+          <LineStyle>
+            <color>ffffff00</color>
+            <width>25</width>
+          </LineStyle>
+        </Style>
+        <StyleMap id="fourth">
+          <Pair>
+            <key>normal</key>
+            <styleUrl>#fourth-normal</styleUrl>
+          </Pair>
+        </StyleMap>
+        <Placemark>
+            <name>fourth</name>
+            <styleUrl>#fourth</styleUrl>
+            <visibility>0</visibility>
+            <LineString>
+                <tessellate>0</tessellate>
+                <drawOrder>4</drawOrder>
+                <coordinates>
+                    6.087,52.509,0
+                    6.086,52.508,0
+                    6.085,52.507,0
+                    6.084,52.506,0
+                </coordinates>
+            </LineString>
+        </Placemark>
+
+        <!-- Fifth line -->
+        <Style id="fifth-normal">
+          <LineStyle>
+            <color>ff00ff00</color>
+            <width>100</width>
+          </LineStyle>
+        </Style>
+        <StyleMap id="fifth">
+          <Pair>
+            <key>normal</key>
+            <styleUrl>#fifth-normal</styleUrl>
+          </Pair>
+        </StyleMap>
+        <Placemark>
+            <name>fifth</name>
+            <styleUrl>#fifth</styleUrl>
+            <visibility>0</visibility>
+            <LineString>
+                <tessellate>0</tessellate>
+                <drawOrder>5</drawOrder>
+                <coordinates>
+                    6.087,52.509,0
+                    6.086,52.508,0
+                    6.085,52.507,0
+                    6.084,52.506,0
+                </coordinates>
+            </LineString>
+        </Placemark>
+
+        <!-- Sixth line -->
+        <Placemark>
+            <name>sixth</name>
+            <LineString>
+                <coordinates>
+                    6.087,52.509,0
+                    6.086,52.508,0
+                    6.085,52.507,0
+                    6.084,52.506,0
+                    6.083,52.505,0
+                    6.082,52.504,0
+                    6.081,52.503,0
+                    6.080,52.502,0
+                    6.079,52.501,0
+                    6.078,52.500,0
+                    6.077,52.499,0
+                    6.076,52.498,0
+                    6.075,52.497,0
+                    6.074,52.496,0
+                    6.073,52.495,0
+                    6.072,52.494,0
+                    6.071,52.493,0
+                    6.070,52.492,0
+                    6.069,52.491,0
+                    6.068,52.490,0
+                    6.067,52.489,0
+                    6.066,52.488,0
+                    6.065,52.487,0
+                    6.064,52.486,0
+                    6.063,52.485,0
+                    6.062,52.484,0
+                    6.061,52.483,0
+                    6.060,52.482,0
+                    6.059,52.481,0
+                    6.058,52.480,0
+                    6.057,52.479,0
+                    6.056,52.478,0
+                    6.055,52.477,0
+                    6.054,52.476,0
+                    6.053,52.475,0
+                    6.052,52.474,0
+                    6.051,52.473,0
+                    6.050,52.472,0
+                    6.049,52.471,0
+                    6.048,52.470,0
+                </coordinates>
+            </LineString>
+        </Placemark>
+    </Document>
+</kml>

@@ -2,6 +2,7 @@ package com.google.maps.android.compose.kml.manager
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.util.Log
 import androidx.compose.runtime.Composable
 import com.google.maps.android.compose.kml.data.KmlStyle
 import com.google.maps.android.compose.kml.data.KmlStyleMap
@@ -44,6 +45,11 @@ public abstract class KmlComposableManager {
 
         if (url.lowercase().startsWith("https")) {
             fetchImageFromUrl(url)?.let { return it }
+        } else if (url.lowercase().startsWith("http")) {
+            Log.w(
+                "KML fetchBitmap",
+                "http is not supported, use https instead"
+            )
         }
 
         return null
