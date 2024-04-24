@@ -4,6 +4,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.DATA_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.DESCRIPTION_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.DISPLAY_NAME_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.DRAW_ORDER_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.EXTENDED_DATA_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.NAME_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.STYLE_URL_TAG
@@ -60,7 +61,7 @@ internal abstract class KmlFeatureParser {
         }
 
         internal val PROPERTY_REGEX =
-            Regex("$NAME_TAG|$DESCRIPTION_TAG|drawOrder|$VISIBILITY_TAG|address|phoneNumber|$STYLE_URL_TAG|$TESSELLATE_TAG")
+            Regex("$NAME_TAG|$DESCRIPTION_TAG|$DRAW_ORDER_TAG|$VISIBILITY_TAG|address|phoneNumber|$STYLE_URL_TAG|$TESSELLATE_TAG")
         private const val LONGITUDE_INDEX = 0
         private const val LATITUDE_INDEX = 1
         private const val LAT_LNG_ALT_SEPARATOR = ","
