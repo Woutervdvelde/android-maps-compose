@@ -32,6 +32,11 @@ public class PolylineManager(
         polylineData.value = PolylineProperties.from(data)
     }
 
+    /**
+     * Returns a copy of the polyline properties
+     *
+     * @return PolylineProperties
+     */
     public fun getProperties(): PolylineProperties = polylineData.value.copy()
 
     override suspend fun setStyle(

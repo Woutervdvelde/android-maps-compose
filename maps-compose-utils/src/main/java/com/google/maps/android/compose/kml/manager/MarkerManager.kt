@@ -44,6 +44,12 @@ public class MarkerManager(
     }
 
     /**
+     * Returns a copy of the marker properties
+     * @return MarkerProperties
+     */
+    public fun getProperties(): MarkerProperties = markerData.value.copy()
+
+    /**
      * Sets the visibility of the marker
      *
      * @param visible True when marker should be visible, false if not

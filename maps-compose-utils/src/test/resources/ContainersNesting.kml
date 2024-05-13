@@ -12,8 +12,26 @@
         <Folder>
           <!-- Another Nested Folder -->
           <name>Folder 3</name>
+          <Placemark>
+              <name>Folder 3 placemark</name>
+              <Point>
+                <coordinates>0,0</coordinates>
+              </Point>
+          </Placemark>
         </Folder>
+        <Placemark>
+            <name>Folder 2 placemark</name>
+            <Point>
+                <coordinates>0,0</coordinates>
+            </Point>
+        </Placemark>
       </Folder>
+      <Placemark>
+          <name>Folder 1 placemark</name>
+          <Point>
+            <coordinates>0,0</coordinates>
+          </Point>
+      </Placemark>
     </Folder>
     <Folder>
       <!-- Second Folder -->
@@ -25,6 +43,12 @@
           <!-- Nested Folder inside Document -->
           <name>Folder 5</name>
         </Folder>
+        <Placemark>
+            <name>Document 1 placemark</name>
+            <Point>
+                <coordinates>0,0</coordinates>
+            </Point>
+        </Placemark>
       </Document>
     </Folder>
   </Document>
