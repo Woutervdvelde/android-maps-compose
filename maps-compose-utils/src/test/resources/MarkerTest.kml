@@ -6,10 +6,10 @@
     <!-- Define Styles -->
     <Style id="style1">
       <IconStyle>
-        <color>ff0000ff</color> <!-- Blue color for icon -->
-        <heading>0</heading> <!-- Heading in degrees clockwise from North -->
+        <color>ffff0000</color> <!-- Blue color for icon -->
+        <heading>0</heading>
         <Icon>
-          <href>http://maps.google.com/mapfiles/kml/paddle/blu-blank.png</href> <!-- Icon URL -->
+          <href>https://maps.google.com/mapfiles/kml/paddle/blu-blank.png</href> <!-- Icon URL -->
         </Icon>
       </IconStyle>
     </Style>
@@ -17,20 +17,18 @@
     <Style id="style2">
       <IconStyle>
         <color>ff00ff00</color> <!-- Green color for icon -->
-        <heading>90</heading> <!-- Heading in degrees clockwise from North -->
+        <heading>90</heading>
         <Icon>
-          <href>http://maps.google.com/mapfiles/kml/paddle/grn-blank.png</href> <!-- Icon URL -->
+          <href>https://maps.google.com/mapfiles/kml/paddle/grn-blank.png</href> <!-- Icon URL -->
         </Icon>
       </IconStyle>
     </Style>
 
     <Style id="style3">
       <IconStyle>
-        <color>ffff0000</color> <!-- Red color for icon -->
-        <heading>180</heading> <!-- Heading in degrees clockwise from North -->
-        <Icon>
-          <href>http://maps.google.com/mapfiles/kml/paddle/red-blank.png</href> <!-- Icon URL -->
-        </Icon>
+        <color>ff000000ff</color> <!-- Red color for icon -->
+        <colorMode>random</colorMode>
+        <heading>135</heading>
       </IconStyle>
     </Style>
 
@@ -71,7 +69,7 @@
     <!-- Placemarks -->
     <!-- Placemark 1 -->
     <Placemark>
-      <name>Placemark 1</name>
+      <name>First Marker</name>
       <styleUrl>#styleMap1</styleUrl>
       <description><![CDATA[<b>Placemark 1</b><br/>This is the first placemark.<br/>]]></description>
       <Point>
@@ -82,7 +80,7 @@
     </Placemark>
     <!-- Placemark 2 -->
     <Placemark>
-      <name>Placemark 2</name>
+      <name>Second Marker</name>
       <styleUrl>#styleMap2</styleUrl>
       <description><![CDATA[<b>Placemark 2</b><br/>This is the second placemark.<br/>]]></description>
       <Point>
@@ -93,13 +91,13 @@
     </Placemark>
     <!-- Placemark 3 -->
     <Placemark>
-      <name>Placemark 3</name>
+      <name>Third Marker</name>
       <styleUrl>#styleMap3</styleUrl>
       <description><![CDATA[<b>Placemark 3</b><br/>This is the third placemark.<br/>]]></description>
       <Point>
         <coordinates>-0.1276,51.5074</coordinates> <!-- London, UK -->
       </Point>
-      <visibility>1</visibility>
+      <visibility>0</visibility>
       <drawOrder>3</drawOrder>
     </Placemark>
   </Document>
