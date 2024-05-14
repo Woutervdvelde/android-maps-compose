@@ -18,6 +18,7 @@
       <IconStyle>
         <color>ff00ff00</color> <!-- Green color for icon -->
         <heading>90</heading>
+        <scale>10</scale>
         <Icon>
           <href>https://maps.google.com/mapfiles/kml/paddle/grn-blank.png</href> <!-- Icon URL -->
         </Icon>
@@ -29,6 +30,7 @@
         <color>ff000000ff</color> <!-- Red color for icon -->
         <colorMode>random</colorMode>
         <heading>135</heading>
+        <hotSpot x="0.5" y="0.5" xunits="fraction" yunits="fraction"/>
       </IconStyle>
     </Style>
 

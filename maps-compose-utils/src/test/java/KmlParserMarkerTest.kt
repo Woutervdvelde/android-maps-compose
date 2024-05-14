@@ -1,15 +1,13 @@
-import android.graphics.Color
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.kml.manager.MarkerManager
+import com.google.maps.android.compose.kml.parser.Anchor
 import com.google.maps.android.compose.kml.parser.KmlParser
-import com.google.maps.android.compose.kml.parser.KmlStyleParser
 import com.google.maps.android.compose.kml.parser.MapFileParser
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.junit.MockitoJUnitRunner
 import org.robolectric.RobolectricTestRunner
 import java.lang.reflect.Field
 
@@ -30,6 +28,7 @@ import java.lang.reflect.Field
  * │ zIndex      │ 1                     │ 2                   │
  * │ color       │ ff0000ff              │ ff00ff00            │
  * │ colorMode   │ unset                 │ unset               │
+ * │ scale       │ unset                 │ 10                  │
  * └─────────────┴───────────────────────┴─────────────────────┘
  * ┌─────────────┬───────────────────────┐
  * │ Marker      │ Third Marker          │
@@ -44,6 +43,7 @@ import java.lang.reflect.Field
  * │ zIndex      │ 3                     │
  * │ color       │ ffff0000              │
  * │ colorMode   │ random                │
+ * │ hotSpot     │ fraction 0.5, 0.5     │
  * └─────────────┴───────────────────────┘
  */
 
@@ -162,5 +162,24 @@ public class KmlParserMarkerTest {
         Assert.assertEquals(1f, marker1.getProperties().drawOrder)
         Assert.assertEquals(2f, marker2.getProperties().drawOrder)
         Assert.assertEquals(3f, marker3.getProperties().drawOrder)
+    }
+
+    @Test
+    public fun testMarkerScale() {
+        val DEFAULT_ICON_SCALE = 1f // taken from KmlStyle companion object
+        Assert.assertEquals(DEFAULT_ICON_SCALE, marker1.style.getIconScale())
+        Assert.assertEquals(10f, marker2.style.getIconScale())
+        Assert.assertEquals(DEFAULT_ICON_SCALE, marker3.style.getIconScale())
+    }
+
+    @Test
+    public fun testMarkerAnchor() {
+        val DEFAULT_ANCHOR = Anchor() // taken from KmlComposableManager companion object
+        Assert.assertEquals(DEFAULT_ANCHOR, marker1.style.getIconAnchor())
+        Assert.assertEquals(DEFAULT_ANCHOR, marker2.style.getIconAnchor())
+        Assert.assertEquals(
+            Anchor(0.5f, 0.5f, "fraction", "fraction"),
+            marker3.style.getIconAnchor()
+        )
     }
 }
