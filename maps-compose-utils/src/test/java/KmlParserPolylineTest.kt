@@ -19,6 +19,8 @@ import java.lang.reflect.Field
 import kotlin.math.round
 
 /**
+ * These tests are focused on the correct parsing of KML <LineString> into a PolylineManager.
+ *
  * For this test the file "PolylineTest.kml" has been written with variations of a <LineString>
  * In total there are 6 lines defined each with different values, the following list will show the variations
  *

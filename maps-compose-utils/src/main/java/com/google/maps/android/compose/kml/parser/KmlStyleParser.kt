@@ -159,7 +159,7 @@ internal class KmlStyleParser {
          * @param color Color in AABBGGRR format
          * @return Pair with first containing float hue value from color and as second the alpha
          */
-        private fun parseKmlColor(color: String): Pair<Float, Float> {
+        internal fun parseKmlColor(color: String): Pair<Float, Float> {
             val c = color.substringAfter('#')
             val integerColor =
                 Color.parseColor("#${convertColorToAARRGGB(c)}")
