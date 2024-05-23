@@ -38,7 +38,7 @@ public class MarkerManager(
     ) {
         val styleUrl = markerData.value.styleUrl
         val normalStyleId = styleMaps[styleUrl]?.getNormalStyleId()
-        styles[normalStyleId]?.let { style = it }
+        style = styles[normalStyleId] ?: styles[styleUrl] ?: style
 
         generateIcon(images)
         applyStylesToProperties()
