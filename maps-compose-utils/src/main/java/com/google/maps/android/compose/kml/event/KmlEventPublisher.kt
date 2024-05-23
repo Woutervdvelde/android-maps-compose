@@ -23,13 +23,3 @@ public class KmlEventPublisher {
 internal interface KmlEventListener {
     fun onEvent(event: KmlEvent)
 }
-
-public sealed class KmlEvent {
-    public sealed class Marker : KmlEvent() {
-        public data class Clicked(val data: MarkerManager.MarkerProperties) : Marker()
-    }
-
-    public sealed class Polyline : KmlEvent() {
-        public data class Clicked(val data: PolylineManager.PolylineProperties) : Polyline()
-    }
-}

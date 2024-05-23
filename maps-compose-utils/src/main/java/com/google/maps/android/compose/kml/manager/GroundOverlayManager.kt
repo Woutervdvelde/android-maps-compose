@@ -1,6 +1,7 @@
 package com.google.maps.android.compose.kml.manager
 
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -13,6 +14,7 @@ import com.google.maps.android.compose.kml.data.KmlStyle
 import com.google.maps.android.compose.kml.data.KmlStyleMap
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.EXTENDED_DATA_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.VISIBILITY_TAG
+import com.google.maps.android.compose.kml.event.KmlEvent
 import com.google.maps.android.compose.kml.parser.ExtendedData
 import com.google.maps.android.compose.kml.parser.KmlParser
 
@@ -77,7 +79,11 @@ public class GroundOverlayManager : KmlComposableManager() {
                 image = BitmapDescriptorFactory.fromBitmap(data.icon!!),
                 transparency = data.alpha * -1 + 1,
                 bearing = -data.rotation.toFloat(), // - (negative) since KML is defined counterclockwise and compose clockwise
-                zIndex = data.drawOrder
+                zIndex = data.drawOrder,
+                clickable = true,
+                onClick = {
+                    listener?.onEvent(KmlEvent.GroundOverlay.Clicked(groundOverlayData.value))
+                }
             )
         }
     }
