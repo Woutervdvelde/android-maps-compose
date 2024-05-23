@@ -40,8 +40,8 @@ public class MarkerManager(
         val normalStyleId = styleMaps[styleUrl]?.getNormalStyleId()
         style = styles[normalStyleId] ?: styles[styleUrl] ?: style
 
-        generateIcon(images)
         applyStylesToProperties()
+        generateIcon(images)
     }
 
     /**

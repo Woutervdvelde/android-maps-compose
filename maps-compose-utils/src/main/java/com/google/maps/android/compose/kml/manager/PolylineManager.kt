@@ -46,9 +46,8 @@ public class PolylineManager(
     ) {
         val styleUrl = polylineData.value.styleUrl
         val normalStyleId = styleMaps[styleUrl]?.getNormalStyleId()
-        val selectedStyle = styles[normalStyleId]
+        style = styles[normalStyleId] ?: styles[styleUrl] ?: style
 
-        style = selectedStyle ?: KmlStyle()
         applyStylesToProperties()
     }
 
