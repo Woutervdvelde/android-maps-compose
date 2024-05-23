@@ -8,6 +8,7 @@ import com.google.maps.android.compose.kml.data.KmlTags.Companion.NAME_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.PLACEMARK_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.STYLE_MAP_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.STYLE_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.VISIBILITY_TAG
 import com.google.maps.android.compose.kml.event.KmlEvent
 import com.google.maps.android.compose.kml.event.KmlEventListener
 import com.google.maps.android.compose.kml.event.KmlEventPublisher
@@ -80,6 +81,8 @@ public class KmlParser(
                 } else if (parser.name.equals(STYLE_TAG)) {
                     val style = KmlStyleParser.parseStyle(parser)
                     styles[style.getId()] = style
+                } else if (parser.name.equals(VISIBILITY_TAG)) {
+                    containerManager.setActive(parser.nextText() == "1")
                 }
             }
             eventType = parser.next()
@@ -128,7 +131,7 @@ public class KmlParser(
                     "maxWidth|near|NetworkLink|NetworkLinkControl|overlayXY|range|refreshMode|" +
                     "refreshInterval|refreshVisibility|rightFov|roll|rotationXY|screenXY|shape|sourceHref|" +
                     "state|targetHref|tessellate|tileSize|topFov|viewBoundScale|viewFormat|viewRefreshMode|" +
-                    "viewRefreshTime|when"
+                    "viewRefreshTime|when|BalloonStyle"
         )
 
         internal fun convertPropertyToBoolean(

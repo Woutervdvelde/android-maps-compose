@@ -3,7 +3,6 @@ package com.google.maps.android.compose.kml.parser
 import android.graphics.Color
 import com.google.maps.android.compose.kml.data.KmlStyle
 import com.google.maps.android.compose.kml.data.KmlStyleMap
-import com.google.maps.android.compose.kml.data.KmlTags.Companion.BALLOON_STYLE_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.HREF_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.ICON_STYLE_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.LINE_STYLE_TAG
@@ -74,7 +73,6 @@ internal class KmlStyleParser {
                         ICON_STYLE_TAG -> parseIconStyle(parser, style)
                         LINE_STYLE_TAG -> parseLineStyle(parser, style)
                         POLY_STYLE_TAG -> return style //TODO()
-                        BALLOON_STYLE_TAG -> return style //TODO()
                     }
                 }
                 eventType = parser.next()

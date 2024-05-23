@@ -2,7 +2,6 @@ package com.google.maps.android.compose.kml.data
 
 internal class KmlTags {
     internal companion object {
-        const val BALLOON_STYLE_TAG = "BalloonStyle"
         const val COORDINATES_TAG = "coordinates"
         const val DATA_TAG = "Data"
         const val DESCRIPTION_TAG = "description"
