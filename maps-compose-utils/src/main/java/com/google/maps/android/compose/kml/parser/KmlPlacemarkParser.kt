@@ -1,6 +1,7 @@
 package com.google.maps.android.compose.kml.parser
 
 import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.kml.data.KmlStyle
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.COORDINATES_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.EXTENDED_DATA_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.LINE_STRING_TAG
@@ -8,6 +9,7 @@ import com.google.maps.android.compose.kml.data.KmlTags.Companion.MULTI_GEOMETRY
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.PLACEMARK_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.POINT_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.POLYGON_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.STYLE_TAG
 import com.google.maps.android.compose.kml.manager.ContainerManager
 import com.google.maps.android.compose.kml.manager.KmlComposableManager
 import com.google.maps.android.compose.kml.manager.MarkerManager
@@ -30,6 +32,7 @@ internal class KmlPlacemarkParser: KmlFeatureParser() {
             val properties: HashMap<String, Any> = hashMapOf()
             val extendedData: MutableList<ExtendedData> = mutableListOf()
             var placemark: KmlComposableManager? = null
+            var style: KmlStyle? = null
 
             while (!(eventType == XmlPullParser.END_TAG && parser.name == PLACEMARK_TAG)) {
                 if (eventType == XmlPullParser.START_TAG) {
@@ -47,6 +50,8 @@ internal class KmlPlacemarkParser: KmlFeatureParser() {
                         //TODO()
                     } else if (parser.name.equals(EXTENDED_DATA_TAG)) {
                         extendedData.addAll(parseExtendedData(parser))
+                    } else if (parser.name.equals(STYLE_TAG)) {
+                        style = KmlStyleParser.parseStyle(parser)
                     }
                 }
                 eventType = parser.next()
@@ -57,6 +62,9 @@ internal class KmlPlacemarkParser: KmlFeatureParser() {
 
             placemark?.let {
                 it.setProperties(properties)
+                if (style != null)
+                    it.style = style
+
                 container.addChild(it)
             }
         }

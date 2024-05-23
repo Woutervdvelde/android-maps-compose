@@ -10,7 +10,9 @@ public abstract class KmlStyleId {
      *
      * @return id with # as prefix
      */
-    internal fun setId(id: String) {
-        styleId = if (id.startsWith("#")) id else "#${id}"
+    internal fun setId(id: String?) {
+        if (id != null) {
+            styleId = if (id.startsWith("#")) id else "#${id}"
+        }
     }
 }

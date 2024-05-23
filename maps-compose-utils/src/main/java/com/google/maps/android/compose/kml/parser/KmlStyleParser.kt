@@ -248,6 +248,10 @@ internal class KmlStyleParser {
             return Color.rgb(red, green, blue)
         }
 
+        private fun setStyleId(style: KmlStyle, id: String) {
+
+        }
+
 
         private const val STYLE_MAP_NORMAL_STYLE = "normal"
         private const val COLOR_MODE_RANDOM = "random"
