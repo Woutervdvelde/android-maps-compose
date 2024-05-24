@@ -13,6 +13,7 @@ import com.google.maps.android.compose.kml.data.KmlStyle
 import com.google.maps.android.compose.kml.data.KmlStyleMap
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.EXTENDED_DATA_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.VISIBILITY_TAG
+import com.google.maps.android.compose.kml.event.KmlEvent
 import com.google.maps.android.compose.kml.parser.ExtendedData
 import com.google.maps.android.compose.kml.parser.KmlParser
 
@@ -79,7 +80,10 @@ public class GroundOverlayManager : KmlComposableManager() {
             transparency = data.alpha * -1 + 1,
             bearing = -data.rotation.toFloat(), // - (negative) since KML is defined counterclockwise and compose clockwise
             visible = isActive.value,
-            zIndex = data.drawOrder
+            zIndex = data.drawOrder,
+            onClick = {
+                listener?.onEvent(KmlEvent.GroundOverlay.Clicked(groundOverlayData.value))
+            }
         )
     }
 
