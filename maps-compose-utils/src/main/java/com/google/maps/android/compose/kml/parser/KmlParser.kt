@@ -112,7 +112,7 @@ public class KmlParser(
      * @param images Images extracted from KMZ
      */
     internal suspend fun applyStyles(images: HashMap<String, Bitmap>) {
-        container.setStyle(styleMaps, styles, images, true)
+        container.setStyle(styleMaps, styles, images, container.getActive())
     }
 
     internal fun setEventListener(listener: KmlEventListener) {

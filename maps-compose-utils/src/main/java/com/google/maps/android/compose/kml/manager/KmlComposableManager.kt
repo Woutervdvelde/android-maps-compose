@@ -4,6 +4,8 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import com.google.maps.android.compose.kml.data.KmlStyle
 import com.google.maps.android.compose.kml.data.KmlStyleMap
 import com.google.maps.android.compose.kml.event.KmlEventListener
@@ -16,6 +18,7 @@ import kotlin.coroutines.suspendCoroutine
 public abstract class KmlComposableManager {
     internal var style: KmlStyle = KmlStyle()
     internal var listener: KmlEventListener? = null
+    internal var isActive: MutableState<Boolean> = mutableStateOf(true)
 
     /**
      * Sets the styles received from the KML Parser
@@ -35,6 +38,15 @@ public abstract class KmlComposableManager {
 
     internal open fun setEventListener(eventListener: KmlEventListener) {
         listener = eventListener
+    }
+
+    /**
+     * Sets the KmlComposableManger active or inactive
+     *
+     * @param active true if KmlComposableManager should be visible
+     */
+    internal open fun setActive(active: Boolean) {
+        this.isActive.value = active
     }
 
     /**

@@ -1,6 +1,7 @@
 package com.google.maps.android.compose.kml.manager
 
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -10,7 +11,6 @@ import com.google.maps.android.compose.kml.event.KmlEventListener
 
 public class ContainerManager : KmlComposableManager() {
     private var containerName: String = ""
-    private var isActive: MutableState<Boolean> = mutableStateOf(true)
     private val children: MutableList<KmlComposableManager> = mutableListOf()
 
     public fun getName(): String = containerName
@@ -34,8 +34,9 @@ public class ContainerManager : KmlComposableManager() {
      *
      * @param active Active state of the container
      */
-    public fun setActive(active: Boolean) {
-        isActive.value = active
+    public override fun setActive(active: Boolean) {
+        super.setActive(active)
+        children.forEach { it.setActive(active) }
     }
 
     /**

@@ -36,6 +36,7 @@ public class GroundOverlayManager : KmlComposableManager() {
 
     override fun setProperties(data: HashMap<String, Any>) {
         groundOverlayData.value = GroundOverlayProperties.from(data)
+        setVisibility(KmlParser.convertPropertyToBoolean(data, VISIBILITY_TAG, DEFAULT_VISIBILITY))
     }
 
     /**

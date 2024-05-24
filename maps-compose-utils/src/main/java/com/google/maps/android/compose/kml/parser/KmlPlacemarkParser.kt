@@ -115,8 +115,6 @@ internal class KmlPlacemarkParser: KmlFeatureParser() {
                 properties
             )
         }
-
-        private val BOUNDARY_REGEX = Regex("outerBoundaryIs|innerBoundaryIs")
     }
 }
 
