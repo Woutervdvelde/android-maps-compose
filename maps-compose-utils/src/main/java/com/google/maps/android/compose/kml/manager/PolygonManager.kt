@@ -15,6 +15,7 @@ import com.google.maps.android.compose.kml.data.KmlTags.Companion.DRAW_ORDER_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.EXTENDED_DATA_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.TESSELLATE_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.VISIBILITY_TAG
+import com.google.maps.android.compose.kml.event.KmlEvent
 import com.google.maps.android.compose.kml.parser.ExtendedData
 import com.google.maps.android.compose.kml.parser.KmlParser.Companion.convertPropertyToBoolean
 import com.google.maps.android.compose.kml.parser.KmlParser.Companion.convertPropertyToFloat
@@ -131,7 +132,7 @@ public class PolygonManager(
             strokeWidth = data.strokeWidth,
             clickable = true,
             onClick = {
-//                listener?.onEvent(KmlEvent.polygon.Clicked(polygonData.value))
+                listener?.onEvent(KmlEvent.Polygon.Clicked(polygonData.value))
             }
         )
     }
