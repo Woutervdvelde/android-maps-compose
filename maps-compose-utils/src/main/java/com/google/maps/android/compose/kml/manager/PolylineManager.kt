@@ -112,7 +112,7 @@ public class PolylineManager(
      * @param visible True when line should be visible, false if not
      */
     public fun setVisibility(visible: Boolean) {
-        isActive.value = visible
+        setActive(visible)
     }
 
     /**

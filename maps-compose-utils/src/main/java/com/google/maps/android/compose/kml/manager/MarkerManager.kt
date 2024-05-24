@@ -60,7 +60,7 @@ public class MarkerManager(
      * @param visible True when marker should be visible, false if not
      */
     public fun setVisibility(visible: Boolean) {
-        isActive.value = visible
+        setActive(visible)
     }
 
     /**
