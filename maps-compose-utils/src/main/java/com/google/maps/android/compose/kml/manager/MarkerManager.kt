@@ -29,12 +29,14 @@ public class MarkerManager(
 
     override fun setProperties(data: HashMap<String, Any>) {
         markerData.value = MarkerProperties.from(data)
+        setVisibility(convertPropertyToBoolean(data, VISIBILITY_TAG, DEFAULT_VISIBILITY))
     }
 
     public override suspend fun setStyle(
         styleMaps: HashMap<String, KmlStyleMap>,
         styles: HashMap<String, KmlStyle>,
-        images: HashMap<String, Bitmap>
+        images: HashMap<String, Bitmap>,
+        parentVisibility: Boolean
     ) {
         val styleUrl = markerData.value.styleUrl
         val normalStyleId = styleMaps[styleUrl]?.getNormalStyleId()
@@ -43,6 +45,7 @@ public class MarkerManager(
         style = selectedStyle ?: KmlStyle()
         generateIcon(images)
         applyStylesToProperties()
+        setVisibility(parentVisibility)
     }
 
     /**
@@ -57,7 +60,7 @@ public class MarkerManager(
      * @param visible True when marker should be visible, false if not
      */
     public fun setVisibility(visible: Boolean) {
-        markerData.value = markerData.value.copy(visibility = visible)
+        setActive(visible)
     }
 
     /**
@@ -180,7 +183,7 @@ public class MarkerManager(
             rotation = currentMarkerData.rotation.toFloat(),
             snippet = currentMarkerData.description,
             title = currentMarkerData.name,
-            visible = currentMarkerData.visibility,
+            visible = isActive.value,
             zIndex = currentMarkerData.drawOrder,
             icon = getIcon(currentMarkerData.icon),
             onClick = {
@@ -202,7 +205,6 @@ public class MarkerManager(
     public data class MarkerProperties(
         val description: String = DEFAULT_DESCRIPTION,
         val name: String = DEFAULT_NAME,
-        val visibility: Boolean = DEFAULT_VISIBILITY,
         val alpha: Float = DEFAULT_ALPHA,
         val drawOrder: Float = DEFAULT_DRAW_ORDER,
         val anchor: Anchor = DEFAULT_ANCHOR,
@@ -216,8 +218,6 @@ public class MarkerManager(
             internal fun from(properties: HashMap<String, Any>): MarkerProperties {
                 val description: String by properties.withDefault { DEFAULT_DESCRIPTION }
                 val name: String by properties.withDefault { DEFAULT_NAME }
-                val visibility: Boolean =
-                    convertPropertyToBoolean(properties, VISIBILITY_TAG, DEFAULT_VISIBILITY)
                 val drawOrder: Float = convertPropertyToFloat(properties, DRAW_ORDER_TAG, DEFAULT_DRAW_ORDER)
                 val styleUrl: String? by properties.withDefault { DEFAULT_STYLE_URL }
                 val extendedData: List<ExtendedData>? =
@@ -225,7 +225,6 @@ public class MarkerManager(
                 return MarkerProperties(
                     description = description,
                     name = name,
-                    visibility = visibility,
                     alpha = DEFAULT_ALPHA,
                     drawOrder = drawOrder,
                     anchor = DEFAULT_ANCHOR,

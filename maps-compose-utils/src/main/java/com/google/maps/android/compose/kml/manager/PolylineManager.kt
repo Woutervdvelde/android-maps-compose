@@ -30,6 +30,7 @@ public class PolylineManager(
 
     override fun setProperties(data: HashMap<String, Any>) {
         polylineData.value = PolylineProperties.from(data)
+        setVisibility(convertPropertyToBoolean(data, VISIBILITY_TAG, DEFAULT_VISIBILITY))
     }
 
     /**
@@ -42,7 +43,8 @@ public class PolylineManager(
     override suspend fun setStyle(
         styleMaps: HashMap<String, KmlStyleMap>,
         styles: HashMap<String, KmlStyle>,
-        images: HashMap<String, Bitmap>
+        images: HashMap<String, Bitmap>,
+        parentVisibility: Boolean
     ) {
         val styleUrl = polylineData.value.styleUrl
         val normalStyleId = styleMaps[styleUrl]?.getNormalStyleId()
@@ -50,6 +52,7 @@ public class PolylineManager(
 
         style = selectedStyle ?: KmlStyle()
         applyStylesToProperties()
+        setVisibility(parentVisibility)
     }
 
     /**
@@ -109,7 +112,7 @@ public class PolylineManager(
      * @param visible True when line should be visible, false if not
      */
     public fun setVisibility(visible: Boolean) {
-        polylineData.value = polylineData.value.copy(visibility = visible)
+        setActive(visible)
     }
 
     /**
@@ -132,7 +135,7 @@ public class PolylineManager(
             geodesic = data.tessellate,
             width = data.width,
             zIndex = data.drawOrder,
-            visible = data.visibility,
+            visible = isActive.value,
             clickable = true,
             jointType = data.jointType,
             startCap = data.startCap,
@@ -147,7 +150,6 @@ public class PolylineManager(
     public data class PolylineProperties(
         val name: String = DEFAULT_NAME,
         val description: String = DEFAULT_DESCRIPTION,
-        val visibility: Boolean = DEFAULT_VISIBILITY,
         val drawOrder: Float = DEFAULT_DRAW_ORDER,
         val color: Color = DEFAULT_COLOR,
         val tessellate: Boolean = DEFAULT_TESSELLATE,
@@ -163,8 +165,6 @@ public class PolylineManager(
             internal fun from(properties: HashMap<String, Any>): PolylineProperties {
                 val name: String by properties.withDefault { DEFAULT_NAME }
                 val description: String by properties.withDefault { DEFAULT_DESCRIPTION }
-                val visibility: Boolean =
-                    convertPropertyToBoolean(properties, VISIBILITY_TAG, DEFAULT_VISIBILITY)
                 val drawOrder: Float = convertPropertyToFloat(properties, DRAW_ORDER_TAG, DEFAULT_DRAW_ORDER)
                 val styleUrl: String? by properties.withDefault { DEFAULT_STYLE_URL }
                 val extendedData: List<ExtendedData>? =
@@ -174,7 +174,6 @@ public class PolylineManager(
                 return PolylineProperties(
                     name = name,
                     description = description,
-                    visibility = visibility,
                     drawOrder = drawOrder,
                     styleUrl = styleUrl,
                     extendedData = extendedData,
