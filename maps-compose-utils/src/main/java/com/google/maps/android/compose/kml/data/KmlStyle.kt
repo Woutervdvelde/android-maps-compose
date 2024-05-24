@@ -15,10 +15,14 @@ public class KmlStyle: KmlStyleId() {
     private var mLineColor: Color = DEFAULT_LINE_COLOR
     private var mLineWidth: Float = DEFAULT_LINE_WIDTH
 
+    private var mPolyFillColor: Color = DEFAULT_POLY_FILL_COLOR
+    private var mPolyFill: Boolean = DEFAULT_POLY_FILL
+    private var mPolyOutline: Boolean = DEFAULT_POLY_OUTLINE
+
     /**
      * Gets the current iconUrl of the marker
      *
-     * @return icon url
+     * @return [String?] icon url
      */
     public fun getIconUrl(): String? = mIconUrl
 
@@ -34,7 +38,7 @@ public class KmlStyle: KmlStyleId() {
     /**
      * Gets the size of the icon
      *
-     * @return scale value
+     * @return [Float] scale value
      */
     public fun getIconScale(): Float = mIconScale
 
@@ -50,7 +54,7 @@ public class KmlStyle: KmlStyleId() {
     /**
      * Gets the heading (rotation) of the icon
      *
-     * @return heading in degrees
+     * @return [Int] heading in degrees
      */
     public fun getIconHeading(): Int = mIconHeading
 
@@ -66,7 +70,7 @@ public class KmlStyle: KmlStyleId() {
     /**
      * Gets icon offset
      *
-     * @return offset with x, y values
+     * @return [Anchor] offset with x, y values
      */
     public fun getIconAnchor(): Anchor = mIconAnchor
 
@@ -82,7 +86,7 @@ public class KmlStyle: KmlStyleId() {
     /**
      * Gets the color hue of the icon color
      *
-     * @return hue
+     * @return [Float?] hue
      */
     public fun getIconColor(): Float? = mIconColor
 
@@ -98,7 +102,7 @@ public class KmlStyle: KmlStyleId() {
     /**
      * Gets the alpha value of the icon
      *
-     * @return float value between 0 and 1
+     * @return [Float] value between 0 and 1
      */
     public fun getIconAlpha(): Float = mIconAlpha
 
@@ -112,7 +116,7 @@ public class KmlStyle: KmlStyleId() {
     }
 
     /**
-     * @return true if the icon colorMode is set to random
+     * @return [Boolean] true if the icon colorMode is set to random
      */
     public fun getIconRandomColorMode(): Boolean = mIconColorModeRandom
 
@@ -128,7 +132,7 @@ public class KmlStyle: KmlStyleId() {
     /**
      * Gets the color of the line
      *
-     * @return color
+     * @return [Color] color
      */
     public fun getLineColor(): Color = mLineColor
 
@@ -145,7 +149,7 @@ public class KmlStyle: KmlStyleId() {
     /**
      * Gets the width of the line in pixels
      *
-     * @return width in pixels
+     * @return [Float] width in pixels
      */
     public fun getLineWidth(): Float = mLineWidth
 
@@ -156,6 +160,58 @@ public class KmlStyle: KmlStyleId() {
      */
     internal fun setLineWidth(width: Float) {
         mLineWidth = width
+    }
+
+    /**
+     * Gets the fill color of a polygon style
+     *
+     * @return [Color] color of the polygon fill
+     */
+    public fun getPolyFillColor(): Color = mPolyFillColor
+
+
+    /**
+     * Sets the fill color of a polygon
+     *
+     * @param color color of the polygon fill
+     */
+    internal fun setFillColor(color: Color) {
+        mPolyFillColor = color
+    }
+
+    /**
+     * Gets if a polygon should be filled or not
+     *
+     * @return [Boolean] true if polygon is filled
+     */
+    public fun getPolyFill(): Boolean = mPolyFill
+
+
+    /**
+     * Sets if a polygon should be filled or not
+     *
+     * @param fill true if polygon should be filled
+     */
+    internal fun setPolyFill(fill: Boolean) {
+        mPolyFill = fill
+    }
+
+
+    /**
+     * Gets if a polygon should have an outline (stroke)
+     *
+     * @return [Boolean] true if polygon should have an outline
+     */
+    public fun getPolyOutline(): Boolean = mPolyOutline
+
+
+    /**
+     * Sets if a polygon should have an outline (stroke)
+     *
+     * @param outline true if polygon should have an outline
+     */
+    internal fun setPolyOutline(outline: Boolean) {
+        mPolyOutline = outline
     }
 
     internal companion object {
@@ -169,5 +225,9 @@ public class KmlStyle: KmlStyleId() {
 
         val DEFAULT_LINE_COLOR = Color.Black
         const val DEFAULT_LINE_WIDTH = 1f
+
+        val DEFAULT_POLY_FILL_COLOR = Color.Black
+        const val DEFAULT_POLY_FILL = true
+        const val DEFAULT_POLY_OUTLINE = true
     }
 }
