@@ -1,6 +1,7 @@
 package com.google.maps.android.compose.kml.parser
 
 import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.COORDINATES_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.DATA_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.DESCRIPTION_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.DISPLAY_NAME_TAG
@@ -61,6 +62,23 @@ internal abstract class KmlFeatureParser {
                 val lng = coordinate[LONGITUDE_INDEX].toDouble()
                 LatLng(lat, lng)
             }
+        }
+
+        internal fun parseBoundary(parser: XmlPullParser, boundaryTag: String): List<LatLng> {
+            var eventType = parser.eventType
+            var coordinates: List<LatLng>? = null
+
+            while (!(eventType == XmlPullParser.END_TAG && parser.name.equals(boundaryTag))) {
+                if (eventType == XmlPullParser.START_TAG && parser.name.equals(COORDINATES_TAG)) {
+                    coordinates = parseCoordinates(parser.nextText())
+                }
+                eventType = parser.next()
+            }
+
+            if (coordinates == null) {
+                throw IllegalArgumentException("KML Boundary doesn't contain coordinates around line ${parser.lineNumber}")
+            }
+            return coordinates
         }
 
         internal val PROPERTY_REGEX =

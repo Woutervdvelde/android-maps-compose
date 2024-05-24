@@ -1,7 +1,6 @@
 package com.google.maps.android.compose.kml.manager
 
 import android.graphics.Bitmap
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -26,15 +25,19 @@ public class GroundOverlayManager : KmlComposableManager() {
     override suspend fun setStyle(
         styleMaps: HashMap<String, KmlStyleMap>,
         styles: HashMap<String, KmlStyle>,
-        images: HashMap<String, Bitmap>
+        images: HashMap<String, Bitmap>,
+        parentVisibility: Boolean
     ) {
         groundOverlayData.value = groundOverlayData.value.copy(
             icon = getBitmap(groundOverlayData.value.iconUrl, images)
         )
+
+        setVisibility(parentVisibility)
     }
 
     override fun setProperties(data: HashMap<String, Any>) {
         groundOverlayData.value = GroundOverlayProperties.from(data)
+        setVisibility(KmlParser.convertPropertyToBoolean(data, VISIBILITY_TAG, DEFAULT_VISIBILITY))
     }
 
     /**
@@ -64,34 +67,29 @@ public class GroundOverlayManager : KmlComposableManager() {
      * @param visible True when overlay should be visible, false if not
      */
     public fun setVisibility(visible: Boolean) {
-        groundOverlayData.value = groundOverlayData.value.copy(
-            visibility = visible
-        )
+        setActive(visible)
     }
 
     @Composable
     override fun Render() {
         val data = groundOverlayData.value
 
-        if (data.visibility) {
-            GroundOverlay(
-                position = GroundOverlayPosition.create(data.positionBounds!!),
-                image = BitmapDescriptorFactory.fromBitmap(data.icon!!),
-                transparency = data.alpha * -1 + 1,
-                bearing = -data.rotation.toFloat(), // - (negative) since KML is defined counterclockwise and compose clockwise
-                zIndex = data.drawOrder,
-                clickable = true,
-                onClick = {
-                    listener?.onEvent(KmlEvent.GroundOverlay.Clicked(groundOverlayData.value))
-                }
-            )
-        }
+        GroundOverlay(
+            position = GroundOverlayPosition.create(data.positionBounds!!),
+            image = BitmapDescriptorFactory.fromBitmap(data.icon!!),
+            transparency = data.alpha * -1 + 1,
+            bearing = -data.rotation.toFloat(), // - (negative) since KML is defined counterclockwise and compose clockwise
+            visible = isActive.value,
+            zIndex = data.drawOrder,
+            onClick = {
+                listener?.onEvent(KmlEvent.GroundOverlay.Clicked(groundOverlayData.value))
+            }
+        )
     }
 
     public data class GroundOverlayProperties(
         val name: String = DEFAULT_NAME,
         val description: String = DEFAULT_DESCRIPTION,
-        val visibility: Boolean = DEFAULT_VISIBILITY,
         val alpha: Float = DEFAULT_ALPHA,
         val drawOrder: Float = DEFAULT_DRAW_ORDER,
         val rotation: Int = DEFAULT_ROTATION,
@@ -105,16 +103,14 @@ public class GroundOverlayManager : KmlComposableManager() {
             internal fun from(properties: HashMap<String, Any>): GroundOverlayProperties {
                 val name: String by properties.withDefault { DEFAULT_NAME }
                 val description: String by properties.withDefault { DEFAULT_DESCRIPTION }
-                val visibility: Boolean =
-                    KmlParser.convertPropertyToBoolean(properties, VISIBILITY_TAG, DEFAULT_VISIBILITY)
                 val drawOrder: Float by properties.withDefault { DEFAULT_DRAW_ORDER }
                 val rotation: Int by properties.withDefault { DEFAULT_ROTATION }
                 val href: String by properties.withDefault { DEFAULT_ICON_URL }
-                val extendedData: List<ExtendedData>? = properties[EXTENDED_DATA_TAG] as? List<ExtendedData>
+                val extendedData: List<ExtendedData>? =
+                    properties[EXTENDED_DATA_TAG] as? List<ExtendedData>
                 return GroundOverlayProperties(
                     name = name,
                     description = description,
-                    visibility = visibility,
                     alpha = DEFAULT_ALPHA,
                     drawOrder = drawOrder,
                     rotation = rotation,
