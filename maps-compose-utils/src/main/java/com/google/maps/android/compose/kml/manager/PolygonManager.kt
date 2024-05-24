@@ -5,7 +5,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
-import com.google.android.gms.maps.model.Cap
 import com.google.android.gms.maps.model.JointType
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PatternItem
@@ -21,7 +20,8 @@ import com.google.maps.android.compose.kml.parser.KmlParser.Companion.convertPro
 import com.google.maps.android.compose.kml.parser.KmlParser.Companion.convertPropertyToFloat
 
 public class PolygonManager(
-    private val coordinates: List<LatLng>
+    private val outerBoundary: List<LatLng>,
+    private val innerBoundaries: List<List<LatLng>>
 ) : KmlComposableManager() {
     private var polygonData: MutableState<PolygonProperties> =
         mutableStateOf(PolygonProperties())
@@ -54,14 +54,24 @@ public class PolygonManager(
      * Applies all available styles to properties
      */
     private fun applyStylesToProperties() {
-//        setColor(style.getLineColor())
-//        setWidth(style.getLineWidth())
+        setFillColor(style.getPolyFillColor())
+        setStrokeColor(style.getLineColor())
+        setStrokeWidth(style.getLineWidth())
+    }
+
+    /**
+     * Sets polygons fill color
+     *
+     * @param color [Color]
+     */
+    public fun setFillColor(color: Color) {
+        polygonData.value = polygonData.value.copy(fillColor = color)
     }
 
     /**
      * Sets polygons stroke joint type
      *
-     * @param Int [JointType]
+     * @param jointType [JointType]
      */
     public fun setStrokeJointType(jointType: Int) {
         polygonData.value = polygonData.value.copy(strokeJointType = jointType)
@@ -70,10 +80,10 @@ public class PolygonManager(
     /**
      * Sets polygons stroke color
      *
-     * @param color color of the line
+     * @param color color of the stroke
      */
     public fun setStrokeColor(color: Color) {
-        polygonData.value = polygonData.value.copy(color = color)
+        polygonData.value = polygonData.value.copy(strokeColor = color)
     }
 
     /**
@@ -95,12 +105,12 @@ public class PolygonManager(
     }
 
     /**
-     * Sets polygon width
+     * Sets polygons stroke width
      *
-     * @param width width of the line
+     * @param width width of the stroke
      */
-    public fun setWidth(width: Float) {
-        polygonData.value = polygonData.value.copy(width = width)
+    public fun setStrokeWidth(width: Float) {
+        polygonData.value = polygonData.value.copy(strokeWidth = width)
     }
 
 
@@ -109,12 +119,13 @@ public class PolygonManager(
         val data = polygonData.value
 
         Polygon(
-            points = coordinates,
-            fillColor = data.fillColor,
+            points = outerBoundary,
+            holes = innerBoundaries,
+            fillColor = if (style.getPolyFill()) data.fillColor else Color.Transparent,
             geodesic = data.tessellate,
             zIndex = data.drawOrder,
             visible = data.visibility,
-            strokeColor = data.strokeColor,
+            strokeColor = if (style.getPolyOutline()) data.strokeColor else Color.Transparent,
             strokeJointType = data.strokeJointType,
             strokePattern = data.strokePattern,
             strokeWidth = data.strokeWidth,
@@ -130,7 +141,6 @@ public class PolygonManager(
         val description: String = DEFAULT_DESCRIPTION,
         val visibility: Boolean = DEFAULT_VISIBILITY,
         val drawOrder: Float = DEFAULT_DRAW_ORDER,
-        val color: Color = DEFAULT_COLOR,
         val tessellate: Boolean = DEFAULT_TESSELLATE,
         val styleUrl: String? = DEFAULT_STYLE_URL,
         val fillColor: Color = DEFAULT_COLOR,

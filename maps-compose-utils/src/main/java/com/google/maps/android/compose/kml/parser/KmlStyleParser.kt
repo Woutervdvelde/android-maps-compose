@@ -10,10 +10,12 @@ import com.google.maps.android.compose.kml.data.KmlTags.Companion.LINE_STYLE_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.POLY_STYLE_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.STYLE_COLOR_MODE_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.STYLE_COLOR_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.STYLE_FILL_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.STYLE_HEADING_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.STYLE_HOTSPOT_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.STYLE_MAP_KEY_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.STYLE_MAP_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.STYLE_OUTLINE_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.STYLE_SCALE_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.STYLE_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.STYLE_URL_TAG
@@ -73,7 +75,7 @@ internal class KmlStyleParser {
                     when (parser.name) {
                         ICON_STYLE_TAG -> parseIconStyle(parser, style)
                         LINE_STYLE_TAG -> parseLineStyle(parser, style)
-                        POLY_STYLE_TAG -> return style //TODO()
+                        POLY_STYLE_TAG -> parsePolyStyle(parser, style)
                         BALLOON_STYLE_TAG -> return style //TODO()
                     }
                 }
@@ -131,6 +133,31 @@ internal class KmlStyleParser {
                         style.setLineColor(convertStringToColor(stringColor))
                     } else if (parser.name.equals(WIDTH_TAG)) {
                         style.setLineWidth(parser.nextText().toFloat())
+                    }
+                }
+
+                eventType = parser.next()
+            }
+        }
+
+        /**
+         * Receives input from the XMLPullParser and assigns relevant properties to a [KmlStyle]
+         *
+         * @param parser XMLPullParser
+         * @param style The KmlStyle properties should be saved in
+         */
+        private fun parsePolyStyle(parser: XmlPullParser, style: KmlStyle) {
+            var eventType = parser.eventType
+
+            while (!(eventType == XmlPullParser.END_TAG && parser.name.equals(POLY_STYLE_TAG))) {
+                if (eventType == XmlPullParser.START_TAG) {
+                    if (parser.name.equals(STYLE_COLOR_TAG)) {
+                        val stringColor = convertColorToAARRGGB(parser.nextText())
+                        style.setFillColor(convertStringToColor(stringColor))
+                    } else if (parser.name.equals(STYLE_FILL_TAG)) {
+                        style.setPolyFill(parser.nextText() == "1")
+                    } else if (parser.name.equals(STYLE_OUTLINE_TAG)) {
+                        style.setPolyOutline(parser.nextText() == "1")
                     }
                 }
 
