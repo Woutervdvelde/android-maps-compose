@@ -40,11 +40,10 @@ public class MarkerManager(
     ) {
         val styleUrl = markerData.value.styleUrl
         val normalStyleId = styleMaps[styleUrl]?.getNormalStyleId()
-        val selectedStyle = styles[normalStyleId]
+        style = styles[normalStyleId] ?: styles[styleUrl] ?: style
 
-        style = selectedStyle ?: KmlStyle()
-        generateIcon(images)
         applyStylesToProperties()
+        generateIcon(images)
         setVisibility(parentVisibility)
     }
 

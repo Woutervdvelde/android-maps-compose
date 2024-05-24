@@ -1,6 +1,7 @@
 package com.google.maps.android.compose.kml.parser
 
 import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.kml.data.KmlStyle
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.COORDINATES_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.EXTENDED_DATA_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.INNER_BOUNDARY_TAG
@@ -10,6 +11,7 @@ import com.google.maps.android.compose.kml.data.KmlTags.Companion.OUTER_BOUNDARY
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.PLACEMARK_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.POINT_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.POLYGON_TAG
+import com.google.maps.android.compose.kml.data.KmlTags.Companion.STYLE_TAG
 import com.google.maps.android.compose.kml.manager.ContainerManager
 import com.google.maps.android.compose.kml.manager.KmlComposableManager
 import com.google.maps.android.compose.kml.manager.MarkerManager
@@ -33,23 +35,23 @@ internal class KmlPlacemarkParser: KmlFeatureParser() {
             val properties: HashMap<String, Any> = hashMapOf()
             val extendedData: MutableList<ExtendedData> = mutableListOf()
             var placemark: KmlComposableManager? = null
+            var style: KmlStyle? = null
 
             while (!(eventType == XmlPullParser.END_TAG && parser.name == PLACEMARK_TAG)) {
                 if (eventType == XmlPullParser.START_TAG) {
                     if (parser.name.matches(PROPERTY_REGEX)) {
                         properties[parser.name] = parser.nextText()
-                    } else if (parser.name.equals(POINT_TAG)) {
-                        placemark = createMarker(parser)
-                    } else if (parser.name.equals(LINE_STRING_TAG)) {
-                        val (manager, data) = createPolyline(parser)
-                        placemark = manager
-                        properties.putAll(data)
-                    } else if (parser.name.equals(POLYGON_TAG)) {
-                        placemark = createPolygon(parser)
-                    } else if (parser.name.equals(MULTI_GEOMETRY_TAG)) {
-                        //TODO()
-                    } else if (parser.name.equals(EXTENDED_DATA_TAG)) {
-                        extendedData.addAll(parseExtendedData(parser))
+                    } else when (parser.name) {
+                        POINT_TAG -> placemark = createMarker(parser)
+                        LINE_STRING_TAG -> {
+                            val (manager, data) = createPolyline(parser)
+                            placemark = manager
+                            properties.putAll(data)
+                        }
+                        POLYGON_TAG -> placemark = createPolygon(parser)
+                        MULTI_GEOMETRY_TAG -> TODO()
+                        EXTENDED_DATA_TAG -> extendedData.addAll(parseExtendedData(parser))
+                        STYLE_TAG -> style = KmlStyleParser.parseStyle(parser)
                     }
                 }
                 eventType = parser.next()
@@ -60,6 +62,9 @@ internal class KmlPlacemarkParser: KmlFeatureParser() {
 
             placemark?.let {
                 it.setProperties(properties)
+                if (style != null)
+                    it.style = style
+
                 container.addChild(it)
             }
         }
