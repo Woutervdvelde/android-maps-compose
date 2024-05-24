@@ -24,11 +24,14 @@ public class GroundOverlayManager : KmlComposableManager() {
     override suspend fun setStyle(
         styleMaps: HashMap<String, KmlStyleMap>,
         styles: HashMap<String, KmlStyle>,
-        images: HashMap<String, Bitmap>
+        images: HashMap<String, Bitmap>,
+        parentVisibility: Boolean
     ) {
         groundOverlayData.value = groundOverlayData.value.copy(
             icon = getBitmap(groundOverlayData.value.iconUrl, images)
         )
+
+        setVisibility(parentVisibility)
     }
 
     override fun setProperties(data: HashMap<String, Any>) {

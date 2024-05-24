@@ -127,9 +127,11 @@ public class ContainerManager : KmlComposableManager() {
     override suspend fun setStyle(
         styleMaps: HashMap<String, KmlStyleMap>,
         styles: HashMap<String, KmlStyle>,
-        images: HashMap<String, Bitmap>
+        images: HashMap<String, Bitmap>,
+        parentVisibility: Boolean
     ) {
-        children.forEach { it.setStyle(styleMaps, styles, images) }
+        setActive(parentVisibility)
+        children.forEach { it.setStyle(styleMaps, styles, images, getActive()) }
     }
 
     /**

@@ -34,7 +34,8 @@ public class MarkerManager(
     public override suspend fun setStyle(
         styleMaps: HashMap<String, KmlStyleMap>,
         styles: HashMap<String, KmlStyle>,
-        images: HashMap<String, Bitmap>
+        images: HashMap<String, Bitmap>,
+        parentVisibility: Boolean
     ) {
         val styleUrl = markerData.value.styleUrl
         val normalStyleId = styleMaps[styleUrl]?.getNormalStyleId()
@@ -43,6 +44,7 @@ public class MarkerManager(
         style = selectedStyle ?: KmlStyle()
         generateIcon(images)
         applyStylesToProperties()
+        setVisibility(parentVisibility)
     }
 
     /**

@@ -27,7 +27,8 @@ public abstract class KmlComposableManager {
     internal abstract suspend fun setStyle(
         styleMaps: HashMap<String, KmlStyleMap>,
         styles: HashMap<String, KmlStyle>,
-        images: HashMap<String, Bitmap>
+        images: HashMap<String, Bitmap>,
+        parentVisibility: Boolean
     )
 
     internal abstract fun setProperties(data: HashMap<String, Any>)

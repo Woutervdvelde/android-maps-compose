@@ -58,7 +58,6 @@ public class KmlParser(
      * @param parser XmlPullParser containing KML Container
      */
     private fun parseKmlContainer(parser: XmlPullParser): ContainerManager {
-        //TODO(extract id from container tag)
         parser.next()
         var eventType = parser.eventType
         val containerManager = ContainerManager()
@@ -113,7 +112,7 @@ public class KmlParser(
      * @param images Images extracted from KMZ
      */
     internal suspend fun applyStyles(images: HashMap<String, Bitmap>) {
-        container.setStyle(styleMaps, styles, images)
+        container.setStyle(styleMaps, styles, images, true)
     }
 
     internal fun setEventListener(listener: KmlEventListener) {
