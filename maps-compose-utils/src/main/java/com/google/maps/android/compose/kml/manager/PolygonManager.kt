@@ -2,6 +2,8 @@ package com.google.maps.android.compose.kml.manager
 
 import android.graphics.Bitmap
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import com.google.android.gms.maps.model.JointType
 import com.google.android.gms.maps.model.LatLng
@@ -14,16 +16,21 @@ import com.google.maps.android.compose.kml.data.KmlTags.Companion.EXTENDED_DATA_
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.TESSELLATE_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.VISIBILITY_TAG
 import com.google.maps.android.compose.kml.event.KmlEvent
-import com.google.maps.android.compose.kml.manager.KmlComposableProperties.Companion.DEFAULT_VISIBILITY
-import com.google.maps.android.compose.kml.manager.KmlComposableProperties.Companion.convertPropertyToBoolean
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Companion.DEFAULT_DESCRIPTION
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Companion.DEFAULT_DRAW_ORDER
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Companion.DEFAULT_EXTENDED_DATA
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Companion.DEFAULT_NAME
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Companion.DEFAULT_STYLE_URL
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Companion.DEFAULT_VISIBILITY
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Companion.convertPropertyToBoolean
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Companion.convertPropertyToFloat
 import com.google.maps.android.compose.kml.parser.ExtendedData
 
 public class PolygonManager(
     private val outerBoundary: List<LatLng>,
     private val innerBoundaries: List<List<LatLng>>
 ) : KmlComposableManager<PolygonProperties>() {
-    override fun initializeProperties(): PolygonProperties = PolygonProperties()
-
+    override val _properties: MutableState<PolygonProperties> = mutableStateOf(PolygonProperties())
     override fun setProperties(data: HashMap<String, Any>) {
         _properties.value = PolygonProperties.from(data)
         convertPropertyToBoolean(data, VISIBILITY_TAG, DEFAULT_VISIBILITY)
@@ -144,7 +151,7 @@ public data class PolygonProperties(
     val strokeJointType: Int = DEFAULT_STROKE_JOINT_TYPE,
     val strokePattern: List<PatternItem>? = DEFAULT_STROKE_PATTERN,
     val strokeWidth: Float = DEFAULT_STROKE_WIDTH,
-) : KmlComposableProperties(name, description, drawOrder, styleUrl, extendedData) {
+) : IKmlComposableProperties {
     internal companion object {
         internal fun from(properties: HashMap<String, Any>): PolygonProperties {
             val name: String by properties.withDefault { DEFAULT_NAME }

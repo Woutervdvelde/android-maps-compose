@@ -13,8 +13,8 @@ import com.google.maps.android.compose.kml.event.KmlEvent
 import com.google.maps.android.compose.kml.event.KmlEventListener
 import com.google.maps.android.compose.kml.event.KmlEventPublisher
 import com.google.maps.android.compose.kml.manager.ContainerManager
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties
 import com.google.maps.android.compose.kml.manager.KmlComposableManager
-import com.google.maps.android.compose.kml.manager.KmlComposableProperties
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import java.io.IOException
@@ -69,7 +69,7 @@ public class KmlParser(
                 if (parser.name.matches(UNSUPPORTED_REGEX)) {
                     skip(parser)
                 } else if (parser.name.matches(CONTAINER_REGEX)) {
-                    containerManager.addChild(parseKmlContainer(parser) as KmlComposableManager<KmlComposableProperties>)
+                    containerManager.addChild(parseKmlContainer(parser) as KmlComposableManager<IKmlComposableProperties>)
                 } else if (parser.name.equals(NAME_TAG)) {
                     containerManager.setName(parser.nextText())
                 } else if (parser.name.equals(PLACEMARK_TAG)) {

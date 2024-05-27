@@ -13,8 +13,8 @@ import com.google.maps.android.compose.kml.data.KmlTags.Companion.POINT_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.POLYGON_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.STYLE_TAG
 import com.google.maps.android.compose.kml.manager.ContainerManager
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties
 import com.google.maps.android.compose.kml.manager.KmlComposableManager
-import com.google.maps.android.compose.kml.manager.KmlComposableProperties
 import com.google.maps.android.compose.kml.manager.MarkerManager
 import com.google.maps.android.compose.kml.manager.PolygonManager
 import com.google.maps.android.compose.kml.manager.PolylineManager
@@ -35,7 +35,7 @@ internal class KmlPlacemarkParser: KmlFeatureParser() {
             var eventType = parser.eventType
             val properties: HashMap<String, Any> = hashMapOf()
             val extendedData: MutableList<ExtendedData> = mutableListOf()
-            var placemark: KmlComposableManager<KmlComposableProperties>? = null
+            var placemark: KmlComposableManager<IKmlComposableProperties>? = null
             var style: KmlStyle? = null
 
             while (!(eventType == XmlPullParser.END_TAG && parser.name == PLACEMARK_TAG)) {
@@ -43,13 +43,13 @@ internal class KmlPlacemarkParser: KmlFeatureParser() {
                     if (parser.name.matches(PROPERTY_REGEX)) {
                         properties[parser.name] = parser.nextText()
                     } else when (parser.name) {
-                        POINT_TAG -> placemark = createMarker(parser) as KmlComposableManager<KmlComposableProperties>
+                        POINT_TAG -> placemark = createMarker(parser) as KmlComposableManager<IKmlComposableProperties>
                         LINE_STRING_TAG -> {
                             val (manager, data) = createPolyline(parser)
-                            placemark = manager as KmlComposableManager<KmlComposableProperties>
+                            placemark = manager as KmlComposableManager<IKmlComposableProperties>
                             properties.putAll(data)
                         }
-                        POLYGON_TAG -> placemark = createPolygon(parser) as KmlComposableManager<KmlComposableProperties>
+                        POLYGON_TAG -> placemark = createPolygon(parser) as KmlComposableManager<IKmlComposableProperties>
                         MULTI_GEOMETRY_TAG -> TODO()
                         EXTENDED_DATA_TAG -> extendedData.addAll(parseExtendedData(parser))
                         STYLE_TAG -> style = KmlStyleParser.parseStyle(parser)

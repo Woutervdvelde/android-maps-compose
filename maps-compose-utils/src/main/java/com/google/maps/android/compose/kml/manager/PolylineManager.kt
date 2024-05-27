@@ -2,6 +2,8 @@ package com.google.maps.android.compose.kml.manager
 
 import android.graphics.Bitmap
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import com.google.android.gms.maps.model.ButtCap
 import com.google.android.gms.maps.model.Cap
@@ -16,15 +18,21 @@ import com.google.maps.android.compose.kml.data.KmlTags.Companion.EXTENDED_DATA_
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.TESSELLATE_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.VISIBILITY_TAG
 import com.google.maps.android.compose.kml.event.KmlEvent
-import com.google.maps.android.compose.kml.manager.KmlComposableProperties.Companion.DEFAULT_VISIBILITY
-import com.google.maps.android.compose.kml.manager.KmlComposableProperties.Companion.convertPropertyToBoolean
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Companion.DEFAULT_DESCRIPTION
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Companion.DEFAULT_DRAW_ORDER
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Companion.DEFAULT_EXTENDED_DATA
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Companion.DEFAULT_NAME
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Companion.DEFAULT_STYLE_URL
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Companion.DEFAULT_VISIBILITY
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Companion.convertPropertyToBoolean
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Companion.convertPropertyToFloat
 import com.google.maps.android.compose.kml.parser.ExtendedData
 
 public class PolylineManager(
     private val coordinates: List<LatLng>
 ) : KmlComposableManager<PolylineProperties>() {
-    override fun initializeProperties(): PolylineProperties = PolylineProperties()
-
+    override val _properties: MutableState<PolylineProperties> =
+        mutableStateOf(PolylineProperties())
 
     override fun setProperties(data: HashMap<String, Any>) {
         _properties.value = PolylineProperties.from(data)
@@ -42,7 +50,8 @@ public class PolylineManager(
         style = styles[normalStyleId] ?: styles[styleUrl] ?: style
 
         applyStylesToProperties()
-        setVisibility(parentVisibility)
+        if (isActive.value) // if it's own visibility is false don't apply parent visibility
+            setVisibility(parentVisibility)
     }
 
     /**
@@ -152,7 +161,7 @@ public data class PolylineProperties(
     val endCap: Cap = DEFAULT_CAP,
     val jointType: Int = DEFAULT_JOINT_TYPE,
     val pattern: List<PatternItem>? = DEFAULT_PATTERN
-) : KmlComposableProperties(name, description, drawOrder, styleUrl, extendedData) {
+) : IKmlComposableProperties {
     internal companion object {
         internal fun from(properties: HashMap<String, Any>): PolylineProperties {
             val name: String by properties.withDefault { DEFAULT_NAME }

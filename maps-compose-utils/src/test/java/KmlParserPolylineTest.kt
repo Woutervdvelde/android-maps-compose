@@ -343,7 +343,7 @@ public class KmlParserPolylineTest {
     @Test
     public fun testDrawOrderLinesZIndex() {
         val lines = getTestLines()
-        val defaultDrawOrder = 0f // taken from KmlComposableManager Companion object DEFAULT_DRAW_ORDER
+        val defaultDrawOrder = 0f // taken from IKmlComposableProperties Companion object DEFAULT_DRAW_ORDER
 
         Assert.assertEquals(1f, lines.line1.properties.drawOrder)
         Assert.assertEquals(2f, lines.line2.properties.drawOrder)

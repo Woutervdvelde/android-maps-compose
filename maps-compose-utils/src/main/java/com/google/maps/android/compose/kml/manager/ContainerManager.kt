@@ -1,18 +1,25 @@
 package com.google.maps.android.compose.kml.manager
 
 import android.graphics.Bitmap
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.google.maps.android.compose.kml.data.KmlStyle
 import com.google.maps.android.compose.kml.data.KmlStyleMap
 import com.google.maps.android.compose.kml.event.KmlEventListener
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Companion.DEFAULT_DESCRIPTION
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Companion.DEFAULT_DRAW_ORDER
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Companion.DEFAULT_EXTENDED_DATA
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Companion.DEFAULT_NAME
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Companion.DEFAULT_STYLE_URL
+import com.google.maps.android.compose.kml.parser.ExtendedData
 
 public class ContainerManager : KmlComposableManager<ContainerProperties>() {
-    private val children: MutableList<KmlComposableManager<KmlComposableProperties>> = mutableListOf()
+    private val children: MutableList<KmlComposableManager<IKmlComposableProperties>> =
+        mutableListOf()
 
-    override fun initializeProperties(): ContainerProperties = ContainerProperties()
+    override val _properties: MutableState<ContainerProperties> =
+        mutableStateOf(ContainerProperties())
 
     public fun getName(): String = _properties.value.name
 
@@ -22,23 +29,15 @@ public class ContainerManager : KmlComposableManager<ContainerProperties>() {
      * @param name Name of the container
      */
     public fun setName(name: String) {
-        _properties.value = _properties.value.copy()
+        _properties.value = _properties.value.copy(
+            name = name
+        )
     }
 
     /**
      * Gets the current active state of the container
      */
     public fun getActive(): Boolean = isActive.value
-
-    /**
-     * Sets a container active or inactive. Inactive containers won't render their children
-     *
-     * @param active Active state of the container
-     */
-    public override fun setActive(active: Boolean) {
-        super.setActive(active)
-        children.forEach { it.setActive(active) }
-    }
 
     /**
      * Toggles the active state of the container
@@ -99,14 +98,15 @@ public class ContainerManager : KmlComposableManager<ContainerProperties>() {
      *
      * @return List of [GroundOverlayManager]s
      */
-    public fun getGroundOverlays(): List<GroundOverlayManager> = children.filterIsInstance<GroundOverlayManager>()
+    public fun getGroundOverlays(): List<GroundOverlayManager> =
+        children.filterIsInstance<GroundOverlayManager>()
 
     /**
      * Adds a child to the ContainerManager
      *
      * @param child Any class extending from the [KmlComposableManager]
      */
-    internal fun addChild(child: KmlComposableManager<KmlComposableProperties>) {
+    internal fun addChild(child: KmlComposableManager<IKmlComposableProperties>) {
         children.add(child)
     }
 
@@ -158,4 +158,8 @@ public class ContainerManager : KmlComposableManager<ContainerProperties>() {
 
 public data class ContainerProperties(
     override val name: String = DEFAULT_NAME,
-): KmlComposableProperties(name)
+    override val description: String = DEFAULT_DESCRIPTION,
+    override val drawOrder: Float = DEFAULT_DRAW_ORDER,
+    override val styleUrl: String? = DEFAULT_STYLE_URL,
+    override val extendedData: List<ExtendedData>? = DEFAULT_EXTENDED_DATA,
+) : IKmlComposableProperties

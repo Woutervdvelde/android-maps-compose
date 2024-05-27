@@ -14,13 +14,21 @@ import com.google.maps.android.compose.kml.data.KmlStyleMap
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.EXTENDED_DATA_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.VISIBILITY_TAG
 import com.google.maps.android.compose.kml.event.KmlEvent
-import com.google.maps.android.compose.kml.manager.KmlComposableProperties.Companion.DEFAULT_VISIBILITY
-import com.google.maps.android.compose.kml.manager.KmlComposableProperties.Companion.convertPropertyToBoolean
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Companion.DEFAULT_ALPHA
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Companion.DEFAULT_DESCRIPTION
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Companion.DEFAULT_DRAW_ORDER
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Companion.DEFAULT_EXTENDED_DATA
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Companion.DEFAULT_ICON
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Companion.DEFAULT_NAME
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Companion.DEFAULT_ROTATION
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Companion.DEFAULT_STYLE_URL
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Companion.DEFAULT_VISIBILITY
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Companion.convertPropertyToBoolean
 import com.google.maps.android.compose.kml.parser.ExtendedData
-import com.google.maps.android.compose.kml.parser.KmlParser
 
 public class GroundOverlayManager : KmlComposableManager<GroundOverlayProperties>() {
-    override fun initializeProperties(): GroundOverlayProperties = GroundOverlayProperties()
+    override val _properties: MutableState<GroundOverlayProperties>
+        get() = mutableStateOf(GroundOverlayProperties())
 
     override suspend fun setStyle(
         styleMaps: HashMap<String, KmlStyleMap>,
@@ -100,7 +108,7 @@ public data class GroundOverlayProperties(
     val icon: Bitmap? = DEFAULT_ICON,
     val positionBounds: LatLngBounds? = DEFAULT_POSITION_BOUNDS,
     val rotation: Int = DEFAULT_ROTATION
-): KmlComposableProperties(name, description, drawOrder, styleUrl, extendedData) {
+) : IKmlComposableProperties {
     internal companion object {
         internal fun from(properties: HashMap<String, Any>): GroundOverlayProperties {
             val name: String by properties.withDefault { DEFAULT_NAME }

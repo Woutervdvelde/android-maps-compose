@@ -137,9 +137,9 @@ public class KmlParserMarkerTest {
 
     @Test
     public fun testMarkerVisibility() {
-        Assert.assertEquals(true, marker1.isActive)
-        Assert.assertEquals(true, marker2.isActive)
-        Assert.assertEquals(false, marker3.isActive)
+        Assert.assertEquals(true, marker1.isActive.value)
+        Assert.assertEquals(true, marker2.isActive.value)
+        Assert.assertEquals(false, marker3.isActive.value)
     }
 
     @Test

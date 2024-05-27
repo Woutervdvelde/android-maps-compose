@@ -13,13 +13,13 @@ import com.google.maps.android.compose.kml.data.KmlTags.Companion.SOUTH_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.WEST_TAG
 import com.google.maps.android.compose.kml.manager.ContainerManager
 import com.google.maps.android.compose.kml.manager.GroundOverlayManager
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties
 import com.google.maps.android.compose.kml.manager.KmlComposableManager
-import com.google.maps.android.compose.kml.manager.KmlComposableProperties
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import java.io.IOException
 
-internal class KmlGroundOverlayParser: KmlFeatureParser() {
+internal class KmlGroundOverlayParser : KmlFeatureParser() {
     companion object {
         /**
          * Parses a GroundOverlay KML tag from the XmlPullParser and adds it to the provided container
@@ -55,12 +55,13 @@ internal class KmlGroundOverlayParser: KmlFeatureParser() {
             compass[ROTATION_TAG]?.let { properties[ROTATION_TAG] = it }
 
             groundOverlay.setProperties(properties)
-            groundOverlay.setCompass(LatLngBounds(
-                LatLng(compass[SOUTH_TAG]!!, compass[WEST_TAG]!!),
-                LatLng(compass[NORTH_TAG]!!, compass[EAST_TAG]!!)
-            ))
-
-            container.addChild(groundOverlay as KmlComposableManager<KmlComposableProperties>)
+            groundOverlay.setCompass(
+                LatLngBounds(
+                    LatLng(compass[SOUTH_TAG]!!, compass[WEST_TAG]!!),
+                    LatLng(compass[NORTH_TAG]!!, compass[EAST_TAG]!!)
+                )
+            )
+            container.addChild(groundOverlay as KmlComposableManager<IKmlComposableProperties>)
         }
 
         /**
@@ -69,7 +70,10 @@ internal class KmlGroundOverlayParser: KmlFeatureParser() {
          * @param parser XmlPullParser containing KML Icon tag
          * @param properties Hashmap the information will be placed in
          */
-        private fun parseGroundOverlayIcon(parser: XmlPullParser, properties: HashMap<String, Any>) {
+        private fun parseGroundOverlayIcon(
+            parser: XmlPullParser,
+            properties: HashMap<String, Any>
+        ) {
             var eventType = parser.eventType
 
             while (!(eventType == XmlPullParser.END_TAG && parser.name.equals(ICON_TAG))) {
