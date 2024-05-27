@@ -42,19 +42,13 @@ public class PolygonManager(
         images: HashMap<String, Bitmap>,
         parentVisibility: Boolean,
     ) {
-        val styleUrl = _properties.value.styleUrl
-        val normalStyleId = styleMaps[styleUrl]?.getNormalStyleId()
-        val selectedStyle = styles[normalStyleId]
-
-        style = selectedStyle ?: KmlStyle()
-        applyStylesToProperties()
-        setActive(parentVisibility)
+        super.setStyle(styleMaps, styles, images, parentVisibility)
     }
 
     /**
      * Applies all available styles to properties
      */
-    private fun applyStylesToProperties() {
+    override fun applyStylesToProperties() {
         setFillColor(style.getPolyFillColor())
         setStrokeColor(style.getLineColor())
         setStrokeWidth(style.getLineWidth())

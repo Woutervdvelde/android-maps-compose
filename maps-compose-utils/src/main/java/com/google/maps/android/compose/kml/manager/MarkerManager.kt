@@ -38,27 +38,30 @@ public class MarkerManager(
 ) : KmlComposableManager<MarkerProperties>() {
     override val _properties: MutableState<MarkerProperties> = mutableStateOf(MarkerProperties())
 
-    override fun setProperties(data: HashMap<String, Any>) {
-        _properties.value = MarkerProperties.from(data)
-        val visiblitiy = convertPropertyToBoolean(data, VISIBILITY_TAG, DEFAULT_VISIBILITY)
-        setVisibility(visiblitiy)
-    }
-
     public override suspend fun setStyle(
         styleMaps: HashMap<String, KmlStyleMap>,
         styles: HashMap<String, KmlStyle>,
         images: HashMap<String, Bitmap>,
         parentVisibility: Boolean
     ) {
-        val styleUrl = _properties.value.styleUrl
-        val normalStyleId = styleMaps[styleUrl]?.getNormalStyleId()
-        style = styles[normalStyleId] ?: styles[styleUrl] ?: style
-
-        applyStylesToProperties()
+        super.setStyle(styleMaps, styles, images, parentVisibility)
         generateIcon(images)
+    }
 
-        if (isActive.value) // if it's own visibility is false don't apply parent visibility
-            setVisibility(parentVisibility)
+    /**
+     * Applies all available styles to properties
+     */
+    override fun applyStylesToProperties() {
+        setAlpha(style.getIconAlpha())
+        setAnchor(style.getIconAnchor())
+        setRotation(style.getIconHeading())
+        style.getIconColor()?.let { setColor(it.toInt()) }
+    }
+
+    override fun setProperties(data: HashMap<String, Any>) {
+        _properties.value = MarkerProperties.from(data)
+        val visiblitiy = convertPropertyToBoolean(data, VISIBILITY_TAG, DEFAULT_VISIBILITY)
+        setVisibility(visiblitiy)
     }
 
     /**
@@ -115,16 +118,6 @@ public class MarkerManager(
             finalColor = KmlStyleParser.convertIntColorToHueValue(randomColor)
         }
         _properties.value = _properties.value.copy(color = finalColor)
-    }
-
-    /**
-     * Applies all available styles to properties
-     */
-    private fun applyStylesToProperties() {
-        setAlpha(style.getIconAlpha())
-        setAnchor(style.getIconAnchor())
-        setRotation(style.getIconHeading())
-        style.getIconColor()?.let { setColor(it.toInt()) }
     }
 
     private fun getIcon(bitmap: Bitmap?): BitmapDescriptor {

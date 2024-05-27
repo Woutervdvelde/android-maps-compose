@@ -36,12 +36,13 @@ public class GroundOverlayManager : KmlComposableManager<GroundOverlayProperties
         images: HashMap<String, Bitmap>,
         parentVisibility: Boolean
     ) {
+        super.setStyle(styleMaps, styles, images, parentVisibility)
         _properties.value = _properties.value.copy(
             icon = getBitmap(_properties.value.iconUrl, images)
         )
-
-        setVisibility(parentVisibility)
     }
+
+    override fun applyStylesToProperties() { }
 
     override fun setProperties(data: HashMap<String, Any>) {
         _properties.value = GroundOverlayProperties.from(data)

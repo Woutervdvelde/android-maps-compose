@@ -21,6 +21,40 @@ public class ContainerManager : KmlComposableManager<ContainerProperties>() {
     override val _properties: MutableState<ContainerProperties> =
         mutableStateOf(ContainerProperties())
 
+    /**
+     *  Sets properties from KML relevant to the container
+     *
+     *  @param data HashMap containing related properties of the container
+     */
+    override fun setProperties(data: HashMap<String, Any>) { }
+    override fun applyStylesToProperties() { }
+
+    /**
+     * Sets the styles of children [ContainerManager]s and all child features ([MarkerManager]s etc.)
+     *
+     * @param styleMaps All StyleMap tags parsed from the KML file
+     * @param styles All Style tags parsed from the KML file
+     * @param images All images when present in KMZ file
+     */
+    override suspend fun setStyle(
+        styleMaps: HashMap<String, KmlStyleMap>,
+        styles: HashMap<String, KmlStyle>,
+        images: HashMap<String, Bitmap>,
+        parentVisibility: Boolean
+    ) {
+        setActive(parentVisibility)
+        children.forEach { it.setStyle(styleMaps, styles, images, getActive()) }
+    }
+
+    /**
+     * Sets the object that uses the KmlEventListener interface for children
+     *
+     * @param eventListener KmlEventListener to be used
+     */
+    override fun setEventListener(eventListener: KmlEventListener) {
+        children.forEach { it.setEventListener(eventListener) }
+    }
+
     public fun getName(): String = _properties.value.name
 
     /**
@@ -108,41 +142,6 @@ public class ContainerManager : KmlComposableManager<ContainerProperties>() {
      */
     internal fun addChild(child: KmlComposableManager<IKmlComposableProperties>) {
         children.add(child)
-    }
-
-    /**
-     *  Sets properties from KML relevant to the container
-     *
-     *  @param data HashMap containing related properties of the container
-     */
-    override fun setProperties(data: HashMap<String, Any>) {
-        //TODO()
-    }
-
-    /**
-     * Sets the styles of children [ContainerManager]s and all child features ([MarkerManager]s etc.)
-     *
-     * @param styleMaps All StyleMap tags parsed from the KML file
-     * @param styles All Style tags parsed from the KML file
-     * @param images All images when present in KMZ file
-     */
-    override suspend fun setStyle(
-        styleMaps: HashMap<String, KmlStyleMap>,
-        styles: HashMap<String, KmlStyle>,
-        images: HashMap<String, Bitmap>,
-        parentVisibility: Boolean
-    ) {
-        setActive(parentVisibility)
-        children.forEach { it.setStyle(styleMaps, styles, images, getActive()) }
-    }
-
-    /**
-     * Sets the object that uses the KmlEventListener interface for children
-     *
-     * @param eventListener KmlEventListener to be used
-     */
-    override fun setEventListener(eventListener: KmlEventListener) {
-        children.forEach { it.setEventListener(eventListener) }
     }
 
     /**

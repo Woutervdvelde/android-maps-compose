@@ -29,12 +29,23 @@ public abstract class KmlComposableManager<T : IKmlComposableProperties> {
      * @param styles All Style tags parsed from the KML file
      * @param images All images when present in KMZ file
      */
-    internal abstract suspend fun setStyle(
+    internal open suspend fun setStyle(
         styleMaps: HashMap<String, KmlStyleMap>,
         styles: HashMap<String, KmlStyle>,
         images: HashMap<String, Bitmap>,
         parentVisibility: Boolean
-    )
+    ) {
+        val styleUrl = _properties.value.styleUrl
+        val normalStyleId = styleMaps[styleUrl]?.getNormalStyleId()
+        style = styles[normalStyleId] ?: styles[styleUrl] ?: style
+
+        applyStylesToProperties()
+
+        if (isActive.value) // if it's own visibility is false don't apply parent visibility
+            setActive(parentVisibility)
+    }
+
+    internal abstract fun applyStylesToProperties()
 
     internal abstract fun setProperties(data: HashMap<String, Any>)
 

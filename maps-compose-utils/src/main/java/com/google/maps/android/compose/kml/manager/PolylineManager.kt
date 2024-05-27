@@ -45,19 +45,13 @@ public class PolylineManager(
         images: HashMap<String, Bitmap>,
         parentVisibility: Boolean
     ) {
-        val styleUrl = _properties.value.styleUrl
-        val normalStyleId = styleMaps[styleUrl]?.getNormalStyleId()
-        style = styles[normalStyleId] ?: styles[styleUrl] ?: style
-
-        applyStylesToProperties()
-        if (isActive.value) // if it's own visibility is false don't apply parent visibility
-            setVisibility(parentVisibility)
+        super.setStyle(styleMaps, styles, images, parentVisibility)
     }
 
     /**
      * Applies all available styles to properties
      */
-    private fun applyStylesToProperties() {
+    override fun applyStylesToProperties() {
         setColor(style.getLineColor())
         setWidth(style.getLineWidth())
     }
