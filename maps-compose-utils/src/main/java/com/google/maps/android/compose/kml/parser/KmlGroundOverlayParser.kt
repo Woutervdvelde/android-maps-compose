@@ -61,7 +61,8 @@ internal class KmlGroundOverlayParser : KmlFeatureParser() {
                     LatLng(compass[NORTH_TAG]!!, compass[EAST_TAG]!!)
                 )
             )
-            container.addChild(groundOverlay as KmlComposableManager<IKmlComposableProperties>)
+            val overlay = groundOverlay as KmlComposableManager<IKmlComposableProperties>
+            container.addChild(overlay)
         }
 
         /**
