@@ -13,6 +13,8 @@ import com.google.maps.android.compose.kml.data.KmlTags.Companion.SOUTH_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.WEST_TAG
 import com.google.maps.android.compose.kml.manager.ContainerManager
 import com.google.maps.android.compose.kml.manager.GroundOverlayManager
+import com.google.maps.android.compose.kml.manager.KmlComposableManager
+import com.google.maps.android.compose.kml.manager.KmlComposableProperties
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import java.io.IOException
@@ -58,7 +60,7 @@ internal class KmlGroundOverlayParser: KmlFeatureParser() {
                 LatLng(compass[NORTH_TAG]!!, compass[EAST_TAG]!!)
             ))
 
-            container.addChild(groundOverlay)
+            container.addChild(groundOverlay as KmlComposableManager<KmlComposableProperties>)
         }
 
         /**

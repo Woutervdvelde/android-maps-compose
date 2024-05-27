@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.google.maps.android.compose.kml.data.KmlStyle
 import com.google.maps.android.compose.kml.data.KmlStyleMap
@@ -15,10 +16,14 @@ import java.net.URL
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-public abstract class KmlComposableManager {
+public abstract class KmlComposableManager<T: KmlComposableProperties> {
     internal var style: KmlStyle = KmlStyle()
     internal var listener: KmlEventListener? = null
     internal var isActive: MutableState<Boolean> = mutableStateOf(true)
+
+    internal val _properties = mutableStateOf<T>(initializeProperties())
+    public val properties: T get() = _properties.value
+    protected abstract fun initializeProperties(): T
 
     /**
      * Sets the styles received from the KML Parser
@@ -88,18 +93,4 @@ public abstract class KmlComposableManager {
 
     @Composable
     internal abstract fun Render()
-
-    internal companion object {
-        internal const val DEFAULT_DESCRIPTION = ""
-        internal const val DEFAULT_NAME = ""
-        internal const val DEFAULT_VISIBILITY = true
-        internal const val DEFAULT_ALPHA = 1f
-        internal const val DEFAULT_DRAW_ORDER = 0f
-        internal val DEFAULT_ANCHOR = Anchor()
-        internal const val DEFAULT_ROTATION = 0
-        internal val DEFAULT_COLOR = null
-        internal const val DEFAULT_STYLE_URL = ""
-        internal val DEFAULT_ICON = null
-        internal val DEFAULT_EXTENDED_DATA = null
-    }
 }

@@ -2,8 +2,6 @@ package com.google.maps.android.compose.kml.manager
 
 import android.graphics.Bitmap
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import com.google.android.gms.maps.model.ButtCap
 import com.google.android.gms.maps.model.Cap
@@ -18,27 +16,20 @@ import com.google.maps.android.compose.kml.data.KmlTags.Companion.EXTENDED_DATA_
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.TESSELLATE_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.VISIBILITY_TAG
 import com.google.maps.android.compose.kml.event.KmlEvent
+import com.google.maps.android.compose.kml.manager.KmlComposableProperties.Companion.DEFAULT_VISIBILITY
+import com.google.maps.android.compose.kml.manager.KmlComposableProperties.Companion.convertPropertyToBoolean
 import com.google.maps.android.compose.kml.parser.ExtendedData
-import com.google.maps.android.compose.kml.parser.KmlParser.Companion.convertPropertyToBoolean
-import com.google.maps.android.compose.kml.parser.KmlParser.Companion.convertPropertyToFloat
 
 public class PolylineManager(
     private val coordinates: List<LatLng>
-) : KmlComposableManager() {
-    private var polylineData: MutableState<PolylineProperties> =
-        mutableStateOf(PolylineProperties())
+) : KmlComposableManager<PolylineProperties>() {
+    override fun initializeProperties(): PolylineProperties = PolylineProperties()
+
 
     override fun setProperties(data: HashMap<String, Any>) {
-        polylineData.value = PolylineProperties.from(data)
+        _properties.value = PolylineProperties.from(data)
         setVisibility(convertPropertyToBoolean(data, VISIBILITY_TAG, DEFAULT_VISIBILITY))
     }
-
-    /**
-     * Returns a copy of the polyline properties
-     *
-     * @return PolylineProperties
-     */
-    public fun getProperties(): PolylineProperties = polylineData.value.copy()
 
     override suspend fun setStyle(
         styleMaps: HashMap<String, KmlStyleMap>,
@@ -46,7 +37,7 @@ public class PolylineManager(
         images: HashMap<String, Bitmap>,
         parentVisibility: Boolean
     ) {
-        val styleUrl = polylineData.value.styleUrl
+        val styleUrl = _properties.value.styleUrl
         val normalStyleId = styleMaps[styleUrl]?.getNormalStyleId()
         style = styles[normalStyleId] ?: styles[styleUrl] ?: style
 
@@ -68,7 +59,7 @@ public class PolylineManager(
      * @param cap any [Cap] subclass
      */
     public fun setStartCap(cap: Cap) {
-        polylineData.value = polylineData.value.copy(startCap = cap)
+        _properties.value = _properties.value.copy(startCap = cap)
     }
 
     /**
@@ -77,14 +68,14 @@ public class PolylineManager(
      * @param cap any [Cap] subclass
      */
     public fun setEndCap(cap: Cap) {
-        polylineData.value = polylineData.value.copy(endCap = cap)
+        _properties.value = _properties.value.copy(endCap = cap)
     }
 
     /**
      *
      */
     public fun setJointType(jointType: Int) {
-        polylineData.value = polylineData.value.copy(jointType = jointType)
+        _properties.value = _properties.value.copy(jointType = jointType)
     }
 
     /**
@@ -93,7 +84,7 @@ public class PolylineManager(
      * @param color color of the line
      */
     public fun setColor(color: Color) {
-        polylineData.value = polylineData.value.copy(color = color)
+        _properties.value = _properties.value.copy(color = color)
     }
 
     /**
@@ -102,7 +93,7 @@ public class PolylineManager(
      * @param pattern List of patternItems creating the pattern
      */
     public fun setPattern(pattern: List<PatternItem>) {
-        polylineData.value = polylineData.value.copy(pattern = pattern)
+        _properties.value = _properties.value.copy(pattern = pattern)
     }
 
     /**
@@ -120,13 +111,13 @@ public class PolylineManager(
      * @param width width of the line
      */
     public fun setWidth(width: Float) {
-        polylineData.value = polylineData.value.copy(width = width)
+        _properties.value = _properties.value.copy(width = width)
     }
 
 
     @Composable
     override fun Render() {
-        val data = polylineData.value
+        val data = _properties.value
 
         Polyline(
             points = coordinates,
@@ -141,51 +132,54 @@ public class PolylineManager(
             endCap = data.endCap,
             pattern = data.pattern,
             onClick = {
-                listener?.onEvent(KmlEvent.Polyline.Clicked(polylineData.value))
+                listener?.onEvent(KmlEvent.Polyline.Clicked(properties))
             }
         )
     }
+}
 
-    public data class PolylineProperties(
-        val name: String = DEFAULT_NAME,
-        val description: String = DEFAULT_DESCRIPTION,
-        val drawOrder: Float = DEFAULT_DRAW_ORDER,
-        val color: Color = DEFAULT_COLOR,
-        val tessellate: Boolean = DEFAULT_TESSELLATE,
-        val width: Float = DEFAULT_WIDTH,
-        val styleUrl: String? = DEFAULT_STYLE_URL,
-        val extendedData: List<ExtendedData>? = DEFAULT_EXTENDED_DATA,
-        val startCap: Cap = DEFAULT_CAP,
-        val endCap: Cap = DEFAULT_CAP,
-        val jointType: Int = DEFAULT_JOINT_TYPE,
-        val pattern: List<PatternItem>? = DEFAULT_PATTERN
-    ) {
-        internal companion object {
-            internal fun from(properties: HashMap<String, Any>): PolylineProperties {
-                val name: String by properties.withDefault { DEFAULT_NAME }
-                val description: String by properties.withDefault { DEFAULT_DESCRIPTION }
-                val drawOrder: Float = convertPropertyToFloat(properties, DRAW_ORDER_TAG, DEFAULT_DRAW_ORDER)
-                val styleUrl: String? by properties.withDefault { DEFAULT_STYLE_URL }
-                val extendedData: List<ExtendedData>? =
-                    properties[EXTENDED_DATA_TAG] as? List<ExtendedData>
-                val tessellate: Boolean =
-                    convertPropertyToBoolean(properties, TESSELLATE_TAG, DEFAULT_TESSELLATE)
-                return PolylineProperties(
-                    name = name,
-                    description = description,
-                    drawOrder = drawOrder,
-                    styleUrl = styleUrl,
-                    extendedData = extendedData,
-                    tessellate = tessellate
-                )
-            }
+public data class PolylineProperties(
+    override val name: String = DEFAULT_NAME,
+    override val description: String = DEFAULT_DESCRIPTION,
+    override val drawOrder: Float = DEFAULT_DRAW_ORDER,
+    override val styleUrl: String? = DEFAULT_STYLE_URL,
+    override val extendedData: List<ExtendedData>? = DEFAULT_EXTENDED_DATA,
 
-            private val DEFAULT_COLOR = Color.Black
-            private val DEFAULT_CAP = ButtCap()
-            private val DEFAULT_PATTERN = null
-            private const val DEFAULT_JOINT_TYPE = JointType.DEFAULT
-            private const val DEFAULT_TESSELLATE = false
-            private const val DEFAULT_WIDTH = 1f
+    val color: Color = DEFAULT_COLOR,
+    val tessellate: Boolean = DEFAULT_TESSELLATE,
+    val width: Float = DEFAULT_WIDTH,
+    val startCap: Cap = DEFAULT_CAP,
+    val endCap: Cap = DEFAULT_CAP,
+    val jointType: Int = DEFAULT_JOINT_TYPE,
+    val pattern: List<PatternItem>? = DEFAULT_PATTERN
+) : KmlComposableProperties(name, description, drawOrder, styleUrl, extendedData) {
+    internal companion object {
+        internal fun from(properties: HashMap<String, Any>): PolylineProperties {
+            val name: String by properties.withDefault { DEFAULT_NAME }
+            val description: String by properties.withDefault { DEFAULT_DESCRIPTION }
+            val drawOrder: Float =
+                convertPropertyToFloat(properties, DRAW_ORDER_TAG, DEFAULT_DRAW_ORDER)
+            val styleUrl: String? by properties.withDefault { DEFAULT_STYLE_URL }
+            val extendedData: List<ExtendedData>? =
+                properties[EXTENDED_DATA_TAG] as? List<ExtendedData>
+            val tessellate: Boolean =
+                convertPropertyToBoolean(properties, TESSELLATE_TAG, DEFAULT_TESSELLATE)
+
+            return PolylineProperties(
+                name = name,
+                description = description,
+                drawOrder = drawOrder,
+                styleUrl = styleUrl,
+                extendedData = extendedData,
+                tessellate = tessellate
+            )
         }
+
+        private val DEFAULT_COLOR = Color.Black
+        private val DEFAULT_CAP = ButtCap()
+        private val DEFAULT_PATTERN = null
+        private const val DEFAULT_JOINT_TYPE = JointType.DEFAULT
+        private const val DEFAULT_TESSELLATE = false
+        private const val DEFAULT_WIDTH = 1f
     }
 }

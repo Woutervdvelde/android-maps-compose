@@ -9,11 +9,12 @@ import com.google.maps.android.compose.kml.data.KmlStyle
 import com.google.maps.android.compose.kml.data.KmlStyleMap
 import com.google.maps.android.compose.kml.event.KmlEventListener
 
-public class ContainerManager : KmlComposableManager() {
-    private var containerName: String = ""
-    private val children: MutableList<KmlComposableManager> = mutableListOf()
+public class ContainerManager : KmlComposableManager<ContainerProperties>() {
+    private val children: MutableList<KmlComposableManager<KmlComposableProperties>> = mutableListOf()
 
-    public fun getName(): String = containerName
+    override fun initializeProperties(): ContainerProperties = ContainerProperties()
+
+    public fun getName(): String = _properties.value.name
 
     /**
      * Sets the name of the container
@@ -21,7 +22,7 @@ public class ContainerManager : KmlComposableManager() {
      * @param name Name of the container
      */
     public fun setName(name: String) {
-        containerName = name
+        _properties.value = _properties.value.copy()
     }
 
     /**
@@ -105,7 +106,7 @@ public class ContainerManager : KmlComposableManager() {
      *
      * @param child Any class extending from the [KmlComposableManager]
      */
-    internal fun addChild(child: KmlComposableManager) {
+    internal fun addChild(child: KmlComposableManager<KmlComposableProperties>) {
         children.add(child)
     }
 
@@ -154,3 +155,7 @@ public class ContainerManager : KmlComposableManager() {
         }
     }
 }
+
+public data class ContainerProperties(
+    override val name: String = DEFAULT_NAME,
+): KmlComposableProperties(name)

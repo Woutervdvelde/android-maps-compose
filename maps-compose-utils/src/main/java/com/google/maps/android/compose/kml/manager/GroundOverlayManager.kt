@@ -14,13 +14,13 @@ import com.google.maps.android.compose.kml.data.KmlStyleMap
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.EXTENDED_DATA_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.VISIBILITY_TAG
 import com.google.maps.android.compose.kml.event.KmlEvent
+import com.google.maps.android.compose.kml.manager.KmlComposableProperties.Companion.DEFAULT_VISIBILITY
+import com.google.maps.android.compose.kml.manager.KmlComposableProperties.Companion.convertPropertyToBoolean
 import com.google.maps.android.compose.kml.parser.ExtendedData
 import com.google.maps.android.compose.kml.parser.KmlParser
 
-public class GroundOverlayManager : KmlComposableManager() {
-    private var groundOverlayData: MutableState<GroundOverlayProperties> = mutableStateOf(
-        GroundOverlayProperties()
-    )
+public class GroundOverlayManager : KmlComposableManager<GroundOverlayProperties>() {
+    override fun initializeProperties(): GroundOverlayProperties = GroundOverlayProperties()
 
     override suspend fun setStyle(
         styleMaps: HashMap<String, KmlStyleMap>,
@@ -28,16 +28,16 @@ public class GroundOverlayManager : KmlComposableManager() {
         images: HashMap<String, Bitmap>,
         parentVisibility: Boolean
     ) {
-        groundOverlayData.value = groundOverlayData.value.copy(
-            icon = getBitmap(groundOverlayData.value.iconUrl, images)
+        _properties.value = _properties.value.copy(
+            icon = getBitmap(_properties.value.iconUrl, images)
         )
 
         setVisibility(parentVisibility)
     }
 
     override fun setProperties(data: HashMap<String, Any>) {
-        groundOverlayData.value = GroundOverlayProperties.from(data)
-        setVisibility(KmlParser.convertPropertyToBoolean(data, VISIBILITY_TAG, DEFAULT_VISIBILITY))
+        _properties.value = GroundOverlayProperties.from(data)
+        setVisibility(convertPropertyToBoolean(data, VISIBILITY_TAG, DEFAULT_VISIBILITY))
     }
 
     /**
@@ -47,7 +47,7 @@ public class GroundOverlayManager : KmlComposableManager() {
      * @param alpha Float value between 0f and 1f
      */
     public fun setAlpha(alpha: Float) {
-        groundOverlayData.value = groundOverlayData.value.copy(alpha = alpha)
+        _properties.value = _properties.value.copy(alpha = alpha)
     }
 
     /**
@@ -56,7 +56,7 @@ public class GroundOverlayManager : KmlComposableManager() {
      * @param positionBounds LatLngBounds containing two [LatLng] objects southwest and northeast
      */
     public fun setCompass(positionBounds: LatLngBounds) {
-        groundOverlayData.value = groundOverlayData.value.copy(
+        _properties.value = _properties.value.copy(
             positionBounds = positionBounds
         )
     }
@@ -72,7 +72,7 @@ public class GroundOverlayManager : KmlComposableManager() {
 
     @Composable
     override fun Render() {
-        val data = groundOverlayData.value
+        val data = _properties.value
 
         GroundOverlay(
             position = GroundOverlayPosition.create(data.positionBounds!!),
@@ -82,45 +82,47 @@ public class GroundOverlayManager : KmlComposableManager() {
             visible = isActive.value,
             zIndex = data.drawOrder,
             onClick = {
-                listener?.onEvent(KmlEvent.GroundOverlay.Clicked(groundOverlayData.value))
+                listener?.onEvent(KmlEvent.GroundOverlay.Clicked(properties))
             }
         )
     }
+}
 
-    public data class GroundOverlayProperties(
-        val name: String = DEFAULT_NAME,
-        val description: String = DEFAULT_DESCRIPTION,
-        val alpha: Float = DEFAULT_ALPHA,
-        val drawOrder: Float = DEFAULT_DRAW_ORDER,
-        val rotation: Int = DEFAULT_ROTATION,
-        val iconUrl: String = DEFAULT_ICON_URL,
-        val styleUrl: String? = DEFAULT_STYLE_URL,
-        val icon: Bitmap? = DEFAULT_ICON,
-        val extendedData: List<ExtendedData>? = DEFAULT_EXTENDED_DATA,
-        val positionBounds: LatLngBounds? = DEFAULT_POSITION_BOUNDS
-    ) {
-        internal companion object {
-            internal fun from(properties: HashMap<String, Any>): GroundOverlayProperties {
-                val name: String by properties.withDefault { DEFAULT_NAME }
-                val description: String by properties.withDefault { DEFAULT_DESCRIPTION }
-                val drawOrder: Float by properties.withDefault { DEFAULT_DRAW_ORDER }
-                val rotation: Int by properties.withDefault { DEFAULT_ROTATION }
-                val href: String by properties.withDefault { DEFAULT_ICON_URL }
-                val extendedData: List<ExtendedData>? =
-                    properties[EXTENDED_DATA_TAG] as? List<ExtendedData>
-                return GroundOverlayProperties(
-                    name = name,
-                    description = description,
-                    alpha = DEFAULT_ALPHA,
-                    drawOrder = drawOrder,
-                    rotation = rotation,
-                    iconUrl = href,
-                    extendedData = extendedData
-                )
-            }
+public data class GroundOverlayProperties(
+    override val name: String = DEFAULT_NAME,
+    override val description: String = DEFAULT_DESCRIPTION,
+    override val drawOrder: Float = DEFAULT_DRAW_ORDER,
+    override val styleUrl: String? = DEFAULT_STYLE_URL,
+    override val extendedData: List<ExtendedData>? = DEFAULT_EXTENDED_DATA,
 
-            internal val DEFAULT_POSITION_BOUNDS = null
-            internal const val DEFAULT_ICON_URL = ""
+    val alpha: Float = DEFAULT_ALPHA,
+    val iconUrl: String = DEFAULT_ICON_URL,
+    val icon: Bitmap? = DEFAULT_ICON,
+    val positionBounds: LatLngBounds? = DEFAULT_POSITION_BOUNDS,
+    val rotation: Int = DEFAULT_ROTATION
+): KmlComposableProperties(name, description, drawOrder, styleUrl, extendedData) {
+    internal companion object {
+        internal fun from(properties: HashMap<String, Any>): GroundOverlayProperties {
+            val name: String by properties.withDefault { DEFAULT_NAME }
+            val description: String by properties.withDefault { DEFAULT_DESCRIPTION }
+            val drawOrder: Float by properties.withDefault { DEFAULT_DRAW_ORDER }
+            val extendedData: List<ExtendedData>? =
+                properties[EXTENDED_DATA_TAG] as? List<ExtendedData>
+
+            val rotation: Int by properties.withDefault { DEFAULT_ROTATION }
+            val href: String by properties.withDefault { DEFAULT_ICON_URL }
+            return GroundOverlayProperties(
+                name = name,
+                description = description,
+                alpha = DEFAULT_ALPHA,
+                drawOrder = drawOrder,
+                rotation = rotation,
+                iconUrl = href,
+                extendedData = extendedData
+            )
         }
+
+        internal val DEFAULT_POSITION_BOUNDS = null
+        internal const val DEFAULT_ICON_URL = ""
     }
 }
