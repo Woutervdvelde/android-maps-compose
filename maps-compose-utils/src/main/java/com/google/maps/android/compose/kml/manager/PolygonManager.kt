@@ -31,10 +31,6 @@ public class PolygonManager(
     private val innerBoundaries: List<List<LatLng>>
 ) : KmlComposableManager<PolygonProperties>() {
     override val _properties: MutableState<PolygonProperties> = mutableStateOf(PolygonProperties())
-    override fun setProperties(data: HashMap<String, Any>) {
-        _properties.value = PolygonProperties.from(data)
-        convertPropertyToBoolean(data, VISIBILITY_TAG, DEFAULT_VISIBILITY)
-    }
 
     override suspend fun setStyle(
         styleMaps: HashMap<String, KmlStyleMap>,
@@ -52,6 +48,11 @@ public class PolygonManager(
         setFillColor(style.getPolyFillColor())
         setStrokeColor(style.getLineColor())
         setStrokeWidth(style.getLineWidth())
+    }
+
+    override fun setProperties(data: HashMap<String, Any>) {
+        _properties.value = PolygonProperties.from(data)
+        convertPropertyToBoolean(data, VISIBILITY_TAG, DEFAULT_VISIBILITY)
     }
 
     /**

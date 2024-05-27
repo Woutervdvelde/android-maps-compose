@@ -34,11 +34,6 @@ public class PolylineManager(
     override val _properties: MutableState<PolylineProperties> =
         mutableStateOf(PolylineProperties())
 
-    override fun setProperties(data: HashMap<String, Any>) {
-        _properties.value = PolylineProperties.from(data)
-        setVisibility(convertPropertyToBoolean(data, VISIBILITY_TAG, DEFAULT_VISIBILITY))
-    }
-
     override suspend fun setStyle(
         styleMaps: HashMap<String, KmlStyleMap>,
         styles: HashMap<String, KmlStyle>,
@@ -54,6 +49,11 @@ public class PolylineManager(
     override fun applyStylesToProperties() {
         setColor(style.getLineColor())
         setWidth(style.getLineWidth())
+    }
+
+    override fun setProperties(data: HashMap<String, Any>) {
+        _properties.value = PolylineProperties.from(data)
+        setVisibility(convertPropertyToBoolean(data, VISIBILITY_TAG, DEFAULT_VISIBILITY))
     }
 
     /**
