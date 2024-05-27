@@ -9,16 +9,18 @@ import androidx.compose.runtime.mutableStateOf
 import com.google.maps.android.compose.kml.data.KmlStyle
 import com.google.maps.android.compose.kml.data.KmlStyleMap
 import com.google.maps.android.compose.kml.event.KmlEventListener
-import com.google.maps.android.compose.kml.parser.Anchor
 import java.io.IOException
 import java.net.URL
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-public abstract class KmlComposableManager {
+public abstract class KmlComposableManager<T : IKmlComposableProperties> {
     internal var style: KmlStyle = KmlStyle()
     internal var listener: KmlEventListener? = null
     internal var isActive: MutableState<Boolean> = mutableStateOf(true)
+
+    internal abstract val _properties: MutableState<T>
+    public val properties: T get() = _properties.value
 
     /**
      * Sets the styles received from the KML Parser
@@ -27,12 +29,23 @@ public abstract class KmlComposableManager {
      * @param styles All Style tags parsed from the KML file
      * @param images All images when present in KMZ file
      */
-    internal abstract suspend fun setStyle(
+    internal open suspend fun setStyle(
         styleMaps: HashMap<String, KmlStyleMap>,
         styles: HashMap<String, KmlStyle>,
         images: HashMap<String, Bitmap>,
         parentVisibility: Boolean
-    )
+    ) {
+        val styleUrl = _properties.value.styleUrl
+        val normalStyleId = styleMaps[styleUrl]?.getNormalStyleId()
+        style = styles[normalStyleId] ?: styles[styleUrl] ?: style
+
+        applyStylesToProperties()
+
+        if (isActive.value) // if it's own visibility is false don't apply parent visibility
+            setActive(parentVisibility)
+    }
+
+    internal abstract fun applyStylesToProperties()
 
     internal abstract fun setProperties(data: HashMap<String, Any>)
 
@@ -88,18 +101,4 @@ public abstract class KmlComposableManager {
 
     @Composable
     internal abstract fun Render()
-
-    internal companion object {
-        internal const val DEFAULT_DESCRIPTION = ""
-        internal const val DEFAULT_NAME = ""
-        internal const val DEFAULT_VISIBILITY = true
-        internal const val DEFAULT_ALPHA = 1f
-        internal const val DEFAULT_DRAW_ORDER = 0f
-        internal val DEFAULT_ANCHOR = Anchor()
-        internal const val DEFAULT_ROTATION = 0
-        internal val DEFAULT_COLOR = null
-        internal const val DEFAULT_STYLE_URL = ""
-        internal val DEFAULT_ICON = null
-        internal val DEFAULT_EXTENDED_DATA = null
-    }
 }

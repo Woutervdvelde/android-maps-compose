@@ -1,19 +1,61 @@
 package com.google.maps.android.compose.kml.manager
 
 import android.graphics.Bitmap
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.google.maps.android.compose.kml.data.KmlStyle
 import com.google.maps.android.compose.kml.data.KmlStyleMap
 import com.google.maps.android.compose.kml.event.KmlEventListener
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Companion.DEFAULT_DESCRIPTION
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Companion.DEFAULT_DRAW_ORDER
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Companion.DEFAULT_EXTENDED_DATA
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Companion.DEFAULT_NAME
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Companion.DEFAULT_STYLE_URL
+import com.google.maps.android.compose.kml.parser.ExtendedData
 
-public class ContainerManager : KmlComposableManager() {
-    private var containerName: String = ""
-    private val children: MutableList<KmlComposableManager> = mutableListOf()
+public class ContainerManager : KmlComposableManager<ContainerProperties>() {
+    private val children: MutableList<KmlComposableManager<IKmlComposableProperties>> =
+        mutableListOf()
 
-    public fun getName(): String = containerName
+    override val _properties: MutableState<ContainerProperties> =
+        mutableStateOf(ContainerProperties())
+
+    /**
+     *  Sets properties from KML relevant to the container
+     *
+     *  @param data HashMap containing related properties of the container
+     */
+    override fun setProperties(data: HashMap<String, Any>) { }
+    override fun applyStylesToProperties() { }
+
+    /**
+     * Sets the styles of children [ContainerManager]s and all child features ([MarkerManager]s etc.)
+     *
+     * @param styleMaps All StyleMap tags parsed from the KML file
+     * @param styles All Style tags parsed from the KML file
+     * @param images All images when present in KMZ file
+     */
+    override suspend fun setStyle(
+        styleMaps: HashMap<String, KmlStyleMap>,
+        styles: HashMap<String, KmlStyle>,
+        images: HashMap<String, Bitmap>,
+        parentVisibility: Boolean
+    ) {
+        setActive(parentVisibility)
+        children.forEach { it.setStyle(styleMaps, styles, images, getActive()) }
+    }
+
+    /**
+     * Sets the object that uses the KmlEventListener interface for children
+     *
+     * @param eventListener KmlEventListener to be used
+     */
+    override fun setEventListener(eventListener: KmlEventListener) {
+        children.forEach { it.setEventListener(eventListener) }
+    }
+
+    public fun getName(): String = _properties.value.name
 
     /**
      * Sets the name of the container
@@ -21,23 +63,15 @@ public class ContainerManager : KmlComposableManager() {
      * @param name Name of the container
      */
     public fun setName(name: String) {
-        containerName = name
+        _properties.value = _properties.value.copy(
+            name = name
+        )
     }
 
     /**
      * Gets the current active state of the container
      */
     public fun getActive(): Boolean = isActive.value
-
-    /**
-     * Sets a container active or inactive. Inactive containers won't render their children
-     *
-     * @param active Active state of the container
-     */
-    public override fun setActive(active: Boolean) {
-        super.setActive(active)
-        children.forEach { it.setActive(active) }
-    }
 
     /**
      * Toggles the active state of the container
@@ -98,50 +132,16 @@ public class ContainerManager : KmlComposableManager() {
      *
      * @return List of [GroundOverlayManager]s
      */
-    public fun getGroundOverlays(): List<GroundOverlayManager> = children.filterIsInstance<GroundOverlayManager>()
+    public fun getGroundOverlays(): List<GroundOverlayManager> =
+        children.filterIsInstance<GroundOverlayManager>()
 
     /**
      * Adds a child to the ContainerManager
      *
      * @param child Any class extending from the [KmlComposableManager]
      */
-    internal fun addChild(child: KmlComposableManager) {
+    internal fun addChild(child: KmlComposableManager<IKmlComposableProperties>) {
         children.add(child)
-    }
-
-    /**
-     *  Sets properties from KML relevant to the container
-     *
-     *  @param data HashMap containing related properties of the container
-     */
-    override fun setProperties(data: HashMap<String, Any>) {
-        //TODO()
-    }
-
-    /**
-     * Sets the styles of children [ContainerManager]s and all child features ([MarkerManager]s etc.)
-     *
-     * @param styleMaps All StyleMap tags parsed from the KML file
-     * @param styles All Style tags parsed from the KML file
-     * @param images All images when present in KMZ file
-     */
-    override suspend fun setStyle(
-        styleMaps: HashMap<String, KmlStyleMap>,
-        styles: HashMap<String, KmlStyle>,
-        images: HashMap<String, Bitmap>,
-        parentVisibility: Boolean
-    ) {
-        setActive(parentVisibility)
-        children.forEach { it.setStyle(styleMaps, styles, images, getActive()) }
-    }
-
-    /**
-     * Sets the object that uses the KmlEventListener interface for children
-     *
-     * @param eventListener KmlEventListener to be used
-     */
-    override fun setEventListener(eventListener: KmlEventListener) {
-        children.forEach { it.setEventListener(eventListener) }
     }
 
     /**
@@ -154,3 +154,11 @@ public class ContainerManager : KmlComposableManager() {
         }
     }
 }
+
+public data class ContainerProperties(
+    override val name: String = DEFAULT_NAME,
+    override val description: String = DEFAULT_DESCRIPTION,
+    override val drawOrder: Float = DEFAULT_DRAW_ORDER,
+    override val styleUrl: String? = DEFAULT_STYLE_URL,
+    override val extendedData: List<ExtendedData>? = DEFAULT_EXTENDED_DATA,
+) : IKmlComposableProperties

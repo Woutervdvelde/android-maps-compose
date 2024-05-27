@@ -15,22 +15,28 @@ import com.google.maps.android.compose.kml.data.KmlTags.Companion.DRAW_ORDER_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.EXTENDED_DATA_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.VISIBILITY_TAG
 import com.google.maps.android.compose.kml.event.KmlEvent
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Companion.DEFAULT_ALPHA
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Companion.DEFAULT_ANCHOR
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Companion.DEFAULT_COLOR
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Companion.DEFAULT_DESCRIPTION
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Companion.DEFAULT_DRAW_ORDER
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Companion.DEFAULT_EXTENDED_DATA
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Companion.DEFAULT_ICON
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Companion.DEFAULT_NAME
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Companion.DEFAULT_ROTATION
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Companion.DEFAULT_STYLE_URL
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Companion.DEFAULT_VISIBILITY
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Companion.convertPropertyToBoolean
+import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Companion.convertPropertyToFloat
 import com.google.maps.android.compose.kml.parser.Anchor
 import com.google.maps.android.compose.kml.parser.ExtendedData
-import com.google.maps.android.compose.kml.parser.KmlParser.Companion.convertPropertyToBoolean
-import com.google.maps.android.compose.kml.parser.KmlParser.Companion.convertPropertyToFloat
 import com.google.maps.android.compose.kml.parser.KmlStyleParser
 import com.google.maps.android.compose.rememberMarkerState
 
 public class MarkerManager(
     private val position: LatLng
-) : KmlComposableManager() {
-    private var markerData: MutableState<MarkerProperties> = mutableStateOf(MarkerProperties())
-
-    override fun setProperties(data: HashMap<String, Any>) {
-        markerData.value = MarkerProperties.from(data)
-        setVisibility(convertPropertyToBoolean(data, VISIBILITY_TAG, DEFAULT_VISIBILITY))
-    }
+) : KmlComposableManager<MarkerProperties>() {
+    override val _properties: MutableState<MarkerProperties> = mutableStateOf(MarkerProperties())
 
     public override suspend fun setStyle(
         styleMaps: HashMap<String, KmlStyleMap>,
@@ -38,20 +44,25 @@ public class MarkerManager(
         images: HashMap<String, Bitmap>,
         parentVisibility: Boolean
     ) {
-        val styleUrl = markerData.value.styleUrl
-        val normalStyleId = styleMaps[styleUrl]?.getNormalStyleId()
-        style = styles[normalStyleId] ?: styles[styleUrl] ?: style
-
-        applyStylesToProperties()
+        super.setStyle(styleMaps, styles, images, parentVisibility)
         generateIcon(images)
-        setVisibility(parentVisibility)
     }
 
     /**
-     * Returns a copy of the marker properties
-     * @return MarkerProperties
+     * Applies all available styles to properties
      */
-    public fun getProperties(): MarkerProperties = markerData.value.copy()
+    override fun applyStylesToProperties() {
+        setAlpha(style.getIconAlpha())
+        setAnchor(style.getIconAnchor())
+        setRotation(style.getIconHeading())
+        style.getIconColor()?.let { setColor(it.toInt()) }
+    }
+
+    override fun setProperties(data: HashMap<String, Any>) {
+        _properties.value = MarkerProperties.from(data)
+        val visiblitiy = convertPropertyToBoolean(data, VISIBILITY_TAG, DEFAULT_VISIBILITY)
+        setVisibility(visiblitiy)
+    }
 
     /**
      * Sets the visibility of the marker
@@ -69,7 +80,7 @@ public class MarkerManager(
      * @param alpha Float value between 0f and 1f
      */
     public fun setAlpha(alpha: Float) {
-        markerData.value = markerData.value.copy(alpha = alpha)
+        _properties.value = _properties.value.copy(alpha = alpha)
     }
 
     /**
@@ -78,7 +89,7 @@ public class MarkerManager(
      * @param rotation in degrees, 0 - 360
      */
     public fun setRotation(rotation: Int) {
-        markerData.value = markerData.value.copy(rotation = rotation)
+        _properties.value = _properties.value.copy(rotation = rotation)
     }
 
     /**
@@ -89,9 +100,9 @@ public class MarkerManager(
     public fun setAnchor(anchor: Anchor) {
         //TODO("handle other unit types, only supports fractions at the moment")
         if (anchor.xUnit == KmlStyleParser.HOTSPOT_UNIT_FRACTION && anchor.yUnit == KmlStyleParser.HOTSPOT_UNIT_FRACTION) {
-            markerData.value = markerData.value.copy(anchor = anchor)
+            _properties.value = _properties.value.copy(anchor = anchor)
         } else {
-            markerData.value = markerData.value.copy(anchor = Anchor())
+            _properties.value = _properties.value.copy(anchor = Anchor())
         }
     }
 
@@ -106,23 +117,13 @@ public class MarkerManager(
             val randomColor = KmlStyleParser.computeRandomColor(color)
             finalColor = KmlStyleParser.convertIntColorToHueValue(randomColor)
         }
-        markerData.value = markerData.value.copy(color = finalColor)
-    }
-
-    /**
-     * Applies all available styles to properties
-     */
-    private fun applyStylesToProperties() {
-        setAlpha(style.getIconAlpha())
-        setAnchor(style.getIconAnchor())
-        setRotation(style.getIconHeading())
-        style.getIconColor()?.let { setColor(it.toInt()) }
+        _properties.value = _properties.value.copy(color = finalColor)
     }
 
     private fun getIcon(bitmap: Bitmap?): BitmapDescriptor {
         return bitmap?.let {
             BitmapDescriptorFactory.fromBitmap(it)
-        } ?: markerData.value.color?.let {
+        } ?: _properties.value.color?.let {
             BitmapDescriptorFactory.defaultMarker(it)
         } ?: BitmapDescriptorFactory.defaultMarker()
     }
@@ -136,7 +137,7 @@ public class MarkerManager(
     private suspend fun generateIcon(images: HashMap<String, Bitmap>) {
         style.getIconUrl()?.let { url ->
             getBitmap(url, images)?.let {
-                markerData.value = markerData.value.copy(
+                _properties.value = _properties.value.copy(
                     icon = resizeIcon(it, style.getIconScale())
                 )
             }
@@ -173,20 +174,20 @@ public class MarkerManager(
     @Composable
     override fun Render() {
         val markerState = rememberMarkerState(position = position)
-        val currentMarkerData = markerData.value
+        val data = _properties.value
 
         Marker(
             state = markerState,
-            alpha = currentMarkerData.alpha,
-            anchor = Offset(currentMarkerData.anchor.x, currentMarkerData.anchor.y),
-            rotation = currentMarkerData.rotation.toFloat(),
-            snippet = currentMarkerData.description,
-            title = currentMarkerData.name,
+            alpha = data.alpha,
+            anchor = Offset(data.anchor.x, data.anchor.y),
+            rotation = data.rotation.toFloat(),
+            snippet = data.description,
+            title = data.name,
             visible = isActive.value,
-            zIndex = currentMarkerData.drawOrder,
-            icon = getIcon(currentMarkerData.icon),
+            zIndex = data.drawOrder,
+            icon = getIcon(data.icon),
             onClick = {
-                listener?.onEvent(KmlEvent.Marker.Clicked(markerData.value))
+                listener?.onEvent(KmlEvent.Marker.Clicked(properties))
                 true
             }
         )
@@ -197,43 +198,41 @@ public class MarkerManager(
         const val DEFAULT_ICON_WIDTH: Float = 110f
         const val DEFAULT_ICON_HEIGHT: Float = 110f
     }
+}
 
-    /**
-     * Helper data class containing all maker properties and styles
-     */
-    public data class MarkerProperties(
-        val description: String = DEFAULT_DESCRIPTION,
-        val name: String = DEFAULT_NAME,
-        val alpha: Float = DEFAULT_ALPHA,
-        val drawOrder: Float = DEFAULT_DRAW_ORDER,
-        val anchor: Anchor = DEFAULT_ANCHOR,
-        val rotation: Int = DEFAULT_ROTATION,
-        val color: Float? = DEFAULT_COLOR,
-        val styleUrl: String? = DEFAULT_STYLE_URL,
-        val icon: Bitmap? = DEFAULT_ICON,
-        val extendedData: List<ExtendedData>? = DEFAULT_EXTENDED_DATA
-    ) {
-        internal companion object {
-            internal fun from(properties: HashMap<String, Any>): MarkerProperties {
-                val description: String by properties.withDefault { DEFAULT_DESCRIPTION }
-                val name: String by properties.withDefault { DEFAULT_NAME }
-                val drawOrder: Float = convertPropertyToFloat(properties, DRAW_ORDER_TAG, DEFAULT_DRAW_ORDER)
-                val styleUrl: String? by properties.withDefault { DEFAULT_STYLE_URL }
-                val extendedData: List<ExtendedData>? =
-                    properties[EXTENDED_DATA_TAG] as? List<ExtendedData>
-                return MarkerProperties(
-                    description = description,
-                    name = name,
-                    alpha = DEFAULT_ALPHA,
-                    drawOrder = drawOrder,
-                    anchor = DEFAULT_ANCHOR,
-                    rotation = DEFAULT_ROTATION,
-                    color = DEFAULT_COLOR,
-                    styleUrl = styleUrl,
-                    icon = DEFAULT_ICON,
-                    extendedData = extendedData
-                )
-            }
+/**
+ * Helper data class containing all maker properties and styles
+ */
+public data class MarkerProperties(
+    override val name: String = DEFAULT_NAME,
+    override val description: String = DEFAULT_DESCRIPTION,
+    override val drawOrder: Float = DEFAULT_DRAW_ORDER,
+    override val styleUrl: String? = DEFAULT_STYLE_URL,
+    override val extendedData: List<ExtendedData>? = DEFAULT_EXTENDED_DATA,
+
+    val alpha: Float = DEFAULT_ALPHA,
+    val anchor: Anchor = DEFAULT_ANCHOR,
+    val color: Float? = DEFAULT_COLOR,
+    val icon: Bitmap? = DEFAULT_ICON,
+    val rotation: Int = DEFAULT_ROTATION,
+) : IKmlComposableProperties {
+    internal companion object {
+        internal fun from(properties: HashMap<String, Any>): MarkerProperties {
+            val name: String by properties.withDefault { DEFAULT_NAME }
+            val description: String by properties.withDefault { DEFAULT_DESCRIPTION }
+            val drawOrder: Float =
+                convertPropertyToFloat(properties, DRAW_ORDER_TAG, DEFAULT_DRAW_ORDER)
+            val extendedData: List<ExtendedData>? =
+                properties[EXTENDED_DATA_TAG] as? List<ExtendedData>
+            val styleUrl: String? by properties.withDefault { DEFAULT_STYLE_URL }
+
+            return MarkerProperties(
+                name = name,
+                description = description,
+                drawOrder = drawOrder,
+                styleUrl = styleUrl,
+                extendedData = extendedData,
+            )
         }
     }
 }

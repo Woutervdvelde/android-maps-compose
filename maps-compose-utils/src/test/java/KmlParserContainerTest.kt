@@ -85,7 +85,7 @@ public class KmlParserContainerTest {
                 .getContainers().first()
                 .getContainers().first()
                 .getMarkers().first()
-                .getProperties().name
+                .properties.name
         )
 
         Assert.assertEquals(
@@ -94,7 +94,7 @@ public class KmlParserContainerTest {
                 .getContainers()[1]
                 .getContainers().first()
                 .getMarkers().first()
-                .getProperties().name
+                .properties.name
         )
     }
 

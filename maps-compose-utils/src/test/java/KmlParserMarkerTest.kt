@@ -92,9 +92,9 @@ public class KmlParserMarkerTest {
 
     @Test
     public fun testCorrectNameParsed() {
-        Assert.assertEquals("First Marker", marker1.getProperties().name)
-        Assert.assertEquals("Second Marker", marker2.getProperties().name)
-        Assert.assertEquals("Third Marker", marker3.getProperties().name)
+        Assert.assertEquals("First Marker", marker1.properties.name)
+        Assert.assertEquals("Second Marker", marker2.properties.name)
+        Assert.assertEquals("Third Marker", marker3.properties.name)
     }
 
     @Test
@@ -112,42 +112,42 @@ public class KmlParserMarkerTest {
 
     @Test
     public fun testMarkerIconBitmapIsSet() {
-        Assert.assertNotNull(marker1.getProperties().icon)
-        Assert.assertNotNull(marker2.getProperties().icon)
+        Assert.assertNotNull(marker1.properties.icon)
+        Assert.assertNotNull(marker2.properties.icon)
     }
 
     @Test
     public fun testMarkerIconNotSet() {
-        Assert.assertNull(marker3.getProperties().icon)
+        Assert.assertNull(marker3.properties.icon)
     }
 
     @Test
     public fun testMarkerDescription() {
-        Assert.assertEquals(marker1Description, marker1.getProperties().description)
-        Assert.assertEquals(marker2Description, marker2.getProperties().description)
-        Assert.assertEquals(marker3Description, marker3.getProperties().description)
+        Assert.assertEquals(marker1Description, marker1.properties.description)
+        Assert.assertEquals(marker2Description, marker2.properties.description)
+        Assert.assertEquals(marker3Description, marker3.properties.description)
     }
 
     @Test
     public fun testMarkerRotation() {
-        Assert.assertEquals(0, marker1.getProperties().rotation)
-        Assert.assertEquals(90, marker2.getProperties().rotation)
-        Assert.assertEquals(135, marker3.getProperties().rotation)
+        Assert.assertEquals(0, marker1.properties.rotation)
+        Assert.assertEquals(90, marker2.properties.rotation)
+        Assert.assertEquals(135, marker3.properties.rotation)
     }
 
     @Test
     public fun testMarkerVisibility() {
-        Assert.assertEquals(true, marker1.getProperties().visibility)
-        Assert.assertEquals(true, marker2.getProperties().visibility)
-        Assert.assertEquals(false, marker3.getProperties().visibility)
+        Assert.assertEquals(true, marker1.isActive.value)
+        Assert.assertEquals(true, marker2.isActive.value)
+        Assert.assertEquals(false, marker3.isActive.value)
     }
 
     @Test
     public fun testMarkerColor() {
         val marker1HueColor = 240f
         val marker2HueColor = 120f
-        Assert.assertEquals(marker1HueColor, marker1.getProperties().color)
-        Assert.assertEquals(marker2HueColor, marker2.getProperties().color)
+        Assert.assertEquals(marker1HueColor, marker1.properties.color)
+        Assert.assertEquals(marker2HueColor, marker2.properties.color)
     }
 
     @Test
@@ -159,9 +159,9 @@ public class KmlParserMarkerTest {
 
     @Test
     public fun testMarkerDrawOrder() {
-        Assert.assertEquals(1f, marker1.getProperties().drawOrder)
-        Assert.assertEquals(2f, marker2.getProperties().drawOrder)
-        Assert.assertEquals(3f, marker3.getProperties().drawOrder)
+        Assert.assertEquals(1f, marker1.properties.drawOrder)
+        Assert.assertEquals(2f, marker2.properties.drawOrder)
+        Assert.assertEquals(3f, marker3.properties.drawOrder)
     }
 
     @Test

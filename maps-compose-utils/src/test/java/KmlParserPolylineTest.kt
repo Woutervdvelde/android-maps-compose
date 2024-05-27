@@ -104,12 +104,12 @@ public class KmlParserPolylineTest {
 
     private fun getTestLines(): TestLines {
         val lines = parser.container.getPolylines()
-        val line1 = lines.find { it.getProperties().name == "first" }!!
-        val line2 = lines.find { it.getProperties().name == "second" }!!
-        val line3 = lines.find { it.getProperties().name == "third" }!!
-        val line4 = lines.find { it.getProperties().name == "fourth" }!!
-        val line5 = lines.find { it.getProperties().name == "fifth" }!!
-        val line6 = lines.find { it.getProperties().name == "sixth" }!!
+        val line1 = lines.find { it.properties.name == "first" }!!
+        val line2 = lines.find { it.properties.name == "second" }!!
+        val line3 = lines.find { it.properties.name == "third" }!!
+        val line4 = lines.find { it.properties.name == "fourth" }!!
+        val line5 = lines.find { it.properties.name == "fifth" }!!
+        val line6 = lines.find { it.properties.name == "sixth" }!!
 
         return TestLines(line1, line2, line3, line4, line5, line6)
     }
@@ -138,12 +138,12 @@ public class KmlParserPolylineTest {
     @Test
     public fun testCorrectNameParsed() {
         val lines = parser.container.getPolylines()
-        val line1 = lines.find { it.getProperties().name == "first" }
-        val line2 = lines.find { it.getProperties().name == "second" }
-        val line3 = lines.find { it.getProperties().name == "third" }
-        val line4 = lines.find { it.getProperties().name == "fourth" }
-        val line5 = lines.find { it.getProperties().name == "fifth" }
-        val line6 = lines.find { it.getProperties().name == "sixth" }
+        val line1 = lines.find { it.properties.name == "first" }
+        val line2 = lines.find { it.properties.name == "second" }
+        val line3 = lines.find { it.properties.name == "third" }
+        val line4 = lines.find { it.properties.name == "fourth" }
+        val line5 = lines.find { it.properties.name == "fifth" }
+        val line6 = lines.find { it.properties.name == "sixth" }
 
         Assert.assertNotNull(line1)
         Assert.assertNotNull(line2)
@@ -240,7 +240,7 @@ public class KmlParserPolylineTest {
     @Test
     public fun testColorLine1CorrectColor() {
         val line = getTestLines().line1
-        val color = line.getProperties().color
+        val color = line.properties.color
 
         Assert.assertEquals(1f, color.alpha)
         Assert.assertEquals(0f, color.red)
@@ -251,7 +251,7 @@ public class KmlParserPolylineTest {
     @Test
     public fun testColorLine2CorrectColor() {
         val line = getTestLines().line2
-        val color = line.getProperties().color
+        val color = line.properties.color
 
         Assert.assertEquals(1f, color.alpha)
         Assert.assertEquals(1f, color.red)
@@ -262,7 +262,7 @@ public class KmlParserPolylineTest {
     @Test
     public fun testColorLine3CorrectColor() {
         val line = getTestLines().line3
-        val color = line.getProperties().color
+        val color = line.properties.color
 
         Assert.assertEquals(.5f, round(color.alpha * 10) / 10)
         Assert.assertEquals(1f, color.red)
@@ -273,7 +273,7 @@ public class KmlParserPolylineTest {
     @Test
     public fun testColorLine4CorrectColor() {
         val line = getTestLines().line4
-        val color = line.getProperties().color
+        val color = line.properties.color
 
         Assert.assertEquals(1f, color.alpha)
         Assert.assertEquals(0f, color.red)
@@ -284,7 +284,7 @@ public class KmlParserPolylineTest {
     @Test
     public fun testColorLine5CorrectColor() {
         val line = getTestLines().line5
-        val color = line.getProperties().color
+        val color = line.properties.color
 
         Assert.assertEquals(1f, color.alpha)
         Assert.assertEquals(0f, color.red)
@@ -295,7 +295,7 @@ public class KmlParserPolylineTest {
     @Test
     public fun testColorLine6CorrectColor() {
         val line = getTestLines().line1
-        val color = line.getProperties().color
+        val color = line.properties.color
         val defaultColor = Color.Black // taken from PolylineManager Companion object DEFAULT_COLOR
 
         Assert.assertEquals(defaultColor, color)
@@ -306,25 +306,25 @@ public class KmlParserPolylineTest {
         val lines = getTestLines()
         val defaultTessellate = false // taken from PolylineManager Companion object DEFAULT_TESSELLATE
 
-        Assert.assertEquals(true, lines.line1.getProperties().tessellate)
-        Assert.assertEquals(true, lines.line2.getProperties().tessellate)
-        Assert.assertEquals(true, lines.line3.getProperties().tessellate)
-        Assert.assertEquals(false, lines.line4.getProperties().tessellate)
-        Assert.assertEquals(false, lines.line5.getProperties().tessellate)
-        Assert.assertEquals(defaultTessellate, lines.line6.getProperties().tessellate)
+        Assert.assertEquals(true, lines.line1.properties.tessellate)
+        Assert.assertEquals(true, lines.line2.properties.tessellate)
+        Assert.assertEquals(true, lines.line3.properties.tessellate)
+        Assert.assertEquals(false, lines.line4.properties.tessellate)
+        Assert.assertEquals(false, lines.line5.properties.tessellate)
+        Assert.assertEquals(defaultTessellate, lines.line6.properties.tessellate)
     }
 
     @Test
     public fun testVisibilityLines() {
         val lines = getTestLines()
-        val defaultVisibility = true // taken from KmlComposableManager Companion object DEFAULT_VISIBILITY
+        val defaultVisibility = true // taken from KmlComposableProperties Companion object DEFAULT_VISIBILITY
 
-        Assert.assertEquals(true, lines.line1.getProperties().visibility)
-        Assert.assertEquals(true, lines.line2.getProperties().visibility)
-        Assert.assertEquals(false, lines.line3.getProperties().visibility)
-        Assert.assertEquals(false, lines.line4.getProperties().visibility)
-        Assert.assertEquals(false, lines.line5.getProperties().visibility)
-        Assert.assertEquals(defaultVisibility, lines.line6.getProperties().visibility)
+        Assert.assertEquals(true, lines.line1.isActive.value)
+        Assert.assertEquals(true, lines.line2.isActive.value)
+        Assert.assertEquals(false, lines.line3.isActive.value)
+        Assert.assertEquals(false, lines.line4.isActive.value)
+        Assert.assertEquals(false, lines.line5.isActive.value)
+        Assert.assertEquals(defaultVisibility, lines.line6.isActive.value)
     }
 
     @Test
@@ -332,25 +332,25 @@ public class KmlParserPolylineTest {
         val lines = getTestLines()
         val defaultWith = 1f // taken from PolylineManager Companion object DEFAULT_WIDTH
 
-        Assert.assertEquals(1f, lines.line1.getProperties().width)
-        Assert.assertEquals(15f, lines.line2.getProperties().width)
-        Assert.assertEquals(20f, lines.line3.getProperties().width)
-        Assert.assertEquals(25f, lines.line4.getProperties().width)
-        Assert.assertEquals(100f, lines.line5.getProperties().width)
-        Assert.assertEquals(defaultWith, lines.line6.getProperties().width)
+        Assert.assertEquals(1f, lines.line1.properties.width)
+        Assert.assertEquals(15f, lines.line2.properties.width)
+        Assert.assertEquals(20f, lines.line3.properties.width)
+        Assert.assertEquals(25f, lines.line4.properties.width)
+        Assert.assertEquals(100f, lines.line5.properties.width)
+        Assert.assertEquals(defaultWith, lines.line6.properties.width)
     }
 
     @Test
     public fun testDrawOrderLinesZIndex() {
         val lines = getTestLines()
-        val defaultDrawOrder = 0f // taken from KmlComposableManager Companion object DEFAULT_DRAW_ORDER
+        val defaultDrawOrder = 0f // taken from IKmlComposableProperties Companion object DEFAULT_DRAW_ORDER
 
-        Assert.assertEquals(1f, lines.line1.getProperties().drawOrder)
-        Assert.assertEquals(2f, lines.line2.getProperties().drawOrder)
-        Assert.assertEquals(3f, lines.line3.getProperties().drawOrder)
-        Assert.assertEquals(4f, lines.line4.getProperties().drawOrder)
-        Assert.assertEquals(5f, lines.line5.getProperties().drawOrder)
-        Assert.assertEquals(defaultDrawOrder, lines.line6.getProperties().drawOrder)
+        Assert.assertEquals(1f, lines.line1.properties.drawOrder)
+        Assert.assertEquals(2f, lines.line2.properties.drawOrder)
+        Assert.assertEquals(3f, lines.line3.properties.drawOrder)
+        Assert.assertEquals(4f, lines.line4.properties.drawOrder)
+        Assert.assertEquals(5f, lines.line5.properties.drawOrder)
+        Assert.assertEquals(defaultDrawOrder, lines.line6.properties.drawOrder)
     }
 
     @Test
@@ -359,9 +359,9 @@ public class KmlParserPolylineTest {
 
         line.setEndCap(RoundCap())
 
-        Assert.assertEquals(RoundCap::class.java, line.getProperties().endCap::class.java)
-        Assert.assertNotEquals(ButtCap::class.java, line.getProperties().endCap::class.java)
-        Assert.assertNotEquals(SquareCap::class.java, line.getProperties().endCap::class.java)
+        Assert.assertEquals(RoundCap::class.java, line.properties.endCap::class.java)
+        Assert.assertNotEquals(ButtCap::class.java, line.properties.endCap::class.java)
+        Assert.assertNotEquals(SquareCap::class.java, line.properties.endCap::class.java)
     }
 
     @Test
@@ -369,9 +369,9 @@ public class KmlParserPolylineTest {
         val line = getTestLines().line1
         line.setStartCap(SquareCap())
 
-        Assert.assertEquals(SquareCap::class.java, line.getProperties().startCap::class.java)
-        Assert.assertNotEquals(ButtCap::class.java, line.getProperties().startCap::class.java)
-        Assert.assertNotEquals(RoundCap::class.java, line.getProperties().startCap::class.java)
+        Assert.assertEquals(SquareCap::class.java, line.properties.startCap::class.java)
+        Assert.assertNotEquals(ButtCap::class.java, line.properties.startCap::class.java)
+        Assert.assertNotEquals(RoundCap::class.java, line.properties.startCap::class.java)
     }
 
     @Test
@@ -379,12 +379,12 @@ public class KmlParserPolylineTest {
         val lines = getTestLines()
         val defaultJointType = JointType.DEFAULT // taken from PolylineManager Companion object DEFAULT_JOINT_TYPE
 
-        Assert.assertEquals(defaultJointType, lines.line1.getProperties().jointType)
-        Assert.assertEquals(defaultJointType, lines.line2.getProperties().jointType)
-        Assert.assertEquals(defaultJointType, lines.line3.getProperties().jointType)
-        Assert.assertEquals(defaultJointType, lines.line4.getProperties().jointType)
-        Assert.assertEquals(defaultJointType, lines.line5.getProperties().jointType)
-        Assert.assertEquals(defaultJointType, lines.line6.getProperties().jointType)
+        Assert.assertEquals(defaultJointType, lines.line1.properties.jointType)
+        Assert.assertEquals(defaultJointType, lines.line2.properties.jointType)
+        Assert.assertEquals(defaultJointType, lines.line3.properties.jointType)
+        Assert.assertEquals(defaultJointType, lines.line4.properties.jointType)
+        Assert.assertEquals(defaultJointType, lines.line5.properties.jointType)
+        Assert.assertEquals(defaultJointType, lines.line6.properties.jointType)
     }
 
     @Test
@@ -393,7 +393,7 @@ public class KmlParserPolylineTest {
         val expectedType = JointType.ROUND
         line.setJointType(expectedType)
 
-        Assert.assertEquals(expectedType, line.getProperties().jointType)
+        Assert.assertEquals(expectedType, line.properties.jointType)
     }
 
     @Test
@@ -407,6 +407,6 @@ public class KmlParserPolylineTest {
         )
         line.setPattern(expectedPattern)
 
-        Assert.assertEquals(expectedPattern, line.getProperties().pattern)
+        Assert.assertEquals(expectedPattern, line.properties.pattern)
     }
 }
