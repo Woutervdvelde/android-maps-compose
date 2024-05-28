@@ -1,6 +1,5 @@
 package com.google.maps.android.compose.kml.manager
 
-import android.graphics.Bitmap
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -9,8 +8,6 @@ import com.google.android.gms.maps.model.JointType
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PatternItem
 import com.google.maps.android.compose.Polygon
-import com.google.maps.android.compose.kml.data.KmlStyle
-import com.google.maps.android.compose.kml.data.KmlStyleMap
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.DRAW_ORDER_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.EXTENDED_DATA_TAG
 import com.google.maps.android.compose.kml.data.KmlTags.Companion.TESSELLATE_TAG
@@ -31,15 +28,6 @@ public class PolygonManager(
     private val innerBoundaries: List<List<LatLng>>
 ) : KmlComposableManager<PolygonProperties>() {
     override val _properties: MutableState<PolygonProperties> = mutableStateOf(PolygonProperties())
-
-    override suspend fun setStyle(
-        styleMaps: HashMap<String, KmlStyleMap>,
-        styles: HashMap<String, KmlStyle>,
-        images: HashMap<String, Bitmap>,
-        parentVisibility: Boolean,
-    ) {
-        super.setStyle(styleMaps, styles, images, parentVisibility)
-    }
 
     /**
      * Applies all available styles to properties

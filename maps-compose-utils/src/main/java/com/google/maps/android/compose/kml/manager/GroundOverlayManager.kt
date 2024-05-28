@@ -27,7 +27,8 @@ import com.google.maps.android.compose.kml.manager.IKmlComposableProperties.Comp
 import com.google.maps.android.compose.kml.parser.ExtendedData
 
 public class GroundOverlayManager : KmlComposableManager<GroundOverlayProperties>() {
-    override val _properties: MutableState<GroundOverlayProperties> = mutableStateOf(GroundOverlayProperties())
+    override val _properties: MutableState<GroundOverlayProperties> =
+        mutableStateOf(GroundOverlayProperties())
 
     override suspend fun setStyle(
         styleMaps: HashMap<String, KmlStyleMap>,
@@ -41,7 +42,7 @@ public class GroundOverlayManager : KmlComposableManager<GroundOverlayProperties
         )
     }
 
-    override fun applyStylesToProperties() { }
+    override fun applyStylesToProperties() {}
 
     override fun setProperties(data: HashMap<String, Any>) {
         _properties.value = GroundOverlayProperties.from(data)
