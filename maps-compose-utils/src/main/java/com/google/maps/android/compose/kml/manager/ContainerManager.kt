@@ -128,6 +128,13 @@ public class ContainerManager : KmlComposableManager<ContainerProperties>() {
     public fun getPolylines(): List<PolylineManager> = children.filterIsInstance<PolylineManager>()
 
     /**
+     * Gets a list of polygons that are direct children of this ContainerManager
+     *
+     * @return List of [PolygonManager]s
+     */
+    public fun getPolygons(): List<PolygonManager> = children.filterIsInstance<PolygonManager>()
+
+    /**
      * Gets a list of ground overlays that are direct children of this ContainerManager
      *
      * @return List of [GroundOverlayManager]s
