@@ -77,6 +77,34 @@
       </Polygon>
     </Placemark>
 
+    <Placemark>
+      <name>Test Polygon 3</name>
+      <description>This is the third test polygon</description>
+      <Polygon>
+        <outerBoundaryIs>
+          <LinearRing>
+            <coordinates>
+              -122.365383,37.825664,0 -122.365152,37.825322,0 -122.364917,37.825474,0 -122.365383,37.825664,0
+            </coordinates>
+          </LinearRing>
+        </outerBoundaryIs>
+        <innerBoundaryIs>
+          <LinearRing>
+            <coordinates>
+              -122.365212,37.825531,0 -122.365001,37.825394,0 -122.364755,37.825493,0 -122.365212,37.825531,0
+            </coordinates>
+          </LinearRing>
+        </innerBoundaryIs>
+        <innerBoundaryIs>
+          <LinearRing>
+            <coordinates>
+              -123.365212,38.825531,0 -123.365001,38.825394,0 -123.364755,38.825493,0 -123.365212,38.825531,0
+            </coordinates>
+          </LinearRing>
+        </innerBoundaryIs>
+      </Polygon>
+    </Placemark>
+
 
   </Document>
 </kml>
