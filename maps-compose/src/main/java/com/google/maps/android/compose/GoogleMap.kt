@@ -88,8 +88,8 @@ public fun GoogleMap(
     onMyLocationButtonClick: (() -> Boolean)? = null,
     onMyLocationClick: ((Location) -> Unit)? = null,
     onPOIClick: ((PointOfInterest) -> Unit)? = null,
-    contentPadding: PaddingValues = NoPadding,
-    content: (@Composable @GoogleMapComposable () -> Unit)? = null,
+    contentPadding: PaddingValues = DefaultMapContentPadding,
+    content: @Composable @GoogleMapComposable () -> Unit = {},
 ) {
     // When in preview, early return a Box with the received modifier preserving layout
     if (LocalInspectionMode.current) {
@@ -139,9 +139,8 @@ public fun GoogleMap(
 
                 CompositionLocalProvider(
                     LocalCameraPositionState provides currentCameraPositionState,
-                ) {
-                    currentContent?.invoke()
-                }
+                    currentContent
+                )
             }
         }
     }
