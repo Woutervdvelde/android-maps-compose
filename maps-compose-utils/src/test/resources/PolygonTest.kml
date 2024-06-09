@@ -6,11 +6,11 @@
 
     <Style id="polygonStyle1">
       <LineStyle>
-        <color>ff0000ff</color>
+        <color>ffff0000</color>
         <width>2</width>
       </LineStyle>
       <PolyStyle>
-        <color>7dff0000</color>
+        <color>ff0000ff</color>
         <fill>0</fill>
         <outline>0</outline>
       </PolyStyle>
@@ -23,7 +23,7 @@
         <width>4</width>
       </LineStyle>
       <PolyStyle>
-        <color>7d00ff00</color>
+        <color>ff00ff00</color>
         <fill>1</fill>
         <outline>1</outline>
       </PolyStyle>

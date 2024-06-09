@@ -23,7 +23,7 @@ import java.lang.reflect.Field
  *  │ Fill Color: Red         │ │ Fill Color: Green   │ │ Fill Color: unset   │
  *  │ Fill: 0                 │ │ Fill: 1             │ │ Fill: unset         │
  *  │ Stroke Color: Blue      │ │ Stroke Color: Green │ │ Stroke Color: unset │
- *  │ Stroke Width: undefined │ │ Stroke Width: 4     │ │ Stroke Width: unset │
+ *  │ Stroke Width: 2         │ │ Stroke Width: 4     │ │ Stroke Width: unset │
  *  │ Stoke: 0                │ │ Stroke: 1           │ │ Stroke: unset       │
  *  │ Geodesic: 1             │ │ Geodesic: 0         │ │ Geodesic: unset     │
  *  │ Visible: 1              │ │ Visible: 0          │ │ Visible: unset      │
@@ -187,5 +187,27 @@ public class KmlParserPolygonTest {
         Assert.assertEquals(polygon1Color, polygon1.properties.fillColor)
         Assert.assertEquals(polygon2Color, polygon2.properties.fillColor)
         Assert.assertEquals(defaultFillColor, polygon3.properties.fillColor)
+    }
+
+    @Test
+    public fun testLineColor() {
+        val polygon1Color = Color(0f, 0f, 1f)
+        val polygon2Color = Color(0f, 1f, 0f)
+        val defaultFillColor = Color.Black // Extracted from DEFAULT_COLOR PolygonManager
+
+        Assert.assertEquals(polygon1Color, polygon1.properties.strokeColor)
+        Assert.assertEquals(polygon2Color, polygon2.properties.strokeColor)
+        Assert.assertEquals(defaultFillColor, polygon3.properties.strokeColor)
+    }
+
+    @Test
+    public fun testLineWidth() {
+        val polygon1Width = 2f
+        val polygon2Width = 4f
+        val defaultWidth = 10f // Extracted from DEFAULT_STROKE_WIDTH PolygonManager
+
+        Assert.assertEquals(polygon1Width, polygon1.properties.strokeWidth)
+        Assert.assertEquals(polygon2Width, polygon2.properties.strokeWidth)
+        Assert.assertEquals(defaultWidth, polygon3.properties.strokeWidth)
     }
 }
