@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Polygon Test Document</name>
+
+
+    <Style id="polygonStyle1">
+      <LineStyle>
+        <color>ff0000ff</color>
+        <width>2</width>
+      </LineStyle>
+      <PolyStyle>
+        <color>7dff0000</color>
+        <fill>0</fill>
+        <outline>0</outline>
+      </PolyStyle>
+    </Style>
+
+
+    <Style id="polygonStyle2">
+      <LineStyle>
+        <color>ff00ff00</color>
+        <width>4</width>
+      </LineStyle>
+      <PolyStyle>
+        <color>7d00ff00</color>
+        <fill>1</fill>
+        <outline>1</outline>
+      </PolyStyle>
+    </Style>
+
+
+    <Placemark>
+      <name>Test Polygon 1</name>
+      <description>This is the first test polygon</description>
+      <styleUrl>#polygonStyle1</styleUrl>
+      <visibility>1</visibility>
+      <Polygon>
+        <outerBoundaryIs>
+          <LinearRing>
+            <coordinates>
+              -122.364383,37.824664,0 -122.364152,37.824322,0 -122.363917,37.824474,0 -122.364383,37.824664,0
+            </coordinates>
+          </LinearRing>
+        </outerBoundaryIs>
+        <innerBoundaryIs>
+          <LinearRing>
+            <coordinates>
+              -122.364212,37.824531,0 -122.364001,37.824394,0 -122.363755,37.824493,0 -122.364212,37.824531,0
+            </coordinates>
+          </LinearRing>
+        </innerBoundaryIs>
+      </Polygon>
+    </Placemark>
+
+
+    <Placemark>
+      <name>Test Polygon 2</name>
+      <description>This is the second test polygon</description>
+      <styleUrl>#polygonStyle2</styleUrl>
+      <visibility>0</visibility>
+      <Polygon>
+        <outerBoundaryIs>
+          <LinearRing>
+            <coordinates>
+              -122.365383,37.825664,0 -122.365152,37.825322,0 -122.364917,37.825474,0 -122.365383,37.825664,0
+            </coordinates>
+          </LinearRing>
+        </outerBoundaryIs>
+        <innerBoundaryIs>
+          <LinearRing>
+            <coordinates>
+              -122.365212,37.825531,0 -122.365001,37.825394,0 -122.364755,37.825493,0 -122.365212,37.825531,0
+            </coordinates>
+          </LinearRing>
+        </innerBoundaryIs>
+      </Polygon>
+    </Placemark>
+
+
+  </Document>
+</kml>

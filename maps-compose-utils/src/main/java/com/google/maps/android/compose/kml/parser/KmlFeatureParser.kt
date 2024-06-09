@@ -52,11 +52,11 @@ internal abstract class KmlFeatureParser {
         /**
          * Extracts single or multiple coordinates into a LatLng list
          *
-         * @param input string containing latitude longitude values separated by a "," and pairs separated by an enter (\n)
+         * @param input string containing latitude longitude values separated by a "," and pairs separated either by a newline or space
          * @return list of LatLng
          */
         internal fun parseCoordinates(input: String): List<LatLng> {
-            return input.trim().split("\n").map {
+            return input.trim().split(Regex("\\s+")).map {
                 val coordinate = it.split(LAT_LNG_ALT_SEPARATOR)
                 val lat = coordinate[LATITUDE_INDEX].toDouble()
                 val lng = coordinate[LONGITUDE_INDEX].toDouble()

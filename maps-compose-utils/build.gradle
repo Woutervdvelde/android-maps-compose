@@ -44,7 +44,6 @@ dependencies {
     api libs.maps.ktx.utils
 
     testImplementation libs.test.junit
-    testImplementation libs.test.mockito
     testImplementation libs.test.kxml
     testImplementation libs.test.robolectric
 }

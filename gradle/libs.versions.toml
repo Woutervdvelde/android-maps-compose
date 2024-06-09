@@ -16,7 +16,6 @@ kxml = "2.3.0"
 material = "1.11.0"
 mapsktx = "5.0.0"
 mapsecrets = "2.0.1"
-mockito = "3.12.4"
 robolectric = "4.12.1"
 
 [libraries]
@@ -46,7 +45,6 @@ maps-secrets-plugin = { module = "com.google.android.libraries.mapsplatform.secr
 material = { module = "com.google.android.material:material", version.ref = "material" }
 test-junit = { module = "junit:junit", version.ref = "junit" }
 test-kxml = { module = "net.sf.kxml:kxml2", version.ref = "kxml"}
-test-mockito = { module = "org.mockito:mockito-core", version.ref = "mockito" }
 test-robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric"}
 
 [plugins]
