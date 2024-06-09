@@ -1,5 +1,4 @@
 plugins {
-    id 'com.android.library'
     id 'kotlin-android'
 }
 
@@ -20,7 +19,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.4"
+        kotlinCompilerExtensionVersion libs.versions.composecompiler.get()
     }
 
     buildFeatures {
@@ -38,20 +37,14 @@ android {
 dependencies {
     api project(':maps-compose')
 
-    implementation "androidx.core:core-ktx:1.12.0"
-    implementation platform("androidx.compose:compose-bom:2024.01.00")
-    implementation "androidx.compose.ui:ui:1.6.3"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.22"
-    api "com.google.maps.android:maps-utils-ktx:5.0.0"
+    implementation libs.androidx.core
+    implementation platform(libs.androidx.compose.bom)
+    implementation libs.androidx.compose.ui
+    implementation libs.kotlin
+    api libs.maps.ktx.utils
 
-    testImplementation "junit:junit:4.13.2"
-    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1-Beta'
-    testImplementation "org.mockito:mockito-core:3.12.4"
-    testImplementation 'net.sf.kxml:kxml2:2.3.0'
-    testImplementation "org.robolectric:robolectric:4.12.1"
-
-    androidTestImplementation "org.mockito:mockito-core:3.12.4"
-    androidTestImplementation platform("androidx.compose:compose-bom:2024.01.00")
-    androidTestImplementation "androidx.test.espresso:espresso-core:3.5.1"
-    androidTestImplementation "androidx.test.ext:junit-ktx:1.1.5"
+    testImplementation libs.test.junit
+    testImplementation libs.test.mockito
+    testImplementation libs.test.kxml
+    testImplementation libs.test.robolectric
 }
