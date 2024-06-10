@@ -1,6 +1,8 @@
 package com.google.maps.android.compose.kml.data
 
 import androidx.compose.ui.graphics.Color
+import com.google.maps.android.compose.kml.manager.PolygonProperties.Companion.DEFAULT_POLY_FILL
+import com.google.maps.android.compose.kml.manager.PolygonProperties.Companion.DEFAULT_POLY_OUTLINE
 import com.google.maps.android.compose.kml.parser.Anchor
 
 public class KmlStyle: KmlStyleId() {
@@ -227,7 +229,5 @@ public class KmlStyle: KmlStyleId() {
         const val DEFAULT_LINE_WIDTH = 1f
 
         val DEFAULT_POLY_FILL_COLOR = Color.Black
-        const val DEFAULT_POLY_FILL = true
-        const val DEFAULT_POLY_OUTLINE = true
     }
 }

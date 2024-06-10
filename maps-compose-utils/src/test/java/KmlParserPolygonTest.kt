@@ -210,4 +210,26 @@ public class KmlParserPolygonTest {
         Assert.assertEquals(polygon2Width, polygon2.properties.strokeWidth)
         Assert.assertEquals(defaultWidth, polygon3.properties.strokeWidth)
     }
+
+    @Test
+    public fun testShowFill() {
+        val polygon1FillStroke = false
+        val polygon2FillStroke = true
+        val defaultFillStroke = true // Extracted from DEFAULT_POLY_FILL PolygonManager
+
+        Assert.assertEquals(polygon1FillStroke, polygon1.properties.showFill)
+        Assert.assertEquals(polygon2FillStroke, polygon2.properties.showFill)
+        Assert.assertEquals(defaultFillStroke, polygon3.properties.showFill)
+    }
+
+    @Test
+    public fun testShowStroke() {
+        val polygon1ShowStroke = false
+        val polygon2ShowStroke = true
+        val defaultShowStroke = true // Extracted from DEFAULT_POLY_OUTLINE PolygonManager
+
+        Assert.assertEquals(polygon1ShowStroke, polygon1.properties.showStroke)
+        Assert.assertEquals(polygon2ShowStroke, polygon2.properties.showStroke)
+        Assert.assertEquals(defaultShowStroke, polygon3.properties.showStroke)
+    }
 }

@@ -36,6 +36,8 @@ public class PolygonManager(
         setFillColor(style.getPolyFillColor())
         setStrokeColor(style.getLineColor())
         setStrokeWidth(style.getLineWidth())
+        setShowFill(style.getPolyFill())
+        setShowStroke(style.getPolyOutline())
     }
 
     override fun setProperties(data: HashMap<String, Any>) {
@@ -50,6 +52,24 @@ public class PolygonManager(
      */
     public fun setFillColor(color: Color) {
         _properties.value = _properties.value.copy(fillColor = color)
+    }
+
+    /**
+     * Sets a boolean defining if the fill should be shown or not
+     *
+     * @param show [Boolean] true if polygon should be filled
+     */
+    public fun setShowFill(show: Boolean) {
+        _properties.value = _properties.value.copy(showFill = show)
+    }
+
+    /**
+     * Sets a boolean defining if the stroke/outline should be shown or not
+     *
+     * @param show [Boolean] true if polygon should have a stroke
+     */
+    public fun setShowStroke(show: Boolean) {
+        _properties.value = _properties.value.copy(showStroke = show)
     }
 
     /**
@@ -130,6 +150,8 @@ public data class PolygonProperties(
 
     val tessellate: Boolean = DEFAULT_TESSELLATE,
     val fillColor: Color = DEFAULT_COLOR,
+    val showFill: Boolean = DEFAULT_POLY_FILL,
+    val showStroke: Boolean = DEFAULT_POLY_OUTLINE,
     val strokeColor: Color = DEFAULT_COLOR,
     val strokeJointType: Int = DEFAULT_STROKE_JOINT_TYPE,
     val strokePattern: List<PatternItem>? = DEFAULT_STROKE_PATTERN,
@@ -161,5 +183,7 @@ public data class PolygonProperties(
         private const val DEFAULT_STROKE_JOINT_TYPE = JointType.DEFAULT
         private const val DEFAULT_TESSELLATE = false
         private const val DEFAULT_STROKE_WIDTH = 10f
+        internal const val DEFAULT_POLY_FILL = true
+        internal const val DEFAULT_POLY_OUTLINE = true
     }
 }
